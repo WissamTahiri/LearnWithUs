@@ -1,0 +1,1164 @@
+/* ============================================================
+   style.css — Feuille de styles principale de LearnWithUs
+   ============================================================
+   Ce fichier contient TOUS les styles visuels du site.
+   Il est chargé par chaque page HTML via <link rel="stylesheet">.
+   On centralise les styles dans un seul fichier pour :
+     1. Éviter de répéter le même code dans plusieurs fichiers
+     2. Garantir un look cohérent sur toutes les pages
+     3. Faciliter les modifications (un seul endroit à changer)
+   ============================================================ */
+
+
+/* ============================================================
+   VARIABLES DE COULEURS (:root)
+   ============================================================
+   :root cible l'élément racine du document HTML (la balise <html>).
+   C'est l'endroit idéal pour déclarer des variables CSS car :
+     - Elles sont accessibles PARTOUT dans le fichier
+     - On peut changer une couleur à un seul endroit et tout
+       le site se met à jour automatiquement
+   Syntaxe : --nom-variable: valeur;
+   Utilisation : var(--nom-variable)
+   ============================================================ */
+:root {
+  /* Bordeaux — couleur identité visuelle de LearnWithUs */
+  --couleur-principale: #6B1F2A;
+
+  /* Bordeaux très clair — utilisé pour les fonds de sections */
+  --couleur-principale-clair: #F7EEF0;
+
+  /* Bordeaux foncé — apparaît quand on survole un bouton */
+  --couleur-principale-hover: #4A1520;
+
+  /* Quasi-noir — réservé aux titres pour un contraste maximal */
+  --couleur-titre: #111111;
+
+  /* Gris foncé — pour le texte courant, plus doux que le noir pur */
+  --couleur-texte: #2A2A2A;
+
+  /* Gris moyen — pour les informations secondaires (dates, légendes) */
+  --couleur-texte-secondaire: #6B6B6B;
+
+  /* Gris très clair — fond des sections alternées */
+  --couleur-fond: #F5F5F5;
+
+  /* Blanc pur — fond des cartes et du body */
+  --couleur-blanc: #FFFFFF;
+
+  /* Gris clair — bordures subtiles autour des champs et cartes */
+  --couleur-bordure: #E0E0E0;
+
+  /* Ombre douce — donne un effet de profondeur aux cartes
+     Les 4 valeurs : décalage-X  décalage-Y  flou  couleur */
+  --ombre-carte: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Arrondi des coins des boutons (6px = léger arrondi) */
+  --rayon-bouton: 6px;
+
+  /* Arrondi des coins des cartes (10px = arrondi plus visible) */
+  --rayon-carte: 10px;
+}
+
+
+/* ============================================================
+   RESET CSS
+   ============================================================
+   Chaque navigateur (Chrome, Firefox, Safari) applique ses
+   propres styles par défaut aux éléments HTML. Par exemple,
+   <body> a une marge de 8px dans la plupart des navigateurs.
+
+   Un "reset" supprime ces styles par défaut pour que NOTRE CSS
+   soit le seul à contrôler l'apparence. Sans reset, on aurait
+   des décalages inexplicables entre navigateurs.
+   ============================================================ */
+
+/* Le sélecteur * cible TOUS les éléments de la page */
+*,
+*::before,
+*::after {
+  /* box-sizing: border-box signifie que la largeur et la hauteur
+     INCLUENT le padding et la bordure. Sans ça, un élément de
+     width: 100% + padding: 20px dépasserait de son conteneur.
+     C'est LE réglage le plus important d'un reset moderne. */
+  box-sizing: border-box;
+
+  /* Supprime les marges et paddings par défaut du navigateur */
+  margin: 0;
+  padding: 0;
+}
+
+/* Style de base pour le body — s'applique à toutes les pages */
+body {
+  /* Police lisible et universelle (disponible sur tous les OS) */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Couleur du texte par défaut — tous les textes en hériteront */
+  color: var(--couleur-texte);
+
+  /* Fond légèrement gris pour que les cartes blanches ressortent */
+  background-color: var(--couleur-fond);
+
+  /* Interligne confortable pour la lecture (1.6 = 160% de la taille du texte) */
+  line-height: 1.6;
+}
+
+/* Les liens n'ont pas de soulignement par défaut sur ce site */
+a {
+  text-decoration: none;
+  color: var(--couleur-principale);
+}
+
+/* Les listes n'ont pas de puces par défaut (on les ajoutera au besoin) */
+ul {
+  list-style: none;
+}
+
+/* Les images ne doivent jamais dépasser leur conteneur */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* ============================================================
+   NAVIGATION
+   ============================================================
+   La barre de navigation apparaît en haut de CHAQUE page.
+   Elle permet à l'utilisateur de se déplacer dans le site.
+
+   On utilise 'position: sticky' pour que la navigation reste
+   visible quand l'utilisateur fait défiler la page vers le bas.
+   Sans ça, la nav disparaîtrait et l'utilisateur serait perdu.
+   ============================================================ */
+
+/* Conteneur principal de la navigation */
+.navigation {
+  /* Fond blanc pour contraster avec le contenu de la page */
+  background-color: var(--couleur-blanc);
+
+  /* Ombre en bas de la barre pour la séparer visuellement du contenu */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* sticky = reste collée en haut de l'écran au défilement.
+     Contrairement à 'fixed', 'sticky' garde sa place dans le flux
+     du document et ne se colle que quand on scrolle. */
+  position: sticky;
+
+  /* top: 0 = se colle tout en haut de la fenêtre */
+  top: 0;
+
+  /* z-index élevé pour que la nav passe AU-DESSUS du contenu
+     quand on scrolle. Sans ça, le contenu recouvrirait la nav. */
+  z-index: 1000;
+}
+
+/* Intérieur de la navigation — aligne logo et liens */
+.nav-contenu {
+  /* Largeur maximale pour ne pas s'étirer sur les grands écrans */
+  max-width: 1200px;
+
+  /* margin auto = centre horizontalement le conteneur */
+  margin: 0 auto;
+
+  /* Padding horizontal pour ne pas coller aux bords */
+  padding: 0 20px;
+
+  /* Flexbox aligne les éléments sur une ligne horizontale.
+     C'est l'outil CSS idéal pour disposer des éléments côte à côte.
+     justify-content: space-between pousse le logo à gauche
+     et les liens à droite. */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* Hauteur fixe de la barre de navigation */
+  height: 70px;
+}
+
+/* Logo du site dans la navigation */
+.nav-logo {
+  /* Taille du logo — plus grand que le texte normal */
+  font-size: 1.5rem;
+
+  /* Gras pour que le logo soit bien visible */
+  font-weight: 700;
+
+  /* Couleur bordeaux — identité visuelle du site */
+  color: var(--couleur-principale);
+
+  /* Supprime le soulignement du lien */
+  text-decoration: none;
+}
+
+/* Conteneur des liens de navigation */
+.nav-liens {
+  /* Flexbox pour aligner les liens horizontalement */
+  display: flex;
+
+  /* Espace de 30px entre chaque lien */
+  gap: 30px;
+
+  /* Supprime les puces de la liste (ul) */
+  list-style: none;
+}
+
+/* Chaque lien individuel dans la navigation */
+.nav-liens a {
+  /* Couleur gris foncé pour les liens non actifs */
+  color: var(--couleur-texte);
+
+  /* Pas de soulignement par défaut */
+  text-decoration: none;
+
+  /* Taille légèrement réduite */
+  font-size: 0.95rem;
+
+  /* Semi-gras pour une bonne lisibilité */
+  font-weight: 500;
+
+  /* Padding vertical pour agrandir la zone cliquable */
+  padding: 8px 0;
+
+  /* Transition douce pour l'animation au survol
+     'color 0.3s' = la couleur change en 0.3 seconde au lieu
+     de changer instantanément, ce qui est plus agréable. */
+  transition: color 0.3s;
+}
+
+/* :hover est une pseudo-classe CSS qui s'active quand la souris
+   survole l'élément. C'est le feedback visuel le plus courant. */
+.nav-liens a:hover {
+  color: var(--couleur-principale);
+}
+
+/* Classe ajoutée au lien de la page ACTUELLE pour indiquer
+   à l'utilisateur où il se trouve dans le site */
+.nav-liens a.actif {
+  color: var(--couleur-principale);
+
+  /* Bordure en bas du lien actif — sert d'indicateur visuel */
+  border-bottom: 2px solid var(--couleur-principale);
+}
+
+/* Bouton hamburger ☰ — visible uniquement sur mobile */
+.menu-mobile {
+  /* Caché par défaut sur les grands écrans */
+  display: none;
+
+  /* Supprime le style par défaut du bouton */
+  background: none;
+  border: none;
+
+  /* Taille de l'icône hamburger */
+  font-size: 1.5rem;
+
+  /* Curseur pointeur pour indiquer que c'est cliquable */
+  cursor: pointer;
+
+  /* Couleur du texte du bouton */
+  color: var(--couleur-texte);
+}
+
+
+/* ============================================================
+   BOUTONS
+   ============================================================
+   Deux styles de boutons pour des usages différents :
+   - .bouton-principal  : action importante (inscription, envoi)
+   - .bouton-secondaire : action secondaire (en savoir plus)
+   ============================================================ */
+
+/* Bouton principal — fond bordeaux, texte blanc */
+.bouton-principal {
+  /* Fond bordeaux — attire l'attention sur l'action principale */
+  background-color: var(--couleur-principale);
+
+  /* Texte blanc pour un bon contraste sur fond foncé */
+  color: var(--couleur-blanc);
+
+  /* Supprime la bordure par défaut des boutons */
+  border: none;
+
+  /* Padding : espace intérieur (vertical horizontal) */
+  padding: 12px 28px;
+
+  /* Coins arrondis */
+  border-radius: var(--rayon-bouton);
+
+  /* Taille du texte */
+  font-size: 1rem;
+
+  /* Semi-gras */
+  font-weight: 600;
+
+  /* Curseur main au survol */
+  cursor: pointer;
+
+  /* Transition douce pour le changement de couleur au survol */
+  transition: background-color 0.3s, transform 0.2s;
+
+  /* Affichage inline-block pour pouvoir ajouter du padding */
+  display: inline-block;
+
+  /* Centre le texte dans le bouton */
+  text-align: center;
+}
+
+/* :hover — quand la souris survole le bouton principal
+   On assombrit le fond pour donner un retour visuel à l'utilisateur */
+.bouton-principal:hover {
+  background-color: var(--couleur-principale-hover);
+
+  /* Légère montée du bouton (-2px vers le haut) */
+  transform: translateY(-2px);
+}
+
+/* :active — quand l'utilisateur CLIQUE (maintient le clic)
+   On donne un effet d'enfoncement pour confirmer le clic */
+.bouton-principal:active {
+  transform: translateY(0);
+}
+
+/* Bouton secondaire — bordure bordeaux, fond transparent */
+.bouton-secondaire {
+  /* Fond transparent — plus discret que le bouton principal */
+  background-color: transparent;
+
+  /* Texte bordeaux */
+  color: var(--couleur-principale);
+
+  /* Bordure bordeaux de 2px — définit le contour du bouton */
+  border: 2px solid var(--couleur-principale);
+
+  /* Même padding que le principal pour une taille cohérente */
+  padding: 10px 28px;
+
+  border-radius: var(--rayon-bouton);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Au survol, le bouton secondaire se remplit légèrement */
+.bouton-secondaire:hover {
+  background-color: var(--couleur-principale-clair);
+}
+
+
+/* ============================================================
+   CARTES
+   ============================================================
+   Les cartes sont des blocs visuels qui contiennent du contenu
+   (formation, argument, etc.). Elles ont un fond blanc, une
+   ombre et des coins arrondis pour se détacher du fond de page.
+   ============================================================ */
+
+.carte {
+  /* Fond blanc pour que la carte ressorte sur le fond gris */
+  background-color: var(--couleur-blanc);
+
+  /* Coins arrondis — adoucit l'aspect visuel */
+  border-radius: var(--rayon-carte);
+
+  /* Ombre douce sous la carte — crée un effet de profondeur
+     box-shadow: décalage-X décalage-Y flou étendue couleur
+     0 2px 8px rgba(0,0,0,0.08) signifie :
+       - 0px de décalage horizontal
+       - 2px de décalage vertical (ombre en bas)
+       - 8px de flou (ombre diffuse)
+       - rgba(0,0,0,0.08) = noir à 8% d'opacité (très léger) */
+  box-shadow: var(--ombre-carte);
+
+  /* Espace intérieur pour que le texte ne touche pas les bords */
+  padding: 24px;
+
+  /* Transition douce pour l'effet d'élévation au survol.
+     'transform 0.3s' = le mouvement prend 0.3 seconde.
+     'box-shadow 0.3s' = l'ombre change en 0.3 seconde. */
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Au survol, la carte "monte" légèrement et son ombre s'intensifie
+   pour donner un effet interactif agréable */
+.carte:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Icône emoji dans les cartes (taille agrandie) */
+.carte-icone {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+/* Titre dans une carte */
+.carte h3 {
+  color: var(--couleur-titre);
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+}
+
+/* Texte descriptif dans une carte */
+.carte p {
+  color: var(--couleur-texte-secondaire);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+/* Informations secondaires (durée, tarif) dans les cartes */
+.carte-info {
+  font-size: 0.9rem;
+  color: var(--couleur-texte-secondaire);
+  margin-bottom: 6px;
+}
+
+/* Lien dans une carte */
+.carte-lien {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--couleur-principale);
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.carte-lien:hover {
+  color: var(--couleur-principale-hover);
+}
+
+
+/* ============================================================
+   GRILLES (CSS Grid)
+   ============================================================
+   CSS Grid est un système de mise en page en 2 dimensions.
+   Il permet de créer des colonnes et des lignes facilement.
+
+   Comment ça marche :
+     1. Le conteneur parent reçoit 'display: grid'
+     2. On définit le nombre de colonnes avec 'grid-template-columns'
+     3. Les enfants directs se placent automatiquement dans la grille
+     4. 'gap' définit l'espace entre les éléments
+
+   Exemple : grid-template-columns: repeat(3, 1fr)
+     - repeat(3, ...) = répète 3 fois
+     - 1fr = 1 fraction de l'espace disponible
+     - Résultat : 3 colonnes de largeur égale
+   ============================================================ */
+
+.grille-3-colonnes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  /* gap = espace entre les cartes (horizontal ET vertical) */
+  gap: 24px;
+}
+
+/* Grille à 2 colonnes (utilisée sur la page contact) */
+.grille-2-colonnes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+
+/* ============================================================
+   MEDIA QUERIES (Responsive Design)
+   ============================================================
+   Les media queries permettent d'appliquer des styles CSS
+   différents selon la TAILLE de l'écran.
+
+   @media (max-width: 768px) signifie :
+     "Applique ces styles SI l'écran fait 768px de large ou moins"
+
+   Breakpoints courants :
+     - 768px  = tablettes et petits écrans
+     - 480px  = téléphones mobiles
+
+   C'est ce qu'on appelle le "responsive design" : le site
+   s'adapte à l'appareil de l'utilisateur.
+   ============================================================ */
+
+/* --- TABLETTE (écrans de 769px à 1024px) --- */
+@media (max-width: 1024px) {
+  .grille-3-colonnes {
+    /* Sur tablette : 2 colonnes au lieu de 3 */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- MOBILE (écrans de 768px et moins) --- */
+@media (max-width: 768px) {
+  .grille-3-colonnes {
+    /* Sur mobile : 1 seule colonne, les cartes s'empilent */
+    grid-template-columns: 1fr;
+  }
+
+  .grille-2-colonnes {
+    /* La grille 2 colonnes passe aussi à 1 colonne */
+    grid-template-columns: 1fr;
+  }
+
+  /* --- Navigation mobile --- */
+  /* On cache les liens de navigation et on affiche le hamburger */
+  .nav-liens {
+    /* Caché par défaut sur mobile */
+    display: none;
+
+    /* Quand visible, les liens s'empilent verticalement */
+    flex-direction: column;
+
+    /* Position absolue pour que le menu se superpose au contenu */
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background-color: var(--couleur-blanc);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    gap: 15px;
+  }
+
+  /* Quand la classe 'menu-ouvert' est ajoutée par JavaScript,
+     les liens deviennent visibles */
+  .nav-liens.menu-ouvert {
+    display: flex;
+  }
+
+  /* Le bouton hamburger devient visible sur mobile */
+  .menu-mobile {
+    display: block;
+  }
+}
+
+
+/* ============================================================
+   HERO SECTION
+   ============================================================
+   La section "hero" est la première chose que voit l'utilisateur.
+   Elle occupe une grande place en haut de la page d'accueil
+   avec un message d'accroche et un bouton d'action.
+   ============================================================ */
+
+.hero {
+  /* Padding généreux pour donner de l'ampleur à la section */
+  padding: 80px 20px;
+
+  /* Fond bordeaux clair pour distinguer cette section */
+  background-color: var(--couleur-principale-clair);
+
+  /* Centre tout le contenu horizontalement */
+  text-align: center;
+}
+
+/* Titre principal du hero */
+.hero h1 {
+  /* Grande taille — c'est LE titre le plus important du site */
+  font-size: 2.5rem;
+
+  /* Couleur quasi-noire pour un maximum de lisibilité */
+  color: var(--couleur-titre);
+
+  /* Espace sous le titre */
+  margin-bottom: 16px;
+
+  /* Interligne serré pour les grands titres */
+  line-height: 1.2;
+}
+
+/* Sous-titre du hero */
+.hero p {
+  font-size: 1.1rem;
+  color: var(--couleur-texte-secondaire);
+  margin-bottom: 30px;
+
+  /* Largeur max pour que le texte ne s'étire pas trop
+     sur les grands écrans (difficile à lire si trop large) */
+  max-width: 600px;
+
+  /* Centre le paragraphe horizontalement */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Adaptation du hero sur mobile */
+@media (max-width: 768px) {
+  .hero {
+    padding: 50px 20px;
+  }
+
+  .hero h1 {
+    /* Titre plus petit sur mobile pour ne pas déborder */
+    font-size: 1.8rem;
+  }
+}
+
+
+/* ============================================================
+   SECTIONS
+   ============================================================
+   Les sections structurent le contenu de chaque page.
+   Elles alternent souvent entre fond blanc et fond gris.
+   ============================================================ */
+
+.section {
+  /* Padding vertical pour aérer le contenu */
+  padding: 60px 20px;
+
+  /* Largeur max + centrage — même principe que la navigation */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Titre de section (h2) */
+.section h2 {
+  font-size: 1.8rem;
+  color: var(--couleur-titre);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Section avec fond alterné (gris clair) */
+.section-fond {
+  background-color: var(--couleur-fond);
+  padding: 60px 20px;
+}
+
+/* Conteneur interne pour les sections avec fond */
+.section-fond .section-contenu {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+/* ============================================================
+   FORMULAIRES
+   ============================================================
+   Styles pour tous les éléments de formulaire du site :
+   inscriptions, contact, etc.
+   ============================================================ */
+
+/* Conteneur du formulaire — limite la largeur pour la lisibilité */
+.formulaire-conteneur {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: var(--couleur-blanc);
+  padding: 40px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+}
+
+/* Labels — texte au-dessus des champs de saisie */
+label {
+  /* block = le label prend toute la largeur (le champ passe en dessous) */
+  display: block;
+
+  /* Gras pour distinguer le label du champ */
+  font-weight: 600;
+
+  /* Espace entre le label et le champ */
+  margin-bottom: 6px;
+
+  /* Espace au-dessus pour séparer du champ précédent */
+  margin-top: 18px;
+
+  /* Couleur du texte du label */
+  color: var(--couleur-titre);
+
+  font-size: 0.95rem;
+}
+
+/* Champs de saisie : input texte, email, tel, select, textarea */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  /* Le champ prend toute la largeur de son conteneur */
+  width: 100%;
+
+  /* Espace intérieur pour que le texte saisi ne touche pas les bords */
+  padding: 12px 14px;
+
+  /* Bordure grise légère autour du champ */
+  border: 1px solid var(--couleur-bordure);
+
+  /* Coins légèrement arrondis */
+  border-radius: var(--rayon-bouton);
+
+  /* Taille du texte saisi */
+  font-size: 1rem;
+
+  /* Même police que le reste du site */
+  font-family: inherit;
+
+  /* Transition pour l'animation de focus (voir ci-dessous) */
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  /* Espace sous le champ */
+  margin-bottom: 4px;
+}
+
+/* :focus est une pseudo-classe qui s'active quand l'utilisateur
+   CLIQUE dans un champ ou y navigue avec Tab.
+   On change la bordure en bordeaux pour montrer quel champ est actif.
+   C'est essentiel pour l'accessibilité (les utilisateurs au clavier
+   doivent savoir où se trouve le curseur). */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+  /* Bordure bordeaux quand le champ est actif */
+  border-color: var(--couleur-principale);
+
+  /* Halo bordeaux léger autour du champ actif */
+  box-shadow: 0 0 0 3px rgba(107, 31, 42, 0.1);
+
+  /* Supprime le contour bleu par défaut du navigateur
+     (on le remplace par notre propre style ci-dessus) */
+  outline: none;
+}
+
+/* Textarea — champ multiligne pour les messages */
+textarea {
+  /* Permet de redimensionner uniquement verticalement
+     (horizontal causerait des problèmes de mise en page) */
+  resize: vertical;
+
+  /* Hauteur minimale pour que le champ soit visible */
+  min-height: 120px;
+}
+
+/* Bouton de soumission dans les formulaires — pleine largeur */
+.formulaire-conteneur .bouton-principal {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+}
+
+/* Messages de retour après soumission d'un formulaire */
+.message-succes {
+  /* Fond vert clair */
+  background-color: #E8F5E9;
+
+  /* Texte vert foncé */
+  color: #2E7D32;
+
+  /* Espace intérieur */
+  padding: 14px 20px;
+
+  /* Coins arrondis */
+  border-radius: var(--rayon-bouton);
+
+  /* Espace au-dessus */
+  margin-top: 20px;
+
+  font-size: 0.95rem;
+}
+
+.message-erreur {
+  /* Fond rouge clair */
+  background-color: #FFEBEE;
+
+  /* Texte rouge foncé */
+  color: #C62828;
+
+  padding: 14px 20px;
+  border-radius: var(--rayon-bouton);
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+
+/* ============================================================
+   FICHES FORMATIONS (page formations.html)
+   ============================================================
+   Chaque formation a sa propre "fiche" détaillée avec
+   description, programme et tarifs.
+   ============================================================ */
+
+.fiche-formation {
+  background-color: var(--couleur-blanc);
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+  padding: 40px;
+  margin-bottom: 30px;
+}
+
+.fiche-formation h2 {
+  text-align: left;
+  color: var(--couleur-principale);
+  margin-bottom: 16px;
+}
+
+.fiche-formation p {
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+/* Liste du programme — avec puces personnalisées */
+.fiche-formation ul {
+  /* Réaffiche les puces (supprimées par le reset) */
+  list-style: disc;
+
+  /* Décale la liste vers la droite */
+  padding-left: 24px;
+
+  margin-bottom: 20px;
+}
+
+.fiche-formation ul li {
+  margin-bottom: 8px;
+  color: var(--couleur-texte);
+}
+
+/* Tableau des tarifs dans les fiches */
+.tableau-tarifs {
+  width: 100%;
+
+  /* Fusionne les bordures du tableau en une seule ligne
+     (par défaut, chaque cellule a sa propre bordure séparée) */
+  border-collapse: collapse;
+
+  margin-bottom: 20px;
+}
+
+.tableau-tarifs th,
+.tableau-tarifs td {
+  /* Bordure autour de chaque cellule */
+  border: 1px solid var(--couleur-bordure);
+
+  /* Espace intérieur des cellules */
+  padding: 12px 16px;
+
+  /* Texte aligné à gauche */
+  text-align: left;
+}
+
+/* En-tête du tableau — fond bordeaux clair */
+.tableau-tarifs th {
+  background-color: var(--couleur-principale-clair);
+  color: var(--couleur-titre);
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   ONGLETS (page espace-client.html)
+   ============================================================
+   Les onglets permettent d'afficher Standard ou Premium
+   sans changer de page. Un seul contenu visible à la fois.
+   ============================================================ */
+
+/* Conteneur des boutons onglets */
+.onglets-conteneur {
+  display: flex;
+  gap: 0;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+/* Chaque bouton onglet */
+.onglet-bouton {
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--couleur-principale);
+  background-color: var(--couleur-blanc);
+  color: var(--couleur-principale);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Premier onglet — coins arrondis à gauche uniquement */
+.onglet-bouton:first-child {
+  border-radius: var(--rayon-bouton) 0 0 var(--rayon-bouton);
+}
+
+/* Dernier onglet — coins arrondis à droite uniquement */
+.onglet-bouton:last-child {
+  border-radius: 0 var(--rayon-bouton) var(--rayon-bouton) 0;
+  /* Évite la double bordure entre les deux onglets */
+  border-left: none;
+}
+
+/* Onglet actif — fond bordeaux, texte blanc */
+.onglet-bouton.actif {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+}
+
+/* Contenu d'un onglet */
+.onglet-contenu {
+  /* Caché par défaut — affiché par JavaScript */
+  display: none;
+}
+
+/* Contenu de l'onglet actif — visible */
+.onglet-contenu.actif {
+  display: block;
+}
+
+
+/* ============================================================
+   ACCORDÉON FAQ
+   ============================================================
+   Chaque question FAQ est un bouton cliquable.
+   Au clic, la réponse apparaît en dessous.
+   ============================================================ */
+
+/* Conteneur de tout l'accordéon */
+.accordeon {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Chaque élément question + réponse */
+.accordeon-element {
+  margin-bottom: 10px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-bouton);
+  overflow: hidden;
+}
+
+/* Bouton question */
+.accordeon-question {
+  /* Prend toute la largeur */
+  width: 100%;
+
+  /* Texte à gauche, chevron à droite */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* Style du bouton */
+  padding: 16px 20px;
+  background-color: var(--couleur-blanc);
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--couleur-titre);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.3s;
+}
+
+.accordeon-question:hover {
+  background-color: var(--couleur-principale-clair);
+}
+
+/* Chevron (flèche) à droite de la question */
+.accordeon-chevron {
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+/* Quand l'élément est ouvert, le chevron tourne de 180° */
+.accordeon-element.ouvert .accordeon-chevron {
+  transform: rotate(180deg);
+}
+
+/* Réponse cachée par défaut */
+.accordeon-reponse {
+  /* Caché par défaut */
+  display: none;
+
+  padding: 0 20px 16px 20px;
+  color: var(--couleur-texte);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+/* Réponse visible quand l'élément parent a la classe 'ouvert' */
+.accordeon-element.ouvert .accordeon-reponse {
+  display: block;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================
+   Le pied de page apparaît en bas de CHAQUE page.
+   Il contient le copyright et des liens utiles.
+   ============================================================ */
+
+.footer {
+  /* Fond noir (presque) — contraste fort avec le contenu */
+  background-color: #111111;
+
+  /* Texte gris clair — lisible sur fond noir */
+  color: #AAAAAA;
+
+  /* Espace intérieur */
+  padding: 40px 20px;
+
+  /* Centre le texte */
+  text-align: center;
+
+  /* Taille du texte réduite */
+  font-size: 0.9rem;
+}
+
+/* Liens dans le footer */
+.footer a {
+  color: var(--couleur-blanc);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer a:hover {
+  color: var(--couleur-principale);
+}
+
+/* Liste de liens dans le footer */
+.footer-liens {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+
+/* ============================================================
+   CLASSES UTILITAIRES
+   ============================================================
+   Petites classes réutilisables pour des ajustements rapides.
+   On les applique directement dans le HTML quand on a besoin
+   d'un style ponctuel sans créer une nouvelle classe complète.
+   ============================================================ */
+
+/* Centre le texte horizontalement */
+.texte-centre {
+  text-align: center;
+}
+
+/* Ajoute un espace au-dessus d'un élément */
+.marge-haut {
+  margin-top: 40px;
+}
+
+/* Badge Premium — petit indicateur doré */
+.badge-premium {
+  /* inline-block pour que le badge s'adapte à son contenu */
+  display: inline-block;
+
+  /* Fond doré/orange pour attirer l'oeil */
+  background-color: #FFF3E0;
+  color: #E65100;
+
+  /* Petit texte */
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  /* Padding compact */
+  padding: 4px 10px;
+
+  /* Coins très arrondis pour un effet "pilule" */
+  border-radius: 20px;
+}
+
+/* Badge accès gratuit */
+.badge-gratuit {
+  display: inline-block;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Badge HD pour le contenu Premium */
+.badge-hd {
+  display: inline-block;
+  background-color: var(--couleur-principale-clair);
+  color: var(--couleur-principale);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Section "Passer à Premium" dans l'espace client */
+.premium-cta {
+  background-color: var(--couleur-principale-clair);
+  border-radius: var(--rayon-carte);
+  padding: 40px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.premium-cta h3 {
+  color: var(--couleur-principale);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.premium-prix {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--couleur-principale);
+  margin-bottom: 20px;
+}
+
+.premium-avantages {
+  list-style: none;
+  margin-bottom: 24px;
+}
+
+.premium-avantages li {
+  padding: 6px 0;
+  color: var(--couleur-texte);
+}
+
+/* Conteneur pour formulaires côte à côte sur la page contact */
+.champs-ligne {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .champs-ligne {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Infos de contact (colonne droite page contact) */
+.infos-contact {
+  background-color: var(--couleur-principale-clair);
+  border-radius: var(--rayon-carte);
+  padding: 40px;
+}
+
+.infos-contact h3 {
+  color: var(--couleur-principale);
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.infos-contact p {
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  color: var(--couleur-texte);
+}
+
+/* Titre de page (h1 en haut de chaque page) */
+.titre-page {
+  text-align: center;
+  padding: 50px 20px 30px;
+}
+
+.titre-page h1 {
+  font-size: 2rem;
+  color: var(--couleur-titre);
+  margin-bottom: 10px;
+}
+
+.titre-page p {
+  font-size: 1.05rem;
+  color: var(--couleur-texte-secondaire);
+}

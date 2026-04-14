@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!--
+  index.html — Page d'accueil de LearnWithUs
+  ============================================================
+  C'est la PREMIÈRE page que voit un visiteur.
+  Elle présente l'organisme et ses 3 formations.
+  Le but est de donner envie d'en savoir plus et de
+  rediriger vers la page "formations.html" pour s'inscrire.
+  ============================================================
+-->
+<html lang="fr">
+<!-- lang="fr" indique aux navigateurs et moteurs de recherche
+     que le contenu est en français. C'est important pour :
+     - L'accessibilité (lecteurs d'écran)
+     - Le référencement (SEO)
+     - La correction orthographique automatique -->
+
+<head>
+  <!-- charset UTF-8 est OBLIGATOIRE en première position du <head>.
+       UTF-8 est un encodage de caractères qui supporte TOUS les
+       alphabets du monde (accents français, emojis, chinois, etc.).
+       Sans cette ligne, les caractères spéciaux comme é, è, ê
+       apparaîtraient comme des symboles incompréhensibles. -->
+  <meta charset="UTF-8">
+
+  <!-- La balise viewport est NÉCESSAIRE pour que le site s'affiche
+       correctement sur mobile. Sans elle, le navigateur mobile
+       affiche la version "desktop" en miniature.
+       - width=device-width : la largeur CSS = largeur de l'écran
+       - initial-scale=1.0 : pas de zoom au chargement -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Le titre apparaît dans l'onglet du navigateur et dans
+       les résultats Google. Soyez clair et descriptif. -->
+  <title>LearnWithUs — Formations Numériques</title>
+
+  <!-- Lien vers notre feuille de styles unique.
+       Toutes les pages utilisent le même fichier CSS. -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       NAVIGATION
+       ============================================================
+       Ce bloc de navigation est IDENTIQUE sur toutes les pages.
+       En HTML pur (sans framework), on doit copier-coller ce code
+       dans chaque page. C'est une limitation du HTML statique.
+       Avec un framework (React, Vue), on créerait un composant
+       réutilisable, mais ici on apprend les bases.
+       ============================================================ -->
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <!-- Logo cliquable — ramène toujours à l'accueil -->
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+
+      <!-- Bouton hamburger ☰ — visible uniquement sur mobile.
+           Au clic, JavaScript ajoutera la classe 'menu-ouvert'
+           à la liste des liens pour les afficher. -->
+      <button class="menu-mobile" aria-label="Ouvrir le menu">
+        ☰
+      </button>
+
+      <!-- Liste des liens de navigation.
+           La classe 'actif' est sur le lien de la page actuelle. -->
+      <ul class="nav-liens">
+        <li><a href="index.html" class="actif">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- ============================================================
+       SECTION HERO
+       ============================================================
+       Le "hero" est la grande section en haut de la page d'accueil.
+       Son rôle : capter l'attention en quelques secondes avec
+       un message clair et un bouton d'action (CTA = Call To Action).
+       ============================================================ -->
+  <section class="hero">
+    <h1>Formez-vous aux métiers du numérique</h1>
+    <p>
+      Des formations en IA, SCRUM et SAP pour booster votre
+      carrière
+    </p>
+    <!-- Le bouton redirige vers le catalogue des formations -->
+    <a href="formations.html" class="bouton-principal">
+      Découvrir nos formations
+    </a>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION "NOS 3 FORMATIONS"
+       ============================================================
+       Présente les 3 formations sous forme de cartes cliquables.
+       On utilise CSS Grid (.grille-3-colonnes) pour les aligner.
+       ============================================================ -->
+  <section class="section">
+    <h2>Nos formations</h2>
+
+    <div class="grille-3-colonnes">
+
+      <!-- CARTE : Intelligence Artificielle -->
+      <div class="carte">
+        <div class="carte-icone">🤖</div>
+        <h3>Intelligence Artificielle</h3>
+        <p>
+          Comprenez l'IA, maîtrisez les outils d'aujourd'hui
+          et apprenez à créer des prompts efficaces pour
+          automatiser votre travail.
+        </p>
+        <p class="carte-info">⏱ 10h de contenu</p>
+        <p class="carte-info">💰 Gratuit / Premium 29€</p>
+        <a href="formations.html" class="carte-lien">
+          En savoir plus →
+        </a>
+      </div>
+
+      <!-- CARTE : Agilité & SCRUM -->
+      <div class="carte">
+        <div class="carte-icone">🔄</div>
+        <h3>Agilité &amp; SCRUM</h3>
+        <!-- &amp; est le code HTML pour le caractère "&"
+             On l'utilise car & seul est réservé en HTML -->
+        <p>
+          Maîtrisez la méthode agile la plus utilisée en
+          entreprise. Rôles, sprints, cérémonies : devenez
+          un acteur clé de votre équipe.
+        </p>
+        <p class="carte-info">⏱ 10h de contenu</p>
+        <p class="carte-info">💰 Gratuit / Premium 29€</p>
+        <a href="formations.html" class="carte-lien">
+          En savoir plus →
+        </a>
+      </div>
+
+      <!-- CARTE : SAP -->
+      <div class="carte">
+        <div class="carte-icone">💼</div>
+        <h3>SAP — Gestion d'entreprise</h3>
+        <p>
+          Naviguez dans SAP avec confiance. Modules FI, MM
+          et SD expliqués clairement pour comprendre comment
+          les entreprises gèrent leur activité.
+        </p>
+        <p class="carte-info">⏱ 10h de contenu</p>
+        <p class="carte-info">💰 Gratuit / Premium 29€</p>
+        <a href="formations.html" class="carte-lien">
+          En savoir plus →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SECTION "POURQUOI NOUS CHOISIR"
+       ============================================================
+       3 arguments de vente présentés sous forme de cartes.
+       Cette section rassure le visiteur avant qu'il s'inscrive.
+       ============================================================ -->
+  <section class="section-fond">
+    <div class="section-contenu">
+      <h2>Pourquoi nous choisir</h2>
+
+      <div class="grille-3-colonnes">
+
+        <!-- Argument 1 : Experts -->
+        <div class="carte texte-centre">
+          <div class="carte-icone">✅</div>
+          <h3>Experts certifiés</h3>
+          <p>
+            Nos formateurs sont des professionnels en activité
+          </p>
+        </div>
+
+        <!-- Argument 2 : Pratique -->
+        <div class="carte texte-centre">
+          <div class="carte-icone">🎯</div>
+          <h3>100% pratique</h3>
+          <p>
+            Exercices concrets et cas réels d'entreprise
+          </p>
+        </div>
+
+        <!-- Argument 3 : Support -->
+        <div class="carte texte-centre">
+          <div class="carte-icone">💬</div>
+          <h3>Support inclus</h3>
+          <p>
+            Répondons à vos questions sous 24h
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================
+       Le pied de page est le même sur toutes les pages.
+       Il contient le copyright et des liens de navigation rapide.
+       ============================================================ -->
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <!-- &copy; affiche le symbole © (copyright) -->
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       SCRIPT JAVASCRIPT
+       ============================================================
+       On place le script en BAS du body (juste avant </body>)
+       et non dans le <head> pour deux raisons :
+       1. PERFORMANCE : le navigateur lit le HTML de haut en bas.
+          Si le script est dans le <head>, le navigateur STOPPE
+          le chargement de la page pour exécuter le JavaScript.
+          En le mettant en bas, la page s'affiche d'abord.
+       2. ACCÈS AU DOM : quand le script s'exécute en bas,
+          tous les éléments HTML existent déjà, donc on peut
+          les manipuler sans attendre.
+       ============================================================ -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>
