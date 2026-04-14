@@ -77,12 +77,19 @@ const app = express()
 
 /* cors() autorise les requêtes provenant d'autres domaines.
    Sans ce middleware, le navigateur bloquerait les appels
-   du frontend (Vercel) vers le backend (Render) car ils
+   du frontend (Vercel) vers le backend (Railway) car ils
    sont sur des domaines différents.
-   En développement, le frontend est sur localhost:5500
-   et le backend sur localhost:3000 — ce sont des "origines"
-   différentes, donc CORS est nécessaire même en local. */
-app.use(cors())
+   On liste explicitement les origines autorisées pour plus
+   de sécurité (plutôt que d'autoriser tout le monde). */
+const originesAutorisées = [
+  'http://localhost:5500',              /* Live Server en développement */
+  'http://localhost:3000',              /* Autre port local possible */
+  'https://learn-with-us-lac.vercel.app' /* Frontend Vercel en production */
+]
+app.use(cors({
+  origin: originesAutorisées,
+  methods: ['GET', 'POST']
+}))
 
 /* express.json() est un middleware qui ANALYSE le corps (body)
    des requêtes POST entrantes quand elles sont au format JSON.
