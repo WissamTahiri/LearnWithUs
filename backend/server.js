@@ -44,6 +44,11 @@ const cors = require('cors')
    sans les écrire en dur dans le code (et sans les publier sur GitHub). */
 const dotenv = require('dotenv')
 
+/* Le SDK officiel Notion permet d'interagir avec l'API Notion.
+   On l'utilise pour créer une entrée dans la base de données
+   Inscriptions à chaque fois qu'un utilisateur s'inscrit. */
+const { Client } = require('@notionhq/client')
+
 
 /* ============================================================
    CONFIGURATION
@@ -54,6 +59,18 @@ const dotenv = require('dotenv')
    process.env.NOM_VARIABLE (ex: process.env.WEBHOOK_N8N_URL).
    Si le fichier .env n'existe pas, rien ne se passe (pas d'erreur). */
 dotenv.config()
+
+/* Initialise le client Notion avec le token d'intégration.
+   process.env.NOTION_TOKEN lit la variable définie dans .env.
+   Ce client sera utilisé dans la route /api/inscription pour
+   créer une nouvelle ligne dans la base de données Notion. */
+const notion = new Client({
+  auth: process.env.NOTION_TOKEN
+})
+
+/* ID de la base de données Notion "Inscriptions".
+   On le lit depuis .env pour ne pas l'écrire en dur ici. */
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID
 
 /* Crée l'application Express.
    'app' est notre serveur — on va lui ajouter des routes
@@ -173,6 +190,44 @@ app.post('/api/inscription', async function(req, res) {
     prenom + ' ' + nom +
     ' → Formation : ' + formation
   )
+
+  /* Sauvegarde dans Notion si le token et l'ID sont configurés.
+     On crée une nouvelle page dans la base "Inscriptions" avec
+     toutes les données du formulaire. Chaque propriété correspond
+     à une colonne de la base de données Notion. */
+  if (NOTION_DATABASE_ID && process.env.NOTION_TOKEN) {
+    try {
+      await notion.pages.create({
+        /* parent indique dans quelle base créer la page */
+        parent: { database_id: NOTION_DATABASE_ID },
+        properties: {
+          /* Prénom est la colonne "title" — format spécial */
+          'Prénom': {
+            title: [{ text: { content: prenom } }]
+          },
+          'Nom': {
+            rich_text: [{ text: { content: nom } }]
+          },
+          'Email': {
+            email: email
+          },
+          'Formation': {
+            select: { name: formation }
+          },
+          'Téléphone': {
+            phone_number: telephone || ''
+          },
+          'Statut': {
+            select: { name: 'Nouveau' }
+          }
+        }
+      })
+      console.log('📋 Inscription sauvegardée dans Notion pour ' + email)
+    } catch (erreurNotion) {
+      /* Si Notion est inaccessible, on log mais on ne bloque pas */
+      console.error('⚠️  Erreur Notion : ' + erreurNotion.message)
+    }
+  }
 
   /* Transmet au webhook n8n si l'URL est configurée.
      process.env.WEBHOOK_N8N_URL lit la variable d'environnement
