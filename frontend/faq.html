@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--
+  faq.html — Foire Aux Questions de LearnWithUs
+  ============================================================
+  Cette page regroupe les 8 questions les plus fréquentes.
+  Chaque question est dans un "accordéon" : au clic, la
+  réponse s'affiche ou se cache. Une seule réponse ouverte
+  à la fois (les autres se ferment automatiquement).
+
+  L'accordéon est géré en JavaScript pur (voir main.js).
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — LearnWithUs</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">
+        ☰
+      </button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html" class="actif">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- Titre de la page -->
+  <div class="titre-page">
+    <h1>Questions Fréquentes</h1>
+  </div>
+
+
+  <!-- ============================================================
+       ACCORDÉON FAQ
+       ============================================================
+       Structure de chaque élément :
+       1. Un <div class="accordeon-element"> contient le tout
+       2. Un <button class="accordeon-question"> affiche la question
+       3. Un <div class="accordeon-reponse"> contient la réponse
+
+       Par défaut, les réponses sont cachées (display: none en CSS).
+       Quand on clique sur une question, JavaScript ajoute la classe
+       'ouvert' à l'élément parent, ce qui affiche la réponse
+       (display: block) et fait tourner le chevron ▼ → ▲.
+       ============================================================ -->
+  <section class="section">
+    <div class="accordeon">
+
+      <!-- Q1 : Comment m'inscrire ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <!-- 'this' en JavaScript fait référence à l'élément
+               qui a déclenché l'événement (ici, ce bouton).
+               On le passe en paramètre à la fonction pour
+               qu'elle sache quel accordéon manipuler. -->
+          <span>Comment m'inscrire ?</span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Rendez-vous sur la page
+            <a href="formations.html">Formations</a>,
+            choisissez votre formation et remplissez le
+            formulaire. Un email de confirmation vous sera
+            envoyé automatiquement dans les minutes suivant
+            votre inscription.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q2 : Les formations sont-elles gratuites ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>Les formations sont-elles gratuites ?</span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Les contenus d'introduction sont accessibles
+            gratuitement. L'abonnement Premium à 29€/mois
+            donne accès à l'intégralité des cours en haute
+            qualité, avec exercices et certificat.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q3 : Combien de temps dure une formation ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>Combien de temps dure une formation ?</span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Chaque formation représente 10 heures de contenu
+            vidéo. À raison de 2 à 3 heures par semaine,
+            comptez 3 à 4 semaines pour terminer une
+            formation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q4 : Plusieurs formations simultanément ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>
+            Puis-je suivre plusieurs formations simultanément ?
+          </span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Oui. Votre espace client vous donne accès à
+            toutes les formations en même temps. Avancez
+            à votre rythme.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q5 : Comment accéder à mon espace client ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>
+            Comment accéder à mon espace client ?
+          </span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Après votre inscription, vous recevrez un email
+            avec vos identifiants. Cliquez sur «Espace Client»
+            dans le menu de navigation pour vous connecter.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q6 : Les formations sont-elles certifiantes ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>
+            Les formations sont-elles certifiantes ?
+          </span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Un certificat de complétion est délivré à la fin
+            de chaque formation Premium. Des partenariats pour
+            des certifications reconnues sont en cours de
+            négociation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q7 : Comment contacter le support ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>Comment contacter le support ?</span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Via la page <a href="contact.html">Contact</a>
+            de ce site, ou directement par email à
+            contact@learnnwithus.fr. Nous répondons sous 24h
+            en semaine.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q8 : Puis-je obtenir un remboursement ? -->
+      <div class="accordeon-element">
+        <button class="accordeon-question"
+                onclick="basculerFAQ(this)">
+          <span>Puis-je obtenir un remboursement ?</span>
+          <span class="accordeon-chevron">▼</span>
+        </button>
+        <div class="accordeon-reponse">
+          <p>
+            Oui. Nous offrons une garantie satisfait ou
+            remboursé de 7 jours pour l'abonnement Premium,
+            sans condition.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>
