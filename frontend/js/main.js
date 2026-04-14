@@ -33,7 +33,7 @@
    Tout le reste du code utilise cette variable, donc le
    changement se fait à UN SEUL endroit.
    ============================================================ */
-const URL_BACKEND = 'http://localhost:3000'
+const URL_BACKEND = 'https://learnwithus-backend.onrender.com'
 
 
 /* ============================================================

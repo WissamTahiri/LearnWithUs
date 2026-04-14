@@ -44,7 +44,9 @@ LearnWithUs/
   - CSS complet avec variables, responsive, composants
   - JS complet (menu mobile, formulaires fetch, onglets, accordéon FAQ)
   - Backend Express avec routes /api/health, /api/inscription, /api/contact
-- [ ] T3.2 : Hébergement et mise en ligne (Vercel + Render)
+- [x] T3.2 : Hébergement et mise en ligne — FAIT (14/04)
+  - Frontend : https://learn-with-us-lac.vercel.app/
+  - Backend  : https://learnwithus-backend.onrender.com
 - [ ] T3.4 : Prototype Low Code v1 (base de données)
 - [ ] T3.5 : Workflow n8n #1 — Inscription → Email
 - [ ] T3.6 : Mise à jour dossier de suivi projet (v1)
