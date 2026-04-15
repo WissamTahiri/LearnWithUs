@@ -1,0 +1,106 @@
+{
+  "name": "LearnWithUs — Inscription vers Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "learnwithus-inscription",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Reception Inscription",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "webhookId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@learnnwithus.fr",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=✅ Confirmation d'inscription — LearnWithUs",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <div style=\"background-color: #6B1F2A; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: white; margin: 0; font-size: 24px;\">LearnWithUs</h1>\n    <p style=\"color: #F7EEF0; margin: 6px 0 0;\">Formations Numériques</p>\n  </div>\n  <div style=\"background-color: #ffffff; padding: 32px; border: 1px solid #e0e0e0;\">\n    <h2 style=\"color: #6B1F2A; margin-top: 0;\">Votre inscription est confirmée !</h2>\n    <p>Bonjour <strong>{{ $json.body.prenom }} {{ $json.body.nom }}</strong>,</p>\n    <p>Nous avons bien reçu votre inscription. Voici le récapitulatif :</p>\n    <div style=\"background-color: #F7EEF0; padding: 16px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #6B1F2A;\">\n      <p style=\"margin: 0 0 8px;\"><strong>Formation :</strong> {{ $json.body.formation }}</p>\n      <p style=\"margin: 0 0 8px;\"><strong>Email :</strong> {{ $json.body.email }}</p>\n      <p style=\"margin: 0;\"><strong>Téléphone :</strong> {{ $json.body.telephone || 'Non renseigné' }}</p>\n    </div>\n    <p>Notre équipe reviendra vers vous très prochainement avec vos accès à la plateforme.</p>\n    <p>En attendant, n'hésitez pas à consulter notre <a href=\"https://learn-with-us-lac.vercel.app/faq.html\" style=\"color: #6B1F2A;\">FAQ</a> ou à nous contacter.</p>\n    <div style=\"text-align: center; margin: 28px 0;\">\n      <a href=\"https://learn-with-us-lac.vercel.app/espace-client.html\"\n         style=\"background-color: #6B1F2A; color: white; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;\">\n        Accéder à mon espace\n      </a>\n    </div>\n    <p>À très bientôt,</p>\n    <p><strong style=\"color: #6B1F2A;\">L'équipe LearnWithUs</strong></p>\n  </div>\n  <div style=\"background-color: #111111; padding: 16px; text-align: center; border-radius: 0 0 8px 8px;\">\n    <p style=\"color: #aaaaaa; margin: 0; font-size: 12px;\">© 2026 LearnWithUs — contact@learnnwithus.fr</p>\n    <p style=\"margin: 4px 0 0;\"><a href=\"https://learn-with-us-lac.vercel.app\" style=\"color: #aaaaaa; font-size: 12px;\">learn-with-us-lac.vercel.app</a></p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "name": "Email Confirmation Etudiant",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [460, 160]
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@learnnwithus.fr",
+        "toEmail": "hi95400@gmail.com, sanjay.mathini@gmail.com, wisstahiri91@gmail.com",
+        "subject": "=🔔 Nouvelle inscription LearnWithUs — {{ $json.body.prenom }} {{ $json.body.nom }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <div style=\"background-color: #111111; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: white; margin: 0; font-size: 20px;\">🔔 Nouvelle inscription reçue</h1>\n  </div>\n  <div style=\"background-color: #ffffff; padding: 28px; border: 1px solid #e0e0e0;\">\n    <h2 style=\"color: #111111; margin-top: 0;\">Détails de l'inscription</h2>\n    <table style=\"width: 100%; border-collapse: collapse;\">\n      <tr style=\"background-color: #F7EEF0;\">\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0; width: 35%;\">Prénom</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\">{{ $json.body.prenom }}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Nom</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\">{{ $json.body.nom }}</td>\n      </tr>\n      <tr style=\"background-color: #F7EEF0;\">\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Email</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\"><a href=\"mailto:{{ $json.body.email }}\">{{ $json.body.email }}</a></td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Formation</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\"><strong style=\"color: #6B1F2A;\">{{ $json.body.formation }}</strong></td>\n      </tr>\n      <tr style=\"background-color: #F7EEF0;\">\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Téléphone</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\">{{ $json.body.telephone || 'Non renseigné' }}</td>\n      </tr>\n    </table>\n    <div style=\"text-align: center; margin-top: 24px;\">\n      <a href=\"https://app.notion.com/p/3424e298eab4805882e3d771a73412e5\"\n         style=\"background-color: #111111; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;\">\n        Voir dans Notion\n      </a>\n    </div>\n  </div>\n  <div style=\"background-color: #6B1F2A; padding: 12px; text-align: center; border-radius: 0 0 8px 8px;\">\n    <p style=\"color: white; margin: 0; font-size: 12px;\">LearnWithUs — Notification automatique</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+      "name": "Email Notification Equipe",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [460, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"succes\": true, \"message\": \"Emails envoyés\" }",
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+      "name": "Repondre au Backend",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Reception Inscription": {
+      "main": [
+        [
+          {
+            "node": "Email Confirmation Etudiant",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Notification Equipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Confirmation Etudiant": {
+      "main": [
+        [
+          {
+            "node": "Repondre au Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Notification Equipe": {
+      "main": [
+        [
+          {
+            "node": "Repondre au Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [{ "name": "LearnWithUs" }]
+}
