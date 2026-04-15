@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<!--
+  connexion.html — Page de connexion de LearnWithUs
+  ============================================================
+  Permet à un utilisateur déjà inscrit de se connecter
+  à son espace personnel.
+  Pour l'instant : interface uniquement (Phase 3).
+  La logique d'authentification sera ajoutée en Phase 4.
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — LearnWithUs</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============================================================
+       STYLES SPÉCIFIQUES À LA PAGE CONNEXION
+       ============================================================
+       Ces styles complètent style.css pour la mise en page
+       centrée du formulaire de connexion.
+       ============================================================ */
+
+    /* Fond bordeaux très clair sur toute la page */
+    .page-auth {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-color: var(--couleur-principale-clair);
+    }
+
+    /* Carte blanche centrale contenant le formulaire */
+    .carte-auth {
+      background-color: var(--couleur-blanc);
+      border-radius: var(--rayon-carte);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* En-tête de la carte : logo + titre */
+    .auth-entete {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--couleur-principale);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .auth-titre {
+      font-size: 1.4rem;
+      color: var(--couleur-titre);
+      margin-bottom: 6px;
+    }
+
+    .auth-sous-titre {
+      color: var(--couleur-texte-secondaire);
+      font-size: 0.9rem;
+    }
+
+    /* Groupe de champs : label + input */
+    .champ-groupe {
+      margin-bottom: 20px;
+    }
+
+    .champ-groupe label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--couleur-titre);
+      margin-bottom: 8px;
+    }
+
+    .champ-groupe input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--couleur-bordure);
+      border-radius: var(--rayon-bouton);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--couleur-texte);
+      background-color: var(--couleur-blanc);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Mise en évidence du champ actif */
+    .champ-groupe input:focus {
+      outline: none;
+      border-color: var(--couleur-principale);
+      box-shadow: 0 0 0 3px rgba(107, 31, 42, 0.12);
+    }
+
+    /* Ligne "Mot de passe oublié" alignée à droite */
+    .lien-mdp-oublie {
+      display: block;
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--couleur-principale);
+      margin-top: -12px;
+      margin-bottom: 24px;
+    }
+
+    .lien-mdp-oublie:hover {
+      text-decoration: underline;
+    }
+
+    /* Bouton de connexion pleine largeur */
+    .bouton-auth {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--couleur-principale);
+      color: var(--couleur-blanc);
+      border: none;
+      border-radius: var(--rayon-bouton);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .bouton-auth:hover {
+      background-color: var(--couleur-principale-hover);
+    }
+
+    /* Séparateur "ou" entre le formulaire et le lien inscription */
+    .separateur {
+      text-align: center;
+      color: var(--couleur-texte-secondaire);
+      font-size: 0.85rem;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .separateur::before,
+    .separateur::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 42%;
+      height: 1px;
+      background-color: var(--couleur-bordure);
+    }
+
+    .separateur::before { left: 0; }
+    .separateur::after  { right: 0; }
+
+    /* Lien vers la page d'inscription */
+    .lien-inscription {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border: 1px solid var(--couleur-principale);
+      border-radius: var(--rayon-bouton);
+      color: var(--couleur-principale);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .lien-inscription:hover {
+      background-color: var(--couleur-principale-clair);
+    }
+
+    /* Message d'information sur l'état provisoire */
+    /* Responsive mobile */
+    @media (max-width: 480px) {
+      .carte-auth {
+        padding: 32px 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation identique aux autres pages -->
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- ============================================================
+       PAGE DE CONNEXION
+       ============================================================
+       Formulaire centré dans une carte blanche.
+       action="#" empêche le rechargement de la page à la soumission.
+       La vraie logique de connexion sera ajoutée en Phase 4.
+       ============================================================ -->
+  <main class="page-auth">
+    <div class="carte-auth">
+
+      <!-- En-tête -->
+      <div class="auth-entete">
+        <a href="index.html" class="auth-logo">LearnWithUs</a>
+        <h1 class="auth-titre">Connexion</h1>
+        <p class="auth-sous-titre">Accédez à votre espace personnel</p>
+      </div>
+
+      <!-- Formulaire de connexion -->
+      <form id="formulaire-connexion" action="#" novalidate>
+
+        <!-- Champ email -->
+        <div class="champ-groupe">
+          <label for="email">Adresse email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="exemple@email.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <!-- Champ mot de passe -->
+        <div class="champ-groupe">
+          <label for="mot-de-passe">Mot de passe</label>
+          <input
+            type="password"
+            id="mot-de-passe"
+            name="mot-de-passe"
+            placeholder="Votre mot de passe"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <!-- Lien mot de passe oublié -->
+        <a href="#" class="lien-mdp-oublie">Mot de passe oublié ?</a>
+
+        <!-- Bouton de connexion -->
+        <button type="submit" class="bouton-auth">Se connecter</button>
+
+      </form>
+
+      <!-- Séparateur -->
+      <div class="separateur">ou</div>
+
+      <!-- Lien vers l'inscription -->
+      <a href="inscription.html" class="lien-inscription">
+        Créer un compte
+      </a>
+
+
+    </div>
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>

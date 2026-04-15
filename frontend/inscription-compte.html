@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<!--
+  inscription-compte.html — Page de création de compte LearnWithUs
+  ============================================================
+  Permet à un nouvel utilisateur de créer son compte personnel.
+  À distinguer de formations.html qui gère l'inscription aux
+  formations (choix d'une formation + coordonnées).
+  Pour l'instant : interface uniquement (Phase 3).
+  La logique de création de compte sera ajoutée en Phase 4.
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte — LearnWithUs</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============================================================
+       STYLES SPÉCIFIQUES À LA PAGE INSCRIPTION COMPTE
+       ============================================================ */
+
+    .page-auth {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-color: var(--couleur-principale-clair);
+    }
+
+    .carte-auth {
+      background-color: var(--couleur-blanc);
+      border-radius: var(--rayon-carte);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .auth-entete {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--couleur-principale);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .auth-titre {
+      font-size: 1.4rem;
+      color: var(--couleur-titre);
+      margin-bottom: 6px;
+    }
+
+    .auth-sous-titre {
+      color: var(--couleur-texte-secondaire);
+      font-size: 0.9rem;
+    }
+
+    /* Deux champs côte à côte (prénom + nom) */
+    .champs-ligne {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .champ-groupe {
+      margin-bottom: 20px;
+    }
+
+    .champ-groupe label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--couleur-titre);
+      margin-bottom: 8px;
+    }
+
+    .champ-groupe input,
+    .champ-groupe select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--couleur-bordure);
+      border-radius: var(--rayon-bouton);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--couleur-texte);
+      background-color: var(--couleur-blanc);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .champ-groupe input:focus,
+    .champ-groupe select:focus {
+      outline: none;
+      border-color: var(--couleur-principale);
+      box-shadow: 0 0 0 3px rgba(107, 31, 42, 0.12);
+    }
+
+    /* Indicateur de force du mot de passe */
+    .force-mdp {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: var(--couleur-texte-secondaire);
+    }
+
+    /* Case à cocher CGU */
+    .champ-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .champ-checkbox input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: var(--couleur-principale);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .champ-checkbox label {
+      font-size: 0.88rem;
+      color: var(--couleur-texte-secondaire);
+      line-height: 1.4;
+    }
+
+    .champ-checkbox label a {
+      color: var(--couleur-principale);
+    }
+
+    .champ-checkbox label a:hover {
+      text-decoration: underline;
+    }
+
+    /* Bouton principal */
+    .bouton-auth {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--couleur-principale);
+      color: var(--couleur-blanc);
+      border: none;
+      border-radius: var(--rayon-bouton);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .bouton-auth:hover {
+      background-color: var(--couleur-principale-hover);
+    }
+
+    /* Séparateur */
+    .separateur {
+      text-align: center;
+      color: var(--couleur-texte-secondaire);
+      font-size: 0.85rem;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .separateur::before,
+    .separateur::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 42%;
+      height: 1px;
+      background-color: var(--couleur-bordure);
+    }
+
+    .separateur::before { left: 0; }
+    .separateur::after  { right: 0; }
+
+    /* Lien vers la connexion */
+    .lien-connexion {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border: 1px solid var(--couleur-principale);
+      border-radius: var(--rayon-bouton);
+      color: var(--couleur-principale);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background-color 0.3s;
+    }
+
+    .lien-connexion:hover {
+      background-color: var(--couleur-principale-clair);
+    }
+
+    /* Responsive mobile */
+    @media (max-width: 480px) {
+      .carte-auth {
+        padding: 32px 24px;
+      }
+
+      .champs-ligne {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation identique aux autres pages -->
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- ============================================================
+       PAGE DE CRÉATION DE COMPTE
+       ============================================================ -->
+  <main class="page-auth">
+    <div class="carte-auth">
+
+      <!-- En-tête -->
+      <div class="auth-entete">
+        <a href="index.html" class="auth-logo">LearnWithUs</a>
+        <h1 class="auth-titre">Créer un compte</h1>
+        <p class="auth-sous-titre">Rejoignez la communauté LearnWithUs</p>
+      </div>
+
+      <!-- Formulaire d'inscription -->
+      <form id="formulaire-inscription-compte" action="#" novalidate>
+
+        <!-- Prénom et Nom côte à côte -->
+        <div class="champs-ligne">
+          <div class="champ-groupe">
+            <label for="prenom">Prénom</label>
+            <input
+              type="text"
+              id="prenom"
+              name="prenom"
+              placeholder="Jean"
+              autocomplete="given-name"
+              required
+            >
+          </div>
+          <div class="champ-groupe">
+            <label for="nom">Nom</label>
+            <input
+              type="text"
+              id="nom"
+              name="nom"
+              placeholder="Dupont"
+              autocomplete="family-name"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="champ-groupe">
+          <label for="email">Adresse email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="exemple@email.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <!-- Téléphone (optionnel) -->
+        <div class="champ-groupe">
+          <label for="telephone">Téléphone <span style="color: var(--couleur-texte-secondaire); font-weight: 400;">(optionnel)</span></label>
+          <input
+            type="tel"
+            id="telephone"
+            name="telephone"
+            placeholder="06 12 34 56 78"
+            autocomplete="tel"
+          >
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="champ-groupe">
+          <label for="mot-de-passe">Mot de passe</label>
+          <input
+            type="password"
+            id="mot-de-passe"
+            name="mot-de-passe"
+            placeholder="Minimum 8 caractères"
+            autocomplete="new-password"
+            required
+          >
+          <p class="force-mdp">Au moins 8 caractères, une majuscule et un chiffre.</p>
+        </div>
+
+        <!-- Confirmation mot de passe -->
+        <div class="champ-groupe">
+          <label for="confirmation-mdp">Confirmer le mot de passe</label>
+          <input
+            type="password"
+            id="confirmation-mdp"
+            name="confirmation-mdp"
+            placeholder="Répétez votre mot de passe"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <!-- Acceptation des CGU -->
+        <div class="champ-checkbox">
+          <input type="checkbox" id="cgu" name="cgu" required>
+          <label for="cgu">
+            J'accepte les <a href="#">conditions générales d'utilisation</a>
+            et la <a href="#">politique de confidentialité</a> de LearnWithUs.
+          </label>
+        </div>
+
+        <!-- Bouton de création de compte -->
+        <button type="submit" class="bouton-auth">Créer mon compte</button>
+
+      </form>
+
+      <!-- Séparateur -->
+      <div class="separateur">déjà inscrit ?</div>
+
+      <!-- Lien vers la connexion -->
+      <a href="connexion.html" class="lien-connexion">
+        Se connecter
+      </a>
+
+
+    </div>
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>

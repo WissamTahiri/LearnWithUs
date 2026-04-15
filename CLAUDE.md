@@ -47,7 +47,10 @@ LearnWithUs/
 - [x] T3.2 : Hébergement et mise en ligne — FAIT (14/04)
   - Frontend : https://learn-with-us-lac.vercel.app/
   - Backend  : https://learnwithus-backend.onrender.com
-- [ ] T3.4 : Prototype Low Code v1 (base de données)
+- [x] T3.4 : Prototype Low Code v1 (base de données) — FAIT (14/04)
+  - Base Notion "Inscriptions" créée (Prénom, Nom, Email, Formation, Téléphone, Date, Statut)
+  - Backend connecté via SDK @notionhq/client
+  - Chaque inscription est sauvegardée automatiquement dans Notion
 - [ ] T3.5 : Workflow n8n #1 — Inscription → Email
 - [ ] T3.6 : Mise à jour dossier de suivi projet (v1)
 
