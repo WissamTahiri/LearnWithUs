@@ -1,15 +1,5 @@
 <!DOCTYPE html>
-<!--
-  espace-client.html — Espace Client LearnWithUs
-  ============================================================
-  Cette page simule un espace client avec deux onglets :
-  - Standard (gratuit) : contenus d'introduction
-  - Premium (29€/mois) : contenus complets en HD
-
-  Les onglets sont gérés en JavaScript pur (pas de framework).
-  C'est un bon exercice pour comprendre la manipulation du DOM.
-  ============================================================
--->
+<!-- espace-client.html — Espace client avec onglets Standard et Premium -->
 <html lang="fr">
 
 <head>
@@ -21,21 +11,14 @@
 
 <body>
 
-  <!-- NAVIGATION -->
   <nav class="navigation">
     <div class="nav-contenu">
       <a href="index.html" class="nav-logo">LearnWithUs</a>
-      <button class="menu-mobile" aria-label="Ouvrir le menu">
-        ☰
-      </button>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
       <ul class="nav-liens">
         <li><a href="index.html">Accueil</a></li>
         <li><a href="formations.html">Formations</a></li>
-        <li>
-          <a href="espace-client.html" class="actif">
-            Espace Client
-          </a>
-        </li>
+        <li><a href="espace-client.html" class="actif">Espace Client</a></li>
         <li><a href="contact.html">Contact</a></li>
         <li><a href="faq.html">FAQ</a></li>
         <li><a href="connexion.html">Connexion</a></li>
@@ -44,231 +27,116 @@
   </nav>
 
 
-  <!-- Titre de la page -->
   <div class="titre-page">
     <h1>Mon Espace Client</h1>
     <p>Accédez à vos formations selon votre abonnement</p>
   </div>
 
 
-  <!-- ============================================================
-       ONGLETS
-       ============================================================
-       Les onglets permettent d'afficher un seul contenu à la fois
-       sans recharger la page. C'est fait en JavaScript pur :
-       - On a 2 boutons (Standard / Premium)
-       - On a 2 blocs de contenu (un par onglet)
-       - Au clic sur un bouton, JS affiche le bon bloc et cache l'autre
-
-       L'attribut onclick appelle directement la fonction JS.
-       C'est simple à comprendre pour un débutant, même si en
-       production on préférerait addEventListener (voir main.js).
-       ============================================================ -->
   <section class="section">
 
-    <!-- Boutons des onglets -->
+    <!-- Boutons de sélection d'onglet -->
     <div class="onglets-conteneur">
-      <!-- Le premier onglet est actif par défaut (classe 'actif') -->
-      <button class="onglet-bouton actif"
-              onclick="basculerOnglet('standard')">
-        Standard — Gratuit
-      </button>
-      <button class="onglet-bouton"
-              onclick="basculerOnglet('premium')">
-        Premium — 29€/mois
-      </button>
+      <button class="onglet-bouton actif" onclick="basculerOnglet('standard')">Standard — Gratuit</button>
+      <button class="onglet-bouton" onclick="basculerOnglet('premium')">Premium — 29€/mois</button>
     </div>
 
 
-    <!-- ============================================================
-         CONTENU ONGLET STANDARD
-         ============================================================
-         Affiché par défaut (classe 'actif' = display: block).
-         Contient les 3 formations en version limitée (introduction).
-         ============================================================ -->
+    <!-- Onglet Standard — actif par défaut -->
     <div id="contenu-standard" class="onglet-contenu actif">
 
-      <!-- Badge indiquant le type d'accès -->
       <div class="texte-centre" style="margin-bottom: 24px;">
         <span class="badge-gratuit">ACCÈS GRATUIT</span>
       </div>
 
       <p class="texte-centre" style="margin-bottom: 30px;">
-        Bienvenue dans votre espace Standard. Accédez aux
-        introductions de nos 3 formations gratuitement.
+        Bienvenue dans votre espace Standard. Accédez aux introductions de nos 3 formations gratuitement.
       </p>
 
-      <!-- Grille des 3 formations en version Standard -->
       <div class="grille-3-colonnes">
 
-        <!-- Formation IA — Standard -->
         <div class="carte">
           <div class="carte-icone">🤖</div>
           <h3>Intelligence Artificielle</h3>
-          <p>
-            Découvrez les bases de l'IA et du prompt engineering
-            avec nos modules d'introduction gratuits.
-          </p>
-          <p class="carte-info">
-            Contenu limité — version d'introduction
-          </p>
-          <!-- onclick affiche une alert simple.
-               En production, ce bouton redirigerait vers
-               la page de la formation. -->
-          <button class="bouton-secondaire"
-                  onclick="alert('Contenu vidéo bientôt disponible !')">
-            Accéder
-          </button>
+          <p>Découvrez les bases de l'IA et du prompt engineering avec nos modules d'introduction gratuits.</p>
+          <p class="carte-info">Contenu limité — version d'introduction</p>
+          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
         </div>
 
-        <!-- Formation SCRUM — Standard -->
         <div class="carte">
           <div class="carte-icone">🔄</div>
           <h3>Agilité &amp; SCRUM</h3>
-          <p>
-            Initiez-vous à la méthode agile et au framework
-            SCRUM avec nos modules gratuits.
-          </p>
-          <p class="carte-info">
-            Contenu limité — version d'introduction
-          </p>
-          <button class="bouton-secondaire"
-                  onclick="alert('Contenu vidéo bientôt disponible !')">
-            Accéder
-          </button>
+          <p>Initiez-vous à la méthode agile et au framework SCRUM avec nos modules gratuits.</p>
+          <p class="carte-info">Contenu limité — version d'introduction</p>
+          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
         </div>
 
-        <!-- Formation SAP — Standard -->
         <div class="carte">
           <div class="carte-icone">💼</div>
           <h3>SAP — Gestion d'entreprise</h3>
-          <p>
-            Apprenez les fondamentaux de SAP et des ERP
-            avec nos modules d'introduction.
-          </p>
-          <p class="carte-info">
-            Contenu limité — version d'introduction
-          </p>
-          <button class="bouton-secondaire"
-                  onclick="alert('Contenu vidéo bientôt disponible !')">
-            Accéder
-          </button>
+          <p>Apprenez les fondamentaux de SAP et des ERP avec nos modules d'introduction.</p>
+          <p class="carte-info">Contenu limité — version d'introduction</p>
+          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
         </div>
 
       </div>
     </div>
 
 
-    <!-- ============================================================
-         CONTENU ONGLET PREMIUM
-         ============================================================
-         Caché par défaut (pas de classe 'actif' = display: none).
-         Contient les formations complètes + section d'abonnement.
-         ============================================================ -->
+    <!-- Onglet Premium — caché par défaut -->
     <div id="contenu-premium" class="onglet-contenu">
 
-      <!-- Badge Premium -->
       <div class="texte-centre" style="margin-bottom: 24px;">
         <span class="badge-premium">⭐ PREMIUM</span>
       </div>
 
       <p class="texte-centre" style="margin-bottom: 30px;">
-        Accédez à l'intégralité des cours en haute définition,
-        avec exercices pratiques et support prioritaire.
+        Accédez à l'intégralité des cours en haute définition, avec exercices pratiques et support prioritaire.
       </p>
 
-      <!-- Grille des 3 formations en version Premium -->
       <div class="grille-3-colonnes">
 
-        <!-- Formation IA — Premium -->
         <div class="carte">
           <div class="carte-icone">🤖</div>
-          <h3>
-            Intelligence Artificielle
-            <span class="badge-hd">HD</span>
-          </h3>
-          <p>
-            Formation complète : 10h de vidéo HD, exercices
-            pratiques et certificat de complétion.
-          </p>
-          <span class="badge-premium">Contenu complet</span>
-          <br><br>
-          <button class="bouton-principal"
-                  onclick="alert('Contenu disponible après souscription Premium')">
-            Accéder en HD
-          </button>
+          <h3>Intelligence Artificielle <span class="badge-hd">HD</span></h3>
+          <p>Formation complète : 10h de vidéo HD, exercices pratiques et certificat de complétion.</p>
+          <span class="badge-premium">Contenu complet</span><br><br>
+          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
         </div>
 
-        <!-- Formation SCRUM — Premium -->
         <div class="carte">
           <div class="carte-icone">🔄</div>
-          <h3>
-            Agilité &amp; SCRUM
-            <span class="badge-hd">HD</span>
-          </h3>
-          <p>
-            Formation complète : 10h de vidéo HD, mises en
-            situation et certificat de complétion.
-          </p>
-          <span class="badge-premium">Contenu complet</span>
-          <br><br>
-          <button class="bouton-principal"
-                  onclick="alert('Contenu disponible après souscription Premium')">
-            Accéder en HD
-          </button>
+          <h3>Agilité &amp; SCRUM <span class="badge-hd">HD</span></h3>
+          <p>Formation complète : 10h de vidéo HD, mises en situation et certificat de complétion.</p>
+          <span class="badge-premium">Contenu complet</span><br><br>
+          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
         </div>
 
-        <!-- Formation SAP — Premium -->
         <div class="carte">
           <div class="carte-icone">💼</div>
-          <h3>
-            SAP — Gestion d'entreprise
-            <span class="badge-hd">HD</span>
-          </h3>
-          <p>
-            Formation complète : 10h de vidéo HD, cas pratiques
-            SAP et certificat de complétion.
-          </p>
-          <span class="badge-premium">Contenu complet</span>
-          <br><br>
-          <button class="bouton-principal"
-                  onclick="alert('Contenu disponible après souscription Premium')">
-            Accéder en HD
-          </button>
+          <h3>SAP — Gestion d'entreprise <span class="badge-hd">HD</span></h3>
+          <p>Formation complète : 10h de vidéo HD, cas pratiques SAP et certificat de complétion.</p>
+          <span class="badge-premium">Contenu complet</span><br><br>
+          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
         </div>
 
       </div>
 
 
-      <!-- ============================================================
-           SECTION "PASSER À PREMIUM"
-           ============================================================
-           Incite l'utilisateur à souscrire à l'abonnement Premium.
-           Pour l'instant, le paiement n'est pas intégré (Stripe
-           sera ajouté plus tard). On affiche un message explicatif.
-           ============================================================ -->
+      <!-- Section d'appel à l'action pour passer à Premium -->
       <div class="premium-cta">
         <h3>Passer à Premium</h3>
         <p class="premium-prix">29€/mois</p>
-
         <ul class="premium-avantages">
           <li>✅ Vidéos en haute définition</li>
           <li>✅ Exercices pratiques guidés</li>
           <li>✅ Certificat de complétion</li>
           <li>✅ Support prioritaire 24h/24</li>
         </ul>
-
-        <!-- Ce bouton affichera un message temporaire car
-             l'intégration Stripe n'est pas encore faite -->
-        <button class="bouton-principal"
-                id="bouton-abonnement"
-                onclick="afficherMessageAbonnement()">
+        <button class="bouton-principal" id="bouton-abonnement" onclick="afficherMessageAbonnement()">
           S'abonner pour 29€/mois
         </button>
-
-        <!-- Zone pour le message d'abonnement -->
-        <div id="message-abonnement"
-             style="margin-top: 16px;"></div>
+        <div id="message-abonnement" style="margin-top: 16px;"></div>
       </div>
 
     </div>
@@ -276,7 +144,6 @@
   </section>
 
 
-  <!-- FOOTER -->
   <footer class="footer">
     <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
     <div class="footer-liens">
@@ -285,7 +152,6 @@
       <a href="faq.html">FAQ</a>
     </div>
   </footer>
-
 
   <script src="js/main.js"></script>
 
