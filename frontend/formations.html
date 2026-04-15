@@ -1,13 +1,5 @@
 <!DOCTYPE html>
-<!--
-  formations.html — Catalogue des formations LearnWithUs
-  ============================================================
-  Cette page présente le détail de chaque formation (programme,
-  durée, tarifs) et contient le formulaire d'inscription.
-  C'est la page la PLUS IMPORTANTE du site car c'est ici
-  que les visiteurs se convertissent en inscrits.
-  ============================================================
--->
+<!-- formations.html — Catalogue des formations et formulaire d'inscription -->
 <html lang="fr">
 
 <head>
@@ -19,16 +11,12 @@
 
 <body>
 
-  <!-- NAVIGATION — identique sur toutes les pages -->
   <nav class="navigation">
     <div class="nav-contenu">
       <a href="index.html" class="nav-logo">LearnWithUs</a>
-      <button class="menu-mobile" aria-label="Ouvrir le menu">
-        ☰
-      </button>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
       <ul class="nav-liens">
         <li><a href="index.html">Accueil</a></li>
-        <!-- 'actif' est sur "Formations" car c'est la page actuelle -->
         <li><a href="formations.html" class="actif">Formations</a></li>
         <li><a href="espace-client.html">Espace Client</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -39,42 +27,23 @@
   </nav>
 
 
-  <!-- Titre de la page -->
   <div class="titre-page">
     <h1>Nos Formations</h1>
-    <p>
-      Choisissez votre formation et inscrivez-vous gratuitement
-    </p>
+    <p>Choisissez votre formation et inscrivez-vous gratuitement</p>
   </div>
 
 
-  <!-- ============================================================
-       FICHES FORMATIONS DÉTAILLÉES
-       ============================================================
-       Chaque formation a sa propre fiche avec :
-       - Description longue
-       - Programme (liste de 5 points)
-       - Tableau des tarifs
-       - Bouton "S'inscrire" qui scrolle vers le formulaire
-         ET pré-sélectionne la formation dans le <select>
-       ============================================================ -->
-
+  <!-- Fiches détaillées par formation -->
   <div class="section">
 
-    <!-- ===== FICHE 1 : INTELLIGENCE ARTIFICIELLE ===== -->
     <div class="fiche-formation">
       <h2>🤖 Intelligence Artificielle</h2>
       <p>
-        L'Intelligence Artificielle transforme tous les secteurs
-        d'activité. Cette formation vous donne les clés pour
-        comprendre l'IA, ses applications concrètes et ses limites.
-        Vous apprendrez à utiliser les outils d'IA générative
-        comme ChatGPT, à rédiger des prompts efficaces et à
-        automatiser des tâches répétitives dans votre quotidien
-        professionnel. Aucun prérequis technique n'est nécessaire :
-        nous partons de zéro.
+        L'Intelligence Artificielle transforme tous les secteurs d'activité. Cette formation vous donne les clés pour
+        comprendre l'IA, ses applications concrètes et ses limites. Vous apprendrez à utiliser les outils d'IA générative
+        comme ChatGPT, à rédiger des prompts efficaces et à automatiser des tâches répétitives dans votre quotidien
+        professionnel. Aucun prérequis technique n'est nécessaire : nous partons de zéro.
       </p>
-
       <h3>Programme</h3>
       <ul>
         <li>Introduction à l'IA : histoire, concepts et vocabulaire</li>
@@ -83,56 +52,30 @@
         <li>Automatiser son travail avec l'IA (cas pratiques)</li>
         <li>Éthique et limites de l'Intelligence Artificielle</li>
       </ul>
-
       <table class="tableau-tarifs">
         <thead>
-          <tr>
-            <th>Offre</th>
-            <th>Contenu</th>
-            <th>Tarif</th>
-          </tr>
+          <tr><th>Offre</th><th>Contenu</th><th>Tarif</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Standard</td>
-            <td>Introduction (3 modules)</td>
-            <td>Gratuit</td>
-          </tr>
-          <tr>
-            <td>Premium</td>
-            <td>Formation complète (10h) + exercices + certificat</td>
-            <td>29€/mois</td>
-          </tr>
+          <tr><td>Standard</td><td>Introduction (3 modules)</td><td>Gratuit</td></tr>
+          <tr><td>Premium</td><td>Formation complète (10h) + exercices + certificat</td><td>29€/mois</td></tr>
         </tbody>
       </table>
-
-      <!-- Ce bouton fait 2 choses en JavaScript :
-           1. Fait défiler la page vers le formulaire d'inscription
-           2. Pré-sélectionne "IA" dans le menu déroulant
-           Le data-formation="IA" est un attribut personnalisé
-           qui stocke la valeur à pré-sélectionner. -->
-      <button class="bouton-principal bouton-inscription"
-              data-formation="IA">
+      <!-- data-formation pré-sélectionne la formation dans le formulaire ci-dessous -->
+      <button class="bouton-principal bouton-inscription" data-formation="IA">
         S'inscrire à cette formation
       </button>
     </div>
 
 
-    <!-- ===== FICHE 2 : AGILITÉ & SCRUM ===== -->
     <div class="fiche-formation">
       <h2>🔄 Agilité &amp; SCRUM</h2>
       <p>
-        La méthode Agile et le framework SCRUM sont devenus
-        incontournables dans le monde professionnel. Que vous
-        soyez développeur, chef de projet ou manager, comprendre
-        l'agilité vous rendra plus efficace en équipe. Cette
-        formation couvre les fondamentaux : les rôles (Product Owner,
-        Scrum Master, équipe de développement), les cérémonies
-        (Sprint Planning, Daily, Rétrospective) et les artefacts
-        (Backlog, Sprint). Apprenez par la pratique avec des
-        mises en situation réelles.
+        La méthode Agile et le framework SCRUM sont devenus incontournables dans le monde professionnel. Que vous
+        soyez développeur, chef de projet ou manager, comprendre l'agilité vous rendra plus efficace en équipe. Cette
+        formation couvre les fondamentaux : les rôles (Product Owner, Scrum Master, équipe de développement), les
+        cérémonies (Sprint Planning, Daily, Rétrospective) et les artefacts (Backlog, Sprint).
       </p>
-
       <h3>Programme</h3>
       <ul>
         <li>Les principes du Manifeste Agile</li>
@@ -141,51 +84,29 @@
         <li>Animer un Sprint de A à Z (simulation)</li>
         <li>Kanban, métriques agiles et amélioration continue</li>
       </ul>
-
       <table class="tableau-tarifs">
         <thead>
-          <tr>
-            <th>Offre</th>
-            <th>Contenu</th>
-            <th>Tarif</th>
-          </tr>
+          <tr><th>Offre</th><th>Contenu</th><th>Tarif</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Standard</td>
-            <td>Introduction (3 modules)</td>
-            <td>Gratuit</td>
-          </tr>
-          <tr>
-            <td>Premium</td>
-            <td>Formation complète (10h) + exercices + certificat</td>
-            <td>29€/mois</td>
-          </tr>
+          <tr><td>Standard</td><td>Introduction (3 modules)</td><td>Gratuit</td></tr>
+          <tr><td>Premium</td><td>Formation complète (10h) + exercices + certificat</td><td>29€/mois</td></tr>
         </tbody>
       </table>
-
-      <button class="bouton-principal bouton-inscription"
-              data-formation="SCRUM">
+      <button class="bouton-principal bouton-inscription" data-formation="SCRUM">
         S'inscrire à cette formation
       </button>
     </div>
 
 
-    <!-- ===== FICHE 3 : SAP ===== -->
     <div class="fiche-formation">
       <h2>💼 SAP — Gestion d'entreprise</h2>
       <p>
-        SAP est le logiciel de gestion d'entreprise (ERP) le plus
-        utilisé au monde. Des milliers d'entreprises l'utilisent
-        pour gérer leurs finances, leurs achats, leurs stocks et
-        leurs ventes. Cette formation vous apprend à naviguer dans
-        SAP, à comprendre ses principaux modules (FI pour la finance,
-        MM pour les achats, SD pour les ventes) et à effectuer les
-        opérations courantes. Idéal pour les profils en reconversion
-        ou les étudiants en gestion qui veulent se démarquer sur
-        le marché de l'emploi.
+        SAP est le logiciel de gestion d'entreprise (ERP) le plus utilisé au monde. Cette formation vous apprend à
+        naviguer dans SAP, à comprendre ses principaux modules (FI pour la finance, MM pour les achats, SD pour les
+        ventes) et à effectuer les opérations courantes. Idéal pour les profils en reconversion ou les étudiants en
+        gestion qui veulent se démarquer sur le marché de l'emploi.
       </p>
-
       <h3>Programme</h3>
       <ul>
         <li>Introduction à SAP : qu'est-ce qu'un ERP ?</li>
@@ -194,31 +115,16 @@
         <li>Module SD : gestion des ventes et de la distribution</li>
         <li>Cas pratique : simuler un cycle complet achat-vente</li>
       </ul>
-
       <table class="tableau-tarifs">
         <thead>
-          <tr>
-            <th>Offre</th>
-            <th>Contenu</th>
-            <th>Tarif</th>
-          </tr>
+          <tr><th>Offre</th><th>Contenu</th><th>Tarif</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Standard</td>
-            <td>Introduction (3 modules)</td>
-            <td>Gratuit</td>
-          </tr>
-          <tr>
-            <td>Premium</td>
-            <td>Formation complète (10h) + exercices + certificat</td>
-            <td>29€/mois</td>
-          </tr>
+          <tr><td>Standard</td><td>Introduction (3 modules)</td><td>Gratuit</td></tr>
+          <tr><td>Premium</td><td>Formation complète (10h) + exercices + certificat</td><td>29€/mois</td></tr>
         </tbody>
       </table>
-
-      <button class="bouton-principal bouton-inscription"
-              data-formation="SAP">
+      <button class="bouton-principal bouton-inscription" data-formation="SAP">
         S'inscrire à cette formation
       </button>
     </div>
@@ -226,85 +132,43 @@
   </div>
 
 
-  <!-- ============================================================
-       FORMULAIRE D'INSCRIPTION
-       ============================================================
-       id="formulaire-inscription" est crucial : les boutons
-       "S'inscrire" des fiches ci-dessus utilisent cet id pour
-       faire défiler la page jusqu'ici avec scrollIntoView().
-
-       Les attributs 'name' de chaque champ sont importants car
-       c'est par ces noms que le serveur backend (et n8n ensuite)
-       identifient les données. Si on change un 'name' ici, il
-       faut aussi le changer dans server.js et dans n8n.
-       ============================================================ -->
+  <!-- Formulaire d'inscription — id utilisé pour le scroll depuis les boutons -->
   <section class="section-fond" id="formulaire-inscription">
     <div class="section-contenu">
       <h2>S'inscrire à une formation</h2>
-
       <div class="formulaire-conteneur">
         <form id="form-inscription">
 
-          <!-- Prénom — obligatoire (attribut required) -->
           <label for="prenom">Prénom *</label>
-          <input id="prenom" name="prenom" type="text"
-                 placeholder="Votre prénom" required>
+          <input id="prenom" name="prenom" type="text" placeholder="Votre prénom" required>
 
-          <!-- Nom — obligatoire -->
           <label for="nom">Nom *</label>
-          <input id="nom" name="nom" type="text"
-                 placeholder="Votre nom" required>
+          <input id="nom" name="nom" type="text" placeholder="Votre nom" required>
 
-          <!-- Email — type="email" active la validation automatique
-               du navigateur (vérifie la présence d'un @ et d'un domaine) -->
           <label for="email">Adresse email *</label>
-          <input id="email" name="email" type="email"
-                 placeholder="votre@email.com" required>
+          <input id="email" name="email" type="email" placeholder="votre@email.com" required>
 
-          <!-- Select — menu déroulant pour choisir la formation.
-               La première option (value="") est un placeholder
-               non sélectionnable grâce à 'required'. -->
           <label for="formation">Formation choisie *</label>
           <select id="formation" name="formation" required>
-            <option value="">
-              -- Choisissez une formation --
-            </option>
-            <option value="IA">
-              Intelligence Artificielle
-            </option>
-            <option value="SCRUM">
-              Agilité &amp; SCRUM
-            </option>
-            <option value="SAP">
-              SAP — Gestion d'entreprise
-            </option>
+            <option value="">-- Choisissez une formation --</option>
+            <option value="IA">Intelligence Artificielle</option>
+            <option value="SCRUM">Agilité &amp; SCRUM</option>
+            <option value="SAP">SAP — Gestion d'entreprise</option>
           </select>
 
-          <!-- Téléphone — optionnel (pas de 'required').
-               type="tel" affiche un clavier numérique sur mobile. -->
           <label for="telephone">Téléphone (optionnel)</label>
-          <input id="telephone" name="telephone" type="tel"
-                 placeholder="06 12 34 56 78">
+          <input id="telephone" name="telephone" type="tel" placeholder="06 12 34 56 78">
 
-          <!-- Bouton de soumission — type="submit" déclenche
-               l'événement 'submit' du formulaire, intercepté par JS. -->
-          <button type="submit" class="bouton-principal">
-            Envoyer ma demande d'inscription
-          </button>
+          <button type="submit" class="bouton-principal">Envoyer ma demande d'inscription</button>
 
         </form>
-
-        <!-- Zone de message — vide par défaut.
-             JavaScript y écrira le message de succès ou d'erreur
-             après la soumission du formulaire. -->
+        <!-- Zone remplie par JavaScript après soumission -->
         <div id="message-inscription"></div>
       </div>
-
     </div>
   </section>
 
 
-  <!-- FOOTER — identique sur toutes les pages -->
   <footer class="footer">
     <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
     <div class="footer-liens">
@@ -314,8 +178,6 @@
     </div>
   </footer>
 
-
-  <!-- Script en bas du body (voir commentaire dans index.html) -->
   <script src="js/main.js"></script>
 
 </body>

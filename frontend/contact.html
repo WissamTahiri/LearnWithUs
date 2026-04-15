@@ -1,16 +1,5 @@
 <!DOCTYPE html>
-<!--
-  contact.html — Page de contact LearnWithUs
-  ============================================================
-  Cette page permet aux visiteurs d'envoyer un message à
-  l'équipe LearnWithUs. Elle contient :
-  - Un formulaire de contact (colonne gauche)
-  - Les informations de contact (colonne droite)
-
-  Le formulaire envoie les données au backend via fetch(),
-  qui pourra ensuite les transmettre par email via n8n.
-  ============================================================
--->
+<!-- contact.html — Formulaire de contact et coordonnées de l'équipe -->
 <html lang="fr">
 
 <head>
@@ -22,13 +11,10 @@
 
 <body>
 
-  <!-- NAVIGATION -->
   <nav class="navigation">
     <div class="nav-contenu">
       <a href="index.html" class="nav-logo">LearnWithUs</a>
-      <button class="menu-mobile" aria-label="Ouvrir le menu">
-        ☰
-      </button>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
       <ul class="nav-liens">
         <li><a href="index.html">Accueil</a></li>
         <li><a href="formations.html">Formations</a></li>
@@ -41,48 +27,34 @@
   </nav>
 
 
-  <!-- Titre de la page -->
   <div class="titre-page">
     <h1>Contactez-nous</h1>
     <p>Notre équipe répond sous 24h en semaine</p>
   </div>
 
 
-  <!-- ============================================================
-       GRILLE 2 COLONNES : Formulaire + Infos
-       ============================================================
-       Sur desktop : 2 colonnes côte à côte
-       Sur mobile : les colonnes s'empilent (grâce au media query)
-       ============================================================ -->
+  <!-- Grille 2 colonnes : formulaire à gauche, coordonnées à droite -->
   <section class="section">
     <div class="grille-2-colonnes">
 
-      <!-- ===== COLONNE GAUCHE : FORMULAIRE ===== -->
       <div class="formulaire-conteneur">
         <form id="form-contact">
 
-          <!-- Prénom et Nom côte à côte sur desktop.
-               La classe 'champs-ligne' utilise CSS Grid
-               pour mettre 2 champs sur la même ligne. -->
+          <!-- Prénom et Nom côte à côte -->
           <div class="champs-ligne">
             <div>
               <label for="contact-prenom">Prénom *</label>
-              <input id="contact-prenom" name="prenom" type="text"
-                     placeholder="Votre prénom" required>
+              <input id="contact-prenom" name="prenom" type="text" placeholder="Votre prénom" required>
             </div>
             <div>
               <label for="contact-nom">Nom *</label>
-              <input id="contact-nom" name="nom" type="text"
-                     placeholder="Votre nom" required>
+              <input id="contact-nom" name="nom" type="text" placeholder="Votre nom" required>
             </div>
           </div>
 
-          <!-- Email -->
           <label for="contact-email">Adresse email *</label>
-          <input id="contact-email" name="email" type="email"
-                 placeholder="votre@email.com" required>
+          <input id="contact-email" name="email" type="email" placeholder="votre@email.com" required>
 
-          <!-- Sujet — menu déroulant -->
           <label for="contact-sujet">Sujet</label>
           <select id="contact-sujet" name="sujet">
             <option value="question">Question générale</option>
@@ -91,52 +63,29 @@
             <option value="autre">Autre</option>
           </select>
 
-          <!-- Message — textarea pour un texte long.
-               rows="5" définit la hauteur initiale (5 lignes). -->
           <label for="contact-message">Message *</label>
-          <textarea id="contact-message" name="message" rows="5"
-                    placeholder="Votre message..." required></textarea>
+          <textarea id="contact-message" name="message" rows="5" placeholder="Votre message..." required></textarea>
 
-          <!-- Bouton d'envoi -->
-          <button type="submit" class="bouton-principal">
-            Envoyer le message
-          </button>
+          <button type="submit" class="bouton-principal">Envoyer le message</button>
 
         </form>
-
-        <!-- Zone de message — remplie par JavaScript -->
+        <!-- Zone remplie par JavaScript après soumission -->
         <div id="message-contact"></div>
       </div>
 
 
-      <!-- ===== COLONNE DROITE : INFOS DE CONTACT ===== -->
       <div class="infos-contact">
         <h3>Nos coordonnées</h3>
-
-        <p>📧 <strong>Email</strong><br>
-          contact@learnnwithus.fr
-        </p>
-
-        <p>⏰ <strong>Horaires</strong><br>
-          Lundi–Vendredi, 9h–18h
-        </p>
-
-        <p>💬 <strong>Délai de réponse</strong><br>
-          Sous 24h en semaine
-        </p>
-
-        <p>
-          ❓ Consultez notre
-          <a href="faq.html">FAQ</a>
-          pour les questions fréquentes
-        </p>
+        <p>📧 <strong>Email</strong><br>contact@learnnwithus.fr</p>
+        <p>⏰ <strong>Horaires</strong><br>Lundi–Vendredi, 9h–18h</p>
+        <p>💬 <strong>Délai de réponse</strong><br>Sous 24h en semaine</p>
+        <p>❓ Consultez notre <a href="faq.html">FAQ</a> pour les questions fréquentes</p>
       </div>
 
     </div>
   </section>
 
 
-  <!-- FOOTER -->
   <footer class="footer">
     <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
     <div class="footer-liens">
@@ -145,7 +94,6 @@
       <a href="faq.html">FAQ</a>
     </div>
   </footer>
-
 
   <script src="js/main.js"></script>
 
