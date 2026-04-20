@@ -103,6 +103,29 @@ img {
   border-bottom: 2px solid var(--couleur-principale);
 }
 
+/* Pastille du prénom affichée dans la nav quand l'utilisateur est connecté.
+   Remplace le lien "Connexion" par un visuel plus distinctif. */
+.nav-liens a.badge-utilisateur {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.nav-liens a.badge-utilisateur:hover {
+  background-color: var(--couleur-principale-hover);
+  color: var(--couleur-blanc);
+}
+
+/* Sur la page de l'espace client, pas de soulignement sur la pastille */
+.nav-liens a.badge-utilisateur.actif {
+  border-bottom: none;
+  color: var(--couleur-blanc);
+}
+
 /* Bouton hamburger — visible uniquement sur mobile */
 .menu-mobile {
   display: none;

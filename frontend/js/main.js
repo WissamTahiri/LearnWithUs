@@ -37,7 +37,7 @@ function deconnecter() {
 
 /* Met à jour la navigation selon l'état de connexion :
    - non connecté : lien "Connexion" visible
-   - connecté : "Bonjour Prénom" + "Déconnexion" */
+   - connecté : pastille colorée avec le prénom + lien "Déconnexion" */
 function majNavigation() {
   const session = lireSession()
   const liensNav = document.querySelector('.nav-liens')
@@ -46,9 +46,14 @@ function majNavigation() {
   const lienConnexion = liensNav.querySelector('a[href="connexion.html"]')
 
   if (session && session.utilisateur && lienConnexion) {
+    /* Remplace "Connexion" par une pastille cliquable qui mène
+       à l'espace client. La classe .badge-utilisateur est stylée
+       dans style.css (fond bordeaux, texte blanc, coins arrondis). */
     const parent = lienConnexion.parentElement
     parent.innerHTML =
-      '<a href="espace-client.html">Bonjour ' + session.utilisateur.prenom + '</a>'
+      '<a href="espace-client.html" class="badge-utilisateur">' +
+        session.utilisateur.prenom +
+      '</a>'
 
     const liDeconnexion = document.createElement('li')
     liDeconnexion.innerHTML =
