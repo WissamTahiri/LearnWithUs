@@ -44,36 +44,21 @@
 
   <main class="formation-contenu">
 
-    <!-- ========== INTRO (gratuit) ========== -->
+    <!-- ========== INTRO (gratuit) — teaser court ========== -->
     <div class="formation-bloc">
       <span class="badge-section gratuit">📖 INTRO GRATUITE</span>
-      <h2>SAP : le leader mondial des ERP</h2>
+      <h2>Pourquoi se former à SAP aujourd'hui ?</h2>
 
-      <p>Un <strong>ERP</strong> (Enterprise Resource Planning, "progiciel de gestion intégré" en français) est un logiciel qui centralise la gestion de toutes les fonctions d'une entreprise : finance, achats, ventes, stocks, ressources humaines, production. Au lieu d'avoir un logiciel par métier, l'ERP offre une vision unifiée de l'activité en temps réel.</p>
+      <p>Derrière les rayons de supermarché, les paies des salariés, la comptabilité des multinationales : il y a souvent SAP. Fondé en 1972, ce géant allemand équipe aujourd'hui plus de 400 000 entreprises dans le monde, dont la quasi-totalité du Fortune 500. Résultat : les profils qui savent naviguer dans SAP sont parmi les plus recherchés — et les mieux payés — sur le marché de l'IT et de la gestion.</p>
 
-      <p><strong>SAP</strong> est l'ERP le plus utilisé au monde. Fondée en 1972 en Allemagne par cinq anciens ingénieurs d'IBM, l'entreprise équipe aujourd'hui plus de 400 000 clients dans 180 pays, dont 92 % des entreprises du classement Forbes Global 2000.</p>
-
-      <h3>Pourquoi apprendre SAP ?</h3>
+      <h3>Dans cette formation, vous allez apprendre à :</h3>
       <ul>
-        <li><strong>Un marché de l'emploi porteur</strong> : les consultants SAP sont parmi les profils IT les plus recherchés, avec des salaires attractifs.</li>
-        <li><strong>Un standard mondial</strong> : comprendre SAP, c'est comprendre comment fonctionnent les grandes organisations.</li>
-        <li><strong>Une montée en compétences progressive</strong> : on peut commencer par les bases (navigation, un module métier) avant de se spécialiser.</li>
+        <li>Naviguer dans SAP GUI et utiliser les T-Codes les plus courants</li>
+        <li>Comprendre les modules FI (comptabilité), MM (achats) et SD (ventes)</li>
+        <li>Réaliser des transactions concrètes : saisie d'écriture, commande d'achat, consultation de stock</li>
       </ul>
 
-      <h3>Les grandes familles de modules</h3>
-      <p>SAP est découpé en modules correspondant chacun à un métier. Les plus connus :</p>
-      <ul>
-        <li><strong>FI</strong> (Financial Accounting) : comptabilité générale.</li>
-        <li><strong>CO</strong> (Controlling) : contrôle de gestion.</li>
-        <li><strong>MM</strong> (Materials Management) : achats et gestion des stocks.</li>
-        <li><strong>SD</strong> (Sales and Distribution) : ventes et expédition.</li>
-        <li><strong>HR</strong> (Human Resources) : ressources humaines.</li>
-        <li><strong>PP</strong> (Production Planning) : planification de la production.</li>
-      </ul>
-
-      <p>Dans cette formation, nous couvrons les trois modules les plus fréquemment rencontrés : <strong>FI, MM et SD</strong>.</p>
-
-      <p><em>Pour accéder au cours complet, à la vidéo et au quiz final, passez à l'offre Premium.</em></p>
+      <p><em>Passez à l'offre Premium pour accéder au cours complet, à la vidéo de 10 min et au quiz final.</em></p>
     </div>
 
 
@@ -86,42 +71,64 @@
     </div>
 
 
-    <!-- ========== COURS COMPLET ========== -->
+    <!-- ========== COURS COMPLET (Premium) — tutoriels pas à pas ========== -->
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">⭐ COURS COMPLET PREMIUM</span>
-      <h2>Naviguer dans SAP et comprendre ses modules clés</h2>
+      <h2>Transactions SAP courantes : 4 tutoriels pas à pas</h2>
 
-      <h3>1. Se connecter et naviguer dans SAP GUI</h3>
-      <p>SAP GUI est l'interface graphique historique pour accéder à SAP. La connexion se fait via un client local qui pointe vers un serveur d'entreprise. Chaque écran ou fonction est identifié par un code transaction appelé <strong>T-Code</strong> (ex : FB01 pour saisir une écriture comptable, ME21N pour créer une commande d'achat). Connaître les T-Codes est essentiel : ils permettent d'accéder directement à une fonction sans passer par le menu.</p>
+      <p><em>La vidéo et les slides qui accompagnent cette formation présentent la vue d'ensemble de SAP : qu'est-ce qu'un ERP, les modules FI/MM/SD, le concept de T-Code et l'évolution vers S/4HANA. Cette partie écrite est un manuel pratique : 4 tutoriels détaillés pour réaliser les transactions les plus courantes que vous rencontrerez en stage ou en mission.</em></p>
 
-      <h3>2. Module FI : la comptabilité</h3>
-      <p>Le module <strong>FI</strong> gère la comptabilité générale, les comptes clients, les comptes fournisseurs, et les immobilisations. Il produit les états financiers officiels : bilan, compte de résultat, grand livre. Chaque écriture comptable est enregistrée dans un <strong>document</strong> qui suit le principe de partie double (débit = crédit). Les T-Codes phares : FB01 (saisie), FBL1N (extraction comptes fournisseurs), F-53 (paiement).</p>
+      <h3>Tuto 1 — Saisir une écriture comptable (FB01)</h3>
+      <ol>
+        <li>Dans la barre de commande SAP, tapez <strong>FB01</strong> puis Entrée.</li>
+        <li>Renseignez la <strong>date du document</strong>, la <strong>date comptable</strong>, le <strong>code société</strong> (souvent 4 caractères, ex : FR01) et la <strong>devise</strong>.</li>
+        <li>Choisissez le <strong>type de document</strong> (SA pour une écriture diverse, KR pour une facture fournisseur).</li>
+        <li>Saisissez la <strong>première ligne</strong> : code de mouvement (40 pour débit, 50 pour crédit), compte, montant, libellé.</li>
+        <li>Ajoutez les lignes suivantes jusqu'à équilibrer débit = crédit, puis cliquez sur <strong>Sauvegarder</strong> (ou F11).</li>
+      </ol>
+      <p>⚠️ Si vous voyez "Ecriture déséquilibrée" : vérifiez les codes 40/50 et les montants. La partie double est obligatoire.</p>
 
-      <h3>3. Module MM : les achats et les stocks</h3>
-      <p>Le module <strong>MM</strong> couvre tout le cycle d'achat (Procure to Pay / P2P) :</p>
+      <h3>Tuto 2 — Créer une commande d'achat (ME21N)</h3>
+      <ol>
+        <li>Tapez <strong>ME21N</strong> dans la barre de commande.</li>
+        <li>Sélectionnez le <strong>type de commande</strong> (NB pour commande standard) et le <strong>fournisseur</strong>.</li>
+        <li>Dans l'en-tête, renseignez l'<strong>organisation d'achat</strong>, le <strong>groupe d'acheteurs</strong> et la <strong>société</strong>.</li>
+        <li>Dans le tableau des postes, saisissez le <strong>code article</strong>, la <strong>quantité</strong>, le <strong>prix</strong> et le <strong>centre</strong>/<strong>magasin</strong> de livraison.</li>
+        <li>Vérifiez la date de livraison prévue, puis cliquez sur <strong>Sauvegarder</strong>. SAP affiche un numéro de commande à 10 chiffres — à communiquer au fournisseur.</li>
+      </ol>
+
+      <h3>Tuto 3 — Vérifier le stock d'un article (MMBE)</h3>
+      <ol>
+        <li>Tapez <strong>MMBE</strong>.</li>
+        <li>Renseignez le <strong>code article</strong> (obligatoire). Vous pouvez filtrer par <strong>centre</strong> et <strong>magasin</strong> si vous cherchez un emplacement précis.</li>
+        <li>Cliquez sur <strong>Exécuter</strong> (F8). SAP affiche les quantités disponibles par centre et par statut (disponible, en contrôle qualité, bloqué).</li>
+        <li>Double-cliquez sur une ligne pour voir le détail par lot / emplacement / date d'entrée.</li>
+      </ol>
+      <p>💡 Astuce : si vous ne connaissez pas le code article, utilisez <strong>MM03</strong> pour le chercher par libellé.</p>
+
+      <h3>Tuto 4 — Consulter une fiche client (VD03)</h3>
+      <ol>
+        <li>Tapez <strong>VD03</strong>.</li>
+        <li>Saisissez le <strong>numéro du client</strong> et la <strong>société</strong>. Cliquez Entrée.</li>
+        <li>Naviguez entre les onglets : <strong>Adresse</strong> (coordonnées), <strong>Contrôle</strong> (catégorie de compte, classification), <strong>Paiement</strong> (conditions de paiement, moyens acceptés), <strong>Interlocuteurs</strong> (personnes à contacter).</li>
+        <li>Pour voir les commandes passées par ce client, utilisez ensuite <strong>VA05</strong> (liste des commandes de vente).</li>
+      </ol>
+
+      <h3>Astuces de productivité SAP</h3>
       <ul>
-        <li>Demande d'achat (besoin exprimé par un service).</li>
-        <li>Commande d'achat (envoyée au fournisseur).</li>
-        <li>Réception de marchandises (entrée en stock).</li>
-        <li>Réception facture (contrôle à 3 voies : commande / réception / facture).</li>
-        <li>Paiement (déclenché côté FI).</li>
+        <li><strong>Favoris</strong> : faites un clic droit sur un T-Code dans le menu puis "Ajouter aux favoris". Vous y accéderez en 1 clic.</li>
+        <li><strong>Variantes d'écran</strong> : après avoir configuré un écran (filtres, colonnes…), sauvegardez la configuration en variante pour la retrouver à chaque session.</li>
+        <li><strong>Nouvelle fenêtre</strong> : tapez <strong>/O</strong> suivi d'un T-Code pour ouvrir une seconde session en parallèle sans perdre la première.</li>
+        <li><strong>Retour rapide</strong> : <strong>/N</strong> revient au menu principal, <strong>/NEX</strong> ferme la session.</li>
       </ul>
 
-      <h3>4. Module SD : les ventes</h3>
-      <p>Le module <strong>SD</strong> couvre tout le cycle de vente (Order to Cash / O2C) :</p>
+      <h3>Pièges fréquents des nouveaux utilisateurs</h3>
       <ul>
-        <li>Devis envoyé au client.</li>
-        <li>Commande de vente validée.</li>
-        <li>Livraison (sortie de stock).</li>
-        <li>Facturation client.</li>
-        <li>Encaissement (déclenché côté FI).</li>
+        <li><strong>Confondre date du document et date comptable</strong> : la première est celle du justificatif, la seconde est celle d'imputation dans la comptabilité.</li>
+        <li><strong>Oublier l'organisation d'achat / société</strong> : SAP rejette la transaction. Toujours vérifier ces champs en premier.</li>
+        <li><strong>Quitter sans sauvegarder</strong> : SAP ne prévient pas toujours. Prenez l'habitude de F11 avant de changer d'écran.</li>
+        <li><strong>Travailler en production au lieu du <em>mandant test</em></strong> : une écriture mal saisie en production est difficile à annuler. Validez toujours le mandant en haut à droite (ex : 400 = test, 100 = prod).</li>
       </ul>
-
-      <h3>5. Intégration entre modules</h3>
-      <p>La grande force de SAP est l'intégration. Une commande de vente dans SD génère automatiquement un mouvement de stock dans MM et une facture dans FI. Cette cohérence évite les ressaisies et garantit la fiabilité des données.</p>
-
-      <h3>6. S/4HANA, la nouvelle génération</h3>
-      <p>Depuis 2015, SAP déploie <strong>S/4HANA</strong>, sa nouvelle plateforme basée sur la base de données in-memory HANA (bien plus rapide) et une nouvelle interface web moderne appelée <strong>Fiori</strong>. Toutes les entreprises doivent migrer de l'ancienne version (ECC) vers S/4HANA d'ici 2030, ce qui génère un marché de migration considérable.</p>
     </div>
 
 
