@@ -2,10 +2,10 @@
 <!--
   connexion.html — Page de connexion de LearnWithUs
   ============================================================
-  Permet à un utilisateur déjà inscrit de se connecter
-  à son espace personnel.
-  Pour l'instant : interface uniquement (Phase 3).
-  La logique d'authentification sera ajoutée en Phase 4.
+  Authentifie l'utilisateur auprès du backend via l'API
+  /api/connexion (bcrypt + JWT). La session est stockée
+  dans localStorage et permet de naviguer connecté sur
+  toutes les pages (voir majNavigation dans main.js).
   ============================================================
 -->
 <html lang="fr">
@@ -257,6 +257,9 @@
         <button type="submit" class="bouton-auth">Se connecter</button>
 
       </form>
+
+      <!-- Zone remplie par main.js selon le résultat de la connexion -->
+      <div id="message-auth"></div>
 
       <!-- Séparateur -->
       <div class="separateur">ou</div>

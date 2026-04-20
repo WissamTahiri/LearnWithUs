@@ -2,11 +2,11 @@
 <!--
   inscription-compte.html — Page de création de compte LearnWithUs
   ============================================================
-  Permet à un nouvel utilisateur de créer son compte personnel.
-  À distinguer de formations.html qui gère l'inscription aux
-  formations (choix d'une formation + coordonnées).
-  Pour l'instant : interface uniquement (Phase 3).
-  La logique de création de compte sera ajoutée en Phase 4.
+  Crée un nouveau compte via l'API /api/creer-compte
+  (mot de passe hashé bcrypt, stocké dans la base Notion
+  "Comptes LearnWithUs"). À distinguer de formations.html
+  qui gère l'inscription aux formations (choix de formation).
+  L'utilisateur est automatiquement connecté après création.
   ============================================================
 -->
 <html lang="fr">
@@ -339,6 +339,9 @@
         <button type="submit" class="bouton-auth">Créer mon compte</button>
 
       </form>
+
+      <!-- Zone remplie par main.js selon le résultat de la création -->
+      <div id="message-auth"></div>
 
       <!-- Séparateur -->
       <div class="separateur">déjà inscrit ?</div>

@@ -4,13 +4,18 @@
 const express  = require('express')
 const cors     = require('cors')
 const dotenv   = require('dotenv')
+const bcrypt   = require('bcryptjs')
+const jwt      = require('jsonwebtoken')
 const { Client } = require('@notionhq/client')
 
 dotenv.config()
 
 /* Client Notion initialisé avec le token d'intégration */
 const notion = new Client({ auth: process.env.NOTION_TOKEN })
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID
+const NOTION_DATABASE_ID          = process.env.NOTION_DATABASE_ID
+const NOTION_DATABASE_COMPTES_ID  = process.env.NOTION_DATABASE_COMPTES_ID
+/* Secret utilisé pour signer les jetons JWT (à définir en prod via Render) */
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-a-remplacer-en-prod'
 
 const app = express()
 
@@ -100,8 +105,9 @@ app.post('/api/inscription', async function(req, res) {
 
 
 /* ===== ROUTE CONTACT ===== */
-/* Reçoit un message de contact et confirme la réception */
-app.post('/api/contact', function(req, res) {
+/* Reçoit un message du formulaire contact et le transmet à n8n
+   qui envoie un accusé de réception à l'étudiant + notifie l'équipe */
+app.post('/api/contact', async function(req, res) {
 
   const { prenom, nom, email, sujet, message } = req.body
 
@@ -114,10 +120,216 @@ app.post('/api/contact', function(req, res) {
 
   console.log('📩 Nouveau message de ' + email + ' — Sujet : ' + sujet)
 
+  /* Transmet au webhook n8n dédié au formulaire contact
+     (workflow n8n-workflow-contact.json) */
+  const urlWebhookContact = process.env.WEBHOOK_N8N_CONTACT_URL
+  if (urlWebhookContact) {
+    try {
+      await fetch(urlWebhookContact, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, sujet, message })
+      })
+      console.log('📨 Message transmis à n8n pour ' + email)
+    } catch (erreur) {
+      console.error('⚠️  Impossible de contacter n8n : ' + erreur.message)
+    }
+  }
+
   res.json({
     succes: true,
     message: 'Votre message a bien été reçu. Réponse sous 24h.'
   })
+})
+
+
+/* ===== UTILITAIRES COMPTES ===== */
+/* Cherche un compte dans la base Notion "Comptes LearnWithUs" par son email.
+   Retourne la page Notion trouvée ou null si aucun compte ne correspond. */
+async function chercherCompteParEmail(email) {
+  const reponse = await notion.databases.query({
+    database_id: NOTION_DATABASE_COMPTES_ID,
+    filter: {
+      property: 'Email',
+      title: { equals: email }
+    }
+  })
+  return reponse.results[0] || null
+}
+
+/* Extrait les champs d'un compte Notion sous forme d'objet simple */
+function lireCompte(pageNotion) {
+  const props = pageNotion.properties
+  return {
+    id:      pageNotion.id,
+    email:   props['Email'].title[0]?.text?.content || '',
+    hash:    props['Mot de passe'].rich_text[0]?.text?.content || '',
+    prenom:  props['Prenom'].rich_text[0]?.text?.content || '',
+    nom:     props['Nom'].rich_text[0]?.text?.content || '',
+    statut:  props['Statut'].select?.name || 'Standard'
+  }
+}
+
+/* Génère un jeton JWT valable 7 jours contenant les infos de l'utilisateur */
+function genererJeton(utilisateur) {
+  return jwt.sign(
+    {
+      email:  utilisateur.email,
+      prenom: utilisateur.prenom,
+      nom:    utilisateur.nom,
+      statut: utilisateur.statut
+    },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  )
+}
+
+
+/* ===== ROUTE CRÉATION DE COMPTE ===== */
+/* Crée un nouveau compte dans Notion avec mot de passe hashé (bcrypt)
+   puis renvoie un jeton JWT pour connecter automatiquement l'utilisateur */
+app.post('/api/creer-compte', async function(req, res) {
+
+  const { prenom, nom, email, motDePasse } = req.body
+
+  if (!prenom || !nom || !email || !motDePasse) {
+    return res.status(400).json({
+      succes: false,
+      message: 'Tous les champs sont obligatoires'
+    })
+  }
+
+  if (motDePasse.length < 8) {
+    return res.status(400).json({
+      succes: false,
+      message: 'Le mot de passe doit faire au moins 8 caractères'
+    })
+  }
+
+  if (!NOTION_DATABASE_COMPTES_ID || !process.env.NOTION_TOKEN) {
+    return res.status(500).json({
+      succes: false,
+      message: 'Base de comptes non configurée sur le serveur'
+    })
+  }
+
+  try {
+    /* Vérifie qu'aucun compte n'existe déjà avec cet email */
+    const compteExistant = await chercherCompteParEmail(email)
+    if (compteExistant) {
+      return res.status(409).json({
+        succes: false,
+        message: 'Un compte existe déjà avec cet email'
+      })
+    }
+
+    /* Hash du mot de passe avec bcrypt (10 rounds = bon équilibre) */
+    const motDePasseHashe = await bcrypt.hash(motDePasse, 10)
+
+    /* Création de la page dans la base Notion Comptes */
+    await notion.pages.create({
+      parent: { database_id: NOTION_DATABASE_COMPTES_ID },
+      properties: {
+        'Email':        { title: [{ text: { content: email } }] },
+        'Mot de passe': { rich_text: [{ text: { content: motDePasseHashe } }] },
+        'Prenom':       { rich_text: [{ text: { content: prenom } }] },
+        'Nom':          { rich_text: [{ text: { content: nom } }] },
+        'Statut':       { select: { name: 'Standard' } }
+      }
+    })
+
+    console.log('👤 Nouveau compte créé : ' + email)
+
+    /* Génère un jeton pour connecter automatiquement l'utilisateur */
+    const utilisateur = { email, prenom, nom, statut: 'Standard' }
+    const token = genererJeton(utilisateur)
+
+    res.json({
+      succes: true,
+      message: 'Compte créé avec succès',
+      token:   token,
+      utilisateur: utilisateur
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur création compte : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur serveur lors de la création du compte'
+    })
+  }
+})
+
+
+/* ===== ROUTE CONNEXION ===== */
+/* Vérifie email + mot de passe puis renvoie un jeton JWT si correct */
+app.post('/api/connexion', async function(req, res) {
+
+  const { email, motDePasse } = req.body
+
+  if (!email || !motDePasse) {
+    return res.status(400).json({
+      succes: false,
+      message: 'Email et mot de passe obligatoires'
+    })
+  }
+
+  try {
+    const pageCompte = await chercherCompteParEmail(email)
+    if (!pageCompte) {
+      return res.status(401).json({
+        succes: false,
+        message: 'Email ou mot de passe incorrect'
+      })
+    }
+
+    const compte = lireCompte(pageCompte)
+
+    /* Compare le mot de passe fourni au hash stocké */
+    const motDePasseValide = await bcrypt.compare(motDePasse, compte.hash)
+    if (!motDePasseValide) {
+      return res.status(401).json({
+        succes: false,
+        message: 'Email ou mot de passe incorrect'
+      })
+    }
+
+    /* Met à jour la date de dernière connexion (silencieux si erreur) */
+    try {
+      await notion.pages.update({
+        page_id: compte.id,
+        properties: {
+          'Derniere connexion': { date: { start: new Date().toISOString() } }
+        }
+      })
+    } catch (e) {
+      console.warn('Maj dernière connexion échouée : ' + e.message)
+    }
+
+    console.log('🔑 Connexion réussie : ' + email)
+
+    const utilisateur = {
+      email:  compte.email,
+      prenom: compte.prenom,
+      nom:    compte.nom,
+      statut: compte.statut
+    }
+    const token = genererJeton(utilisateur)
+
+    res.json({
+      succes: true,
+      message: 'Connexion réussie',
+      token:   token,
+      utilisateur: utilisateur
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur connexion : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur serveur lors de la connexion'
+    })
+  }
 })
 
 
