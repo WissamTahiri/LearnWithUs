@@ -67,7 +67,7 @@ app.post('/api/inscription', async function(req, res) {
           'Nom':       { rich_text: [{ text: { content: nom } }] },
           'Email':     { email: email },
           'Formation': { select: { name: formation } },
-          'Téléphone': { phone_number: telephone || '' },
+          'Téléphone': { phone_number: telephone || null },
           'Statut':    { select: { name: 'Nouveau' } }
         }
       })
