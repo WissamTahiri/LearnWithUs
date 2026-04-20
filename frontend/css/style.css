@@ -776,13 +776,17 @@ textarea {
   margin-bottom: 14px;
 }
 
-.formation-bloc ul {
-  list-style: disc;
+.formation-bloc ul,
+.formation-bloc ol {
   padding-left: 24px;
   margin-bottom: 14px;
 }
 
-.formation-bloc ul li {
+.formation-bloc ul { list-style: disc; }
+.formation-bloc ol { list-style: decimal; }
+
+.formation-bloc ul li,
+.formation-bloc ol li {
   margin-bottom: 6px;
   line-height: 1.6;
 }
