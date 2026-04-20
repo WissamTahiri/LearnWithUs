@@ -62,8 +62,11 @@ LearnWithUs/
   - Credential SMTP Gmail configurée
 - [x] T3.6 : Mise à jour dossier de suivi projet (v1) — FAIT (15/04)
 
-### Phase 4 : Intégration & Auto. (18/04 - 21/05) — À VENIR
-- [ ] T4.1 : Finalisation site web (contenu + SEO)
+### Phase 4 : Intégration & Auto. (18/04 - 21/05) — EN COURS
+- [x] T4.1 : Finalisation site web (contenu + SEO) — FAIT (20/04)
+  - Corrections : faute 'learnnwithus.fr', alert() remplacés par messages propres
+  - Contenu enrichi : section "Chiffres clés" (accueil), +2 FAQ (prérequis, CPF), adresse (contact)
+  - SEO de base : meta description + author sur 7 pages, favicon.svg, sitemap.xml, robots.txt
 - [ ] T4.2 : Intégration contenus e-learning (vidéos)
 - [ ] T4.3 : Workflow n8n #2 Prospect → CRM
 - [ ] T3.3 : Schéma architecture SI (version complète)
