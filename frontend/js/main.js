@@ -1,9 +1,61 @@
 /* main.js — JavaScript principal de LearnWithUs
    Chargé sur toutes les pages. Gère : menu mobile, formulaires,
-   onglets espace client, accordéon FAQ. */
+   onglets espace client, accordéon FAQ, authentification. */
 
 /* URL du backend — changer ici pour basculer entre dev et prod */
 const URL_BACKEND = 'https://learnwithus-backend.onrender.com'
+
+/* Clé de stockage localStorage pour la session utilisateur */
+const CLE_SESSION = 'learnwithus_session'
+
+
+/* ===== SESSION UTILISATEUR ===== */
+/* La session (token JWT + infos) est stockée dans localStorage
+   pour persister entre les pages et les rechargements. */
+
+/* Lit la session active. Retourne null si aucun utilisateur connecté. */
+function lireSession() {
+  const donnees = localStorage.getItem(CLE_SESSION)
+  if (!donnees) return null
+  try {
+    return JSON.parse(donnees)
+  } catch (e) {
+    return null
+  }
+}
+
+/* Enregistre le jeton et les infos utilisateur après connexion/inscription */
+function sauverSession(token, utilisateur) {
+  localStorage.setItem(CLE_SESSION, JSON.stringify({ token, utilisateur }))
+}
+
+/* Déconnecte l'utilisateur et le renvoie sur l'accueil */
+function deconnecter() {
+  localStorage.removeItem(CLE_SESSION)
+  window.location.href = 'index.html'
+}
+
+/* Met à jour la navigation selon l'état de connexion :
+   - non connecté : lien "Connexion" visible
+   - connecté : "Bonjour Prénom" + "Déconnexion" */
+function majNavigation() {
+  const session = lireSession()
+  const liensNav = document.querySelector('.nav-liens')
+  if (!liensNav) return
+
+  const lienConnexion = liensNav.querySelector('a[href="connexion.html"]')
+
+  if (session && session.utilisateur && lienConnexion) {
+    const parent = lienConnexion.parentElement
+    parent.innerHTML =
+      '<a href="espace-client.html">Bonjour ' + session.utilisateur.prenom + '</a>'
+
+    const liDeconnexion = document.createElement('li')
+    liDeconnexion.innerHTML =
+      '<a href="#" onclick="deconnecter(); return false;">Déconnexion</a>'
+    liensNav.appendChild(liDeconnexion)
+  }
+}
 
 
 /* Ouvre/ferme le menu de navigation sur mobile */
@@ -168,6 +220,116 @@ function afficherMessageAbonnement() {
 }
 
 
+/* ===== AUTHENTIFICATION ===== */
+/* Envoie le formulaire de création de compte au backend */
+async function envoyerCreationCompte(evenement) {
+  evenement.preventDefault()
+
+  const prenom           = document.getElementById('prenom').value.trim()
+  const nom              = document.getElementById('nom').value.trim()
+  const email            = document.getElementById('email').value.trim()
+  const motDePasse       = document.getElementById('mot-de-passe').value
+  const confirmationMdp  = document.getElementById('confirmation-mdp').value
+  const cguAcceptees     = document.getElementById('cgu').checked
+
+  const zoneMessage = document.getElementById('message-auth')
+
+  /* Vérifications côté client avant d'envoyer au backend */
+  if (motDePasse !== confirmationMdp) {
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Les deux mots de passe ne correspondent pas.'
+    return
+  }
+  if (motDePasse.length < 8) {
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Le mot de passe doit faire au moins 8 caractères.'
+    return
+  }
+  if (!cguAcceptees) {
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Vous devez accepter les conditions d\'utilisation.'
+    return
+  }
+
+  const boutonEnvoi = evenement.target.querySelector('button[type="submit"]')
+  const texteOriginal = boutonEnvoi.textContent
+  boutonEnvoi.disabled = true
+  boutonEnvoi.textContent = 'Création du compte...'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/creer-compte', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prenom, nom, email, motDePasse })
+    })
+    const resultat = await reponse.json()
+
+    if (resultat.succes) {
+      /* Compte créé : on stocke la session et on redirige */
+      sauverSession(resultat.token, resultat.utilisateur)
+      zoneMessage.className = 'message-succes'
+      zoneMessage.textContent = 'Compte créé ! Redirection en cours...'
+      setTimeout(function() {
+        window.location.href = 'espace-client.html'
+      }, 1200)
+    } else {
+      zoneMessage.className = 'message-erreur'
+      zoneMessage.textContent = resultat.message || 'Erreur lors de la création du compte.'
+    }
+  } catch (erreur) {
+    console.error('Erreur création compte :', erreur)
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Impossible de contacter le serveur. Réessayez.'
+  }
+
+  boutonEnvoi.disabled = false
+  boutonEnvoi.textContent = texteOriginal
+}
+
+
+/* Envoie le formulaire de connexion au backend */
+async function envoyerConnexion(evenement) {
+  evenement.preventDefault()
+
+  const email      = document.getElementById('email').value.trim()
+  const motDePasse = document.getElementById('mot-de-passe').value
+
+  const zoneMessage = document.getElementById('message-auth')
+  const boutonEnvoi = evenement.target.querySelector('button[type="submit"]')
+  const texteOriginal = boutonEnvoi.textContent
+  boutonEnvoi.disabled = true
+  boutonEnvoi.textContent = 'Connexion...'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/connexion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, motDePasse })
+    })
+    const resultat = await reponse.json()
+
+    if (resultat.succes) {
+      sauverSession(resultat.token, resultat.utilisateur)
+      zoneMessage.className = 'message-succes'
+      zoneMessage.textContent = 'Connexion réussie ! Redirection...'
+      setTimeout(function() {
+        window.location.href = 'espace-client.html'
+      }, 800)
+    } else {
+      zoneMessage.className = 'message-erreur'
+      zoneMessage.textContent = resultat.message || 'Email ou mot de passe incorrect.'
+    }
+  } catch (erreur) {
+    console.error('Erreur connexion :', erreur)
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Impossible de contacter le serveur. Réessayez.'
+  }
+
+  boutonEnvoi.disabled = false
+  boutonEnvoi.textContent = texteOriginal
+}
+
+
 /* Affiche un message sous les cartes de formation de l'espace client */
 function afficherMessageFormation(typeOffre) {
   const zoneMessage = document.getElementById('message-formation-' + typeOffre)
@@ -189,6 +351,21 @@ function afficherMessageFormation(typeOffre) {
 
 /* Initialisation au chargement de la page */
 document.addEventListener('DOMContentLoaded', function() {
+
+  /* Mise à jour de la navigation selon l'état de connexion (toutes pages) */
+  majNavigation()
+
+  /* Formulaire de connexion — présent uniquement sur connexion.html */
+  const formulaireConnexion = document.getElementById('formulaire-connexion')
+  if (formulaireConnexion) {
+    formulaireConnexion.addEventListener('submit', envoyerConnexion)
+  }
+
+  /* Formulaire de création de compte — présent sur inscription-compte.html */
+  const formulaireCompte = document.getElementById('formulaire-inscription-compte')
+  if (formulaireCompte) {
+    formulaireCompte.addEventListener('submit', envoyerCreationCompte)
+  }
 
   /* Formulaire d'inscription — présent uniquement sur formations.html */
   const formulaireInscription = document.getElementById('form-inscription')
