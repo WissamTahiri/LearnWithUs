@@ -1,0 +1,6 @@
+# robots.txt — Autorise tous les robots à indexer le site LearnWithUs
+User-agent: *
+Allow: /
+
+# Référence du sitemap pour faciliter l'indexation
+Sitemap: https://learn-with-us-lac.vercel.app/sitemap.xml
