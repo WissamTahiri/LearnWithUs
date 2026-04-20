@@ -253,9 +253,12 @@ app.post('/api/creer-compte', async function(req, res) {
 
   } catch (erreur) {
     console.error('⚠️  Erreur création compte : ' + erreur.message)
+    console.error(erreur)
     res.status(500).json({
       succes: false,
-      message: 'Erreur serveur lors de la création du compte'
+      message: 'Erreur serveur lors de la création du compte',
+      detail: erreur.message,
+      code:   erreur.code
     })
   }
 })
