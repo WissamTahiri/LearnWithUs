@@ -335,22 +335,75 @@ async function envoyerConnexion(evenement) {
 }
 
 
-/* Affiche un message sous les cartes de formation de l'espace client */
-function afficherMessageFormation(typeOffre) {
-  const zoneMessage = document.getElementById('message-formation-' + typeOffre)
-  if (!zoneMessage) return
+/* ===== PAGES DE FORMATION ===== */
+/* Gère l'accès au contenu Premium sur les pages formation-*.html
+   - Non connecté : sections Premium floutées + CTA "Créer un compte"
+   - Standard : sections Premium floutées + CTA "Passer Premium"
+   - Premium : tout débloqué */
+function configurerAccesFormation() {
+  const session = lireSession()
+  const estConnecte = !!(session && session.utilisateur)
+  const estPremium  = estConnecte && session.utilisateur.statut === 'Premium'
 
-  if (typeOffre === 'standard') {
-    zoneMessage.textContent =
-      'Les contenus vidéo gratuits seront disponibles très prochainement. ' +
-      'Vous recevrez un email dès leur mise en ligne.'
+  const sectionsPremium = document.querySelectorAll('.contenu-premium')
+  const carteCta        = document.getElementById('cta-premium')
+
+  if (estPremium) {
+    /* Accès complet : on retire le flou et on cache la carte CTA */
+    sectionsPremium.forEach(function(s) { s.classList.remove('contenu-bloque') })
+    if (carteCta) carteCta.style.display = 'none'
   } else {
-    zoneMessage.textContent =
-      'Cet accès est réservé aux abonnés Premium. ' +
-      'Souscrivez à l\'offre Premium ci-dessous pour accéder au contenu complet en HD.'
+    /* Accès restreint : on floute et on adapte le message CTA */
+    sectionsPremium.forEach(function(s) { s.classList.add('contenu-bloque') })
+
+    if (carteCta) {
+      const bouton  = carteCta.querySelector('.bouton-cta')
+      const message = carteCta.querySelector('.message-cta')
+      if (estConnecte) {
+        message.textContent =
+          'Passez à Premium pour débloquer le cours complet, la vidéo de 10 min et le quiz final.'
+        bouton.textContent = 'Passer à Premium'
+        bouton.href = 'espace-client.html'
+      } else {
+        message.textContent =
+          'Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.'
+        bouton.textContent = 'Créer un compte'
+        bouton.href = 'inscription-compte.html'
+      }
+    }
+  }
+}
+
+/* Valide le quiz d'une page formation et affiche le score.
+   - formationId : identifiant court (ia, scrum, sap) pour stocker le score
+   - bonnesReponses : objet { q1: 'b', q2: 'a', ... } */
+function validerQuiz(formationId, bonnesReponses) {
+  let score = 0
+  const total = Object.keys(bonnesReponses).length
+
+  for (const nomQuestion in bonnesReponses) {
+    const choix = document.querySelector('input[name="' + nomQuestion + '"]:checked')
+    if (choix && choix.value === bonnesReponses[nomQuestion]) {
+      score++
+    }
   }
 
-  zoneMessage.classList.add('visible')
+  const zoneResultat = document.getElementById('resultat-quiz')
+  const reussi = score >= Math.ceil(total * 0.6)   /* 60% pour réussir */
+
+  zoneResultat.classList.add('visible')
+  zoneResultat.classList.toggle('succes', reussi)
+  zoneResultat.classList.toggle('echec', !reussi)
+  zoneResultat.textContent =
+    (reussi ? '✅ Bravo ! ' : '❌ Continuez à apprendre ! ') +
+    'Votre score : ' + score + '/' + total
+
+  /* Mémorise le meilleur score localement pour l'afficher dans l'espace client */
+  const cleScore = 'score-' + formationId
+  const scorePrecedent = parseInt(localStorage.getItem(cleScore) || '0', 10)
+  if (score > scorePrecedent) {
+    localStorage.setItem(cleScore, score)
+  }
 }
 
 
@@ -359,6 +412,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* Mise à jour de la navigation selon l'état de connexion (toutes pages) */
   majNavigation()
+
+  /* Pages formation-*.html : configure l'accès au contenu Premium */
+  if (document.querySelector('.contenu-premium')) {
+    configurerAccesFormation()
+  }
 
   /* Formulaire de connexion — présent uniquement sur connexion.html */
   const formulaireConnexion = document.getElementById('formulaire-connexion')

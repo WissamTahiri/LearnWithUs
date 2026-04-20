@@ -424,20 +424,6 @@ textarea {
   font-size: 0.95rem;
 }
 
-.message-info {
-  background-color: var(--couleur-principale-clair);
-  color: var(--couleur-principale);
-  padding: 14px 20px;
-  border-radius: var(--rayon-bouton);
-  margin-top: 20px;
-  font-size: 0.95rem;
-  text-align: center;
-  display: none;
-}
-
-.message-info.visible {
-  display: block;
-}
 
 
 /* ===== FICHES FORMATIONS ===== */
@@ -489,6 +475,14 @@ textarea {
   background-color: var(--couleur-principale-clair);
   color: var(--couleur-titre);
   font-weight: 600;
+}
+
+/* Groupe de 2 boutons côte à côte sous chaque fiche formation */
+.fiche-boutons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
 }
 
 
@@ -725,6 +719,252 @@ textarea {
   font-size: 0.95rem;
   color: var(--couleur-texte);
 }
+
+/* ===== PAGES DE FORMATION ===== */
+/* Layout commun aux 3 pages formation-*.html */
+
+/* En-tête de chaque page formation : bandeau titre + description */
+.formation-hero {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.formation-hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.formation-hero p {
+  font-size: 1.05rem;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
+/* Conteneur principal du cours (intro + sections premium) */
+.formation-contenu {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Bloc de cours (intro ou section premium) */
+.formation-bloc {
+  background-color: var(--couleur-blanc);
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+  padding: 36px;
+  margin-bottom: 30px;
+}
+
+.formation-bloc h2 {
+  color: var(--couleur-principale);
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.formation-bloc h3 {
+  color: var(--couleur-titre);
+  font-size: 1.15rem;
+  margin: 24px 0 10px;
+}
+
+.formation-bloc p {
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.formation-bloc ul {
+  list-style: disc;
+  padding-left: 24px;
+  margin-bottom: 14px;
+}
+
+.formation-bloc ul li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+/* Badge de statut de section (Gratuit / Premium) */
+.badge-section {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.badge-section.gratuit {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.badge-section.premium {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
+/* Section Premium verrouillée : flou + overlay avec CTA */
+.contenu-bloque {
+  position: relative;
+  max-height: 280px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contenu-bloque::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 80%);
+  pointer-events: none;
+}
+
+.contenu-bloque > *:not(.badge-section) {
+  filter: blur(3px);
+  opacity: 0.6;
+}
+
+/* Carte d'appel à l'action (créer compte / passer Premium) */
+.cta-premium {
+  background: linear-gradient(135deg, var(--couleur-principale) 0%, var(--couleur-principale-hover) 100%);
+  color: var(--couleur-blanc);
+  border-radius: var(--rayon-carte);
+  padding: 36px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.cta-premium .icone-cadenas {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.cta-premium h3 {
+  color: var(--couleur-blanc);
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.cta-premium p {
+  opacity: 0.95;
+  margin-bottom: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-premium .bouton-cta {
+  display: inline-block;
+  background-color: var(--couleur-blanc);
+  color: var(--couleur-principale);
+  padding: 12px 28px;
+  border-radius: var(--rayon-bouton);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.cta-premium .bouton-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* Placeholder vidéo (la vidéo réelle sera tournée plus tard) */
+.video-placeholder {
+  background-color: #111111;
+  color: #AAAAAA;
+  border-radius: var(--rayon-carte);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.video-placeholder-icone {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.video-placeholder p {
+  font-size: 0.95rem;
+}
+
+/* Bloc quiz : questions avec choix multiples */
+.quiz-question {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.quiz-question:last-of-type {
+  border-bottom: none;
+}
+
+.quiz-question p {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--couleur-titre);
+}
+
+.quiz-reponses {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quiz-reponses label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-bouton);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  font-weight: 400;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.quiz-reponses label:hover {
+  background-color: var(--couleur-principale-clair);
+  border-color: var(--couleur-principale);
+}
+
+.quiz-reponses input[type="radio"] {
+  accent-color: var(--couleur-principale);
+}
+
+/* Affichage du résultat après validation */
+.resultat-quiz {
+  margin-top: 20px;
+  padding: 18px 24px;
+  border-radius: var(--rayon-bouton);
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: none;
+}
+
+.resultat-quiz.visible {
+  display: block;
+}
+
+.resultat-quiz.succes {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.resultat-quiz.echec {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
 
 /* Section "Chiffres clés" sur la page d'accueil */
 .chiffres-cles {

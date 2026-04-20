@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<!--
+  formation-sap.html — Page du cours "SAP — Gestion d'entreprise"
+  ============================================================
+  Même structure que les 2 autres pages formation-*.html :
+  intro gratuite + cours / vidéo / quiz réservés Premium.
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Formation SAP : naviguez dans l'ERP leader mondial et maîtrisez les modules FI, MM et SD.">
+  <meta name="author" content="LearnWithUs">
+  <title>Formation SAP — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html" class="actif">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <section class="formation-hero">
+    <h1>💼 SAP — Gestion d'entreprise</h1>
+    <p>Naviguez dans SAP avec confiance. Modules FI, MM et SD expliqués clairement pour comprendre comment les grandes entreprises gèrent leur activité.</p>
+  </section>
+
+
+  <main class="formation-contenu">
+
+    <!-- ========== INTRO (gratuit) ========== -->
+    <div class="formation-bloc">
+      <span class="badge-section gratuit">📖 INTRO GRATUITE</span>
+      <h2>SAP : le leader mondial des ERP</h2>
+
+      <p>Un <strong>ERP</strong> (Enterprise Resource Planning, "progiciel de gestion intégré" en français) est un logiciel qui centralise la gestion de toutes les fonctions d'une entreprise : finance, achats, ventes, stocks, ressources humaines, production. Au lieu d'avoir un logiciel par métier, l'ERP offre une vision unifiée de l'activité en temps réel.</p>
+
+      <p><strong>SAP</strong> est l'ERP le plus utilisé au monde. Fondée en 1972 en Allemagne par cinq anciens ingénieurs d'IBM, l'entreprise équipe aujourd'hui plus de 400 000 clients dans 180 pays, dont 92 % des entreprises du classement Forbes Global 2000.</p>
+
+      <h3>Pourquoi apprendre SAP ?</h3>
+      <ul>
+        <li><strong>Un marché de l'emploi porteur</strong> : les consultants SAP sont parmi les profils IT les plus recherchés, avec des salaires attractifs.</li>
+        <li><strong>Un standard mondial</strong> : comprendre SAP, c'est comprendre comment fonctionnent les grandes organisations.</li>
+        <li><strong>Une montée en compétences progressive</strong> : on peut commencer par les bases (navigation, un module métier) avant de se spécialiser.</li>
+      </ul>
+
+      <h3>Les grandes familles de modules</h3>
+      <p>SAP est découpé en modules correspondant chacun à un métier. Les plus connus :</p>
+      <ul>
+        <li><strong>FI</strong> (Financial Accounting) : comptabilité générale.</li>
+        <li><strong>CO</strong> (Controlling) : contrôle de gestion.</li>
+        <li><strong>MM</strong> (Materials Management) : achats et gestion des stocks.</li>
+        <li><strong>SD</strong> (Sales and Distribution) : ventes et expédition.</li>
+        <li><strong>HR</strong> (Human Resources) : ressources humaines.</li>
+        <li><strong>PP</strong> (Production Planning) : planification de la production.</li>
+      </ul>
+
+      <p>Dans cette formation, nous couvrons les trois modules les plus fréquemment rencontrés : <strong>FI, MM et SD</strong>.</p>
+
+      <p><em>Pour accéder au cours complet, à la vidéo et au quiz final, passez à l'offre Premium.</em></p>
+    </div>
+
+
+    <!-- ========== CTA PREMIUM ========== -->
+    <div class="cta-premium" id="cta-premium">
+      <div class="icone-cadenas">🔒</div>
+      <h3>Contenu réservé aux abonnés Premium</h3>
+      <p class="message-cta">Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.</p>
+      <a href="inscription-compte.html" class="bouton-cta">Créer un compte</a>
+    </div>
+
+
+    <!-- ========== COURS COMPLET ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">⭐ COURS COMPLET PREMIUM</span>
+      <h2>Naviguer dans SAP et comprendre ses modules clés</h2>
+
+      <h3>1. Se connecter et naviguer dans SAP GUI</h3>
+      <p>SAP GUI est l'interface graphique historique pour accéder à SAP. La connexion se fait via un client local qui pointe vers un serveur d'entreprise. Chaque écran ou fonction est identifié par un code transaction appelé <strong>T-Code</strong> (ex : FB01 pour saisir une écriture comptable, ME21N pour créer une commande d'achat). Connaître les T-Codes est essentiel : ils permettent d'accéder directement à une fonction sans passer par le menu.</p>
+
+      <h3>2. Module FI : la comptabilité</h3>
+      <p>Le module <strong>FI</strong> gère la comptabilité générale, les comptes clients, les comptes fournisseurs, et les immobilisations. Il produit les états financiers officiels : bilan, compte de résultat, grand livre. Chaque écriture comptable est enregistrée dans un <strong>document</strong> qui suit le principe de partie double (débit = crédit). Les T-Codes phares : FB01 (saisie), FBL1N (extraction comptes fournisseurs), F-53 (paiement).</p>
+
+      <h3>3. Module MM : les achats et les stocks</h3>
+      <p>Le module <strong>MM</strong> couvre tout le cycle d'achat (Procure to Pay / P2P) :</p>
+      <ul>
+        <li>Demande d'achat (besoin exprimé par un service).</li>
+        <li>Commande d'achat (envoyée au fournisseur).</li>
+        <li>Réception de marchandises (entrée en stock).</li>
+        <li>Réception facture (contrôle à 3 voies : commande / réception / facture).</li>
+        <li>Paiement (déclenché côté FI).</li>
+      </ul>
+
+      <h3>4. Module SD : les ventes</h3>
+      <p>Le module <strong>SD</strong> couvre tout le cycle de vente (Order to Cash / O2C) :</p>
+      <ul>
+        <li>Devis envoyé au client.</li>
+        <li>Commande de vente validée.</li>
+        <li>Livraison (sortie de stock).</li>
+        <li>Facturation client.</li>
+        <li>Encaissement (déclenché côté FI).</li>
+      </ul>
+
+      <h3>5. Intégration entre modules</h3>
+      <p>La grande force de SAP est l'intégration. Une commande de vente dans SD génère automatiquement un mouvement de stock dans MM et une facture dans FI. Cette cohérence évite les ressaisies et garantit la fiabilité des données.</p>
+
+      <h3>6. S/4HANA, la nouvelle génération</h3>
+      <p>Depuis 2015, SAP déploie <strong>S/4HANA</strong>, sa nouvelle plateforme basée sur la base de données in-memory HANA (bien plus rapide) et une nouvelle interface web moderne appelée <strong>Fiori</strong>. Toutes les entreprises doivent migrer de l'ancienne version (ECC) vers S/4HANA d'ici 2030, ce qui génère un marché de migration considérable.</p>
+    </div>
+
+
+    <!-- ========== VIDÉO 10 MIN ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">🎥 VIDÉO PREMIUM — 10 MIN</span>
+      <h2>Synthèse vidéo du cours</h2>
+      <div class="video-placeholder">
+        <div class="video-placeholder-icone">🎬</div>
+        <p>Vidéo de 10 minutes — à intégrer ici une fois tournée par l'équipe</p>
+      </div>
+    </div>
+
+
+    <!-- ========== QUIZ FINAL ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">📝 QUIZ FINAL PREMIUM</span>
+      <h2>Testez vos connaissances</h2>
+      <p>5 questions pour valider votre formation. Il faut au moins 60 % (3/5) pour réussir.</p>
+
+      <form id="quiz-formation" onsubmit="event.preventDefault(); validerQuiz('sap', BONNES_REPONSES_SAP);">
+
+        <div class="quiz-question">
+          <p>1. Que signifie l'acronyme "ERP" ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q1" value="a"> Electronic Recording Process</label>
+            <label><input type="radio" name="q1" value="b"> Enterprise Resource Planning</label>
+            <label><input type="radio" name="q1" value="c"> European Reporting Platform</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>2. Quel module SAP gère la comptabilité générale ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q2" value="a"> MM</label>
+            <label><input type="radio" name="q2" value="b"> FI</label>
+            <label><input type="radio" name="q2" value="c"> SD</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>3. Que signifie "MM" dans SAP ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q3" value="a"> Money Management</label>
+            <label><input type="radio" name="q3" value="b"> Materials Management</label>
+            <label><input type="radio" name="q3" value="c"> Monthly Maintenance</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>4. Le cycle "Order to Cash" (O2C) est géré principalement par quel module ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q4" value="a"> FI</label>
+            <label><input type="radio" name="q4" value="b"> MM</label>
+            <label><input type="radio" name="q4" value="c"> SD</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>5. Quel est le nom de la nouvelle génération de la plateforme SAP ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q5" value="a"> S/4HANA</label>
+            <label><input type="radio" name="q5" value="b"> SAP R/3</label>
+            <label><input type="radio" name="q5" value="c"> SAP Cloud</label>
+          </div>
+        </div>
+
+        <button type="submit" class="bouton-principal">Valider mes réponses</button>
+      </form>
+
+      <div id="resultat-quiz" class="resultat-quiz"></div>
+    </div>
+
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script>
+    const BONNES_REPONSES_SAP = { q1: 'b', q2: 'b', q3: 'b', q4: 'c', q5: 'a' }
+  </script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

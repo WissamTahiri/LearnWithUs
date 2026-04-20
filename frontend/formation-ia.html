@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--
+  formation-ia.html — Page du cours "Intelligence Artificielle"
+  ============================================================
+  Structure : intro (gratuit, toujours visible) + cours complet,
+  vidéo et quiz final (Premium, débloqués via JS selon la session).
+  L'accès est géré par configurerAccesFormation() dans main.js.
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Formation Intelligence Artificielle : comprenez l'IA, maîtrisez le prompt engineering et apprenez à automatiser votre travail.">
+  <meta name="author" content="LearnWithUs">
+  <title>Formation IA — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Navigation commune -->
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html" class="actif">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- Bandeau de titre de la formation -->
+  <section class="formation-hero">
+    <h1>🤖 Intelligence Artificielle</h1>
+    <p>Comprenez l'IA, maîtrisez le prompt engineering et apprenez à automatiser votre travail avec les outils d'IA générative.</p>
+  </section>
+
+
+  <main class="formation-contenu">
+
+    <!-- ========== INTRO (gratuit) ========== -->
+    <div class="formation-bloc">
+      <span class="badge-section gratuit">📖 INTRO GRATUITE</span>
+      <h2>Qu'est-ce que l'Intelligence Artificielle ?</h2>
+
+      <p>L'Intelligence Artificielle (IA) désigne un ensemble de techniques permettant à une machine d'effectuer des tâches qui, traditionnellement, exigeaient l'intelligence humaine : reconnaître un visage, comprendre une phrase, conduire une voiture, ou écrire un texte cohérent.</p>
+
+      <p>L'IA n'est pas une invention récente : les premières recherches remontent aux <strong>années 1950</strong>, avec des pionniers comme Alan Turing. Cependant, trois révolutions ont bouleversé le domaine ces quinze dernières années :</p>
+
+      <ul>
+        <li><strong>L'explosion des données</strong> : internet, smartphones et capteurs génèrent des quantités massives d'informations à exploiter.</li>
+        <li><strong>La puissance de calcul</strong> : les GPU et le cloud permettent d'entraîner des modèles très complexes.</li>
+        <li><strong>De nouveaux algorithmes</strong> : les réseaux de neurones profonds (Deep Learning) ont atteint des performances jamais vues.</li>
+      </ul>
+
+      <h3>L'IA est déjà partout autour de vous</h3>
+      <p>Quand Netflix vous recommande une série, quand votre GPS recalcule l'itinéraire, quand votre téléphone reconnaît votre visage ou votre voix, quand vous utilisez ChatGPT pour rédiger un email : vous utilisez de l'IA. L'objectif de cette formation est de démystifier ces technologies et de vous rendre autonome pour les utiliser dans votre vie professionnelle.</p>
+
+      <p><em>Pour accéder au cours complet, à la vidéo et au quiz final, passez à l'offre Premium.</em></p>
+    </div>
+
+
+    <!-- ========== CTA PREMIUM (affiché si Standard/non connecté) ========== -->
+    <div class="cta-premium" id="cta-premium">
+      <div class="icone-cadenas">🔒</div>
+      <h3>Contenu réservé aux abonnés Premium</h3>
+      <p class="message-cta">Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.</p>
+      <a href="inscription-compte.html" class="bouton-cta">Créer un compte</a>
+    </div>
+
+
+    <!-- ========== COURS COMPLET (Premium) ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">⭐ COURS COMPLET PREMIUM</span>
+      <h2>Comprendre les grandes familles d'IA</h2>
+
+      <h3>1. Machine Learning : apprendre à partir de données</h3>
+      <p>Le Machine Learning (apprentissage automatique) est la branche la plus utilisée de l'IA. Le principe : au lieu de programmer des règles, on montre à la machine des milliers d'exemples et elle en déduit un modèle. On distingue trois grandes familles :</p>
+      <ul>
+        <li><strong>Apprentissage supervisé</strong> : on fournit des données étiquetées (par exemple, des emails marqués "spam" ou "pas spam"). Le modèle apprend à reproduire la classification.</li>
+        <li><strong>Apprentissage non supervisé</strong> : les données ne sont pas étiquetées. Le modèle trouve lui-même des regroupements (clustering de clients par exemple).</li>
+        <li><strong>Apprentissage par renforcement</strong> : le modèle apprend par essais-erreurs en recevant des récompenses (jeux vidéo, robotique).</li>
+      </ul>
+
+      <h3>2. Deep Learning et réseaux de neurones</h3>
+      <p>Le Deep Learning est un sous-ensemble du Machine Learning utilisant des <strong>réseaux de neurones artificiels</strong> à plusieurs couches. Inspiré du cerveau humain, chaque neurone reçoit des signaux, les pondère, et transmet un résultat. En empilant des dizaines ou des centaines de couches, on obtient des modèles capables de reconnaître des images, de traduire des langues ou de générer du texte.</p>
+
+      <h3>3. L'IA générative : ChatGPT, Claude, Midjourney</h3>
+      <p>L'IA générative est la catégorie qui a fait exploser le grand public depuis 2022. Ces modèles (appelés "LLM" pour Large Language Models) sont entraînés sur des milliards de textes et peuvent générer du contenu cohérent à partir d'une simple instruction, appelée <strong>prompt</strong>.</p>
+
+      <h3>4. Maîtriser le prompt engineering</h3>
+      <p>Bien rédiger un prompt est devenu une compétence clé. Quelques règles simples :</p>
+      <ul>
+        <li><strong>Soyez précis</strong> : indiquez le contexte, le public cible et le format attendu.</li>
+        <li><strong>Donnez un rôle</strong> : "Tu es un expert en marketing B2B…" oriente la réponse.</li>
+        <li><strong>Découpez les tâches complexes</strong> : demandez une étape à la fois.</li>
+        <li><strong>Fournissez des exemples</strong> : quelques exemples valent mieux qu'une longue explication.</li>
+      </ul>
+
+      <h3>5. Automatiser son quotidien professionnel</h3>
+      <p>Une fois ces bases acquises, vous pouvez automatiser : rédaction de comptes-rendus de réunion, synthèse de documents longs, traduction, génération de code, brainstorming d'idées, réponse à des emails courants. Le gain de productivité est souvent de 30 à 50 % sur les tâches administratives.</p>
+
+      <h3>6. Éthique, biais et limites</h3>
+      <p>Une IA n'est jamais neutre : elle reflète les biais des données qui l'ont entraînée. Elle peut "halluciner" (inventer des faits), compromettre la vie privée, ou menacer certains emplois. Utilisez toujours un regard critique et vérifiez les informations importantes.</p>
+    </div>
+
+
+    <!-- ========== VIDÉO 10 MIN (Premium) ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">🎥 VIDÉO PREMIUM — 10 MIN</span>
+      <h2>Synthèse vidéo du cours</h2>
+      <div class="video-placeholder">
+        <div class="video-placeholder-icone">🎬</div>
+        <p>Vidéo de 10 minutes — à intégrer ici une fois tournée par l'équipe</p>
+      </div>
+    </div>
+
+
+    <!-- ========== QUIZ FINAL (Premium) ========== -->
+    <div class="formation-bloc contenu-premium">
+      <span class="badge-section premium">📝 QUIZ FINAL PREMIUM</span>
+      <h2>Testez vos connaissances</h2>
+      <p>5 questions pour valider votre formation. Il faut au moins 60 % (3/5) pour réussir.</p>
+
+      <form id="quiz-formation" onsubmit="event.preventDefault(); validerQuiz('ia', BONNES_REPONSES_IA);">
+
+        <div class="quiz-question">
+          <p>1. Que signifie l'acronyme "IA" en français ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q1" value="a"> Information Automatique</label>
+            <label><input type="radio" name="q1" value="b"> Intelligence Artificielle</label>
+            <label><input type="radio" name="q1" value="c"> Intégration Algorithmique</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>2. Quelle est la différence entre Machine Learning et Deep Learning ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q2" value="a"> Ce sont deux noms pour la même chose</label>
+            <label><input type="radio" name="q2" value="b"> Le Deep Learning est un sous-ensemble du Machine Learning qui utilise des réseaux de neurones profonds</label>
+            <label><input type="radio" name="q2" value="c"> Le Deep Learning ne nécessite pas de données</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>3. Qu'est-ce qu'un "prompt" ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q3" value="a"> Un bug dans le modèle</label>
+            <label><input type="radio" name="q3" value="b"> L'instruction que l'on donne à une IA générative pour obtenir un résultat</label>
+            <label><input type="radio" name="q3" value="c"> Le fichier de configuration du modèle</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>4. Quel type d'apprentissage utilise des données étiquetées ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q4" value="a"> L'apprentissage supervisé</label>
+            <label><input type="radio" name="q4" value="b"> L'apprentissage non supervisé</label>
+            <label><input type="radio" name="q4" value="c"> L'apprentissage par renforcement</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>5. Pourquoi une IA peut-elle produire des résultats biaisés ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q5" value="a"> Parce que les ordinateurs sont aléatoires</label>
+            <label><input type="radio" name="q5" value="b"> Parce qu'elle reflète les biais présents dans les données d'entraînement</label>
+            <label><input type="radio" name="q5" value="c"> Parce qu'elle cherche à tromper l'utilisateur</label>
+          </div>
+        </div>
+
+        <button type="submit" class="bouton-principal">Valider mes réponses</button>
+      </form>
+
+      <div id="resultat-quiz" class="resultat-quiz"></div>
+    </div>
+
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <!-- Bonnes réponses du quiz — lu par validerQuiz() dans main.js -->
+  <script>
+    const BONNES_REPONSES_IA = { q1: 'b', q2: 'b', q3: 'b', q4: 'a', q5: 'b' }
+  </script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
