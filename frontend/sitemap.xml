@@ -15,6 +15,24 @@
   </url>
 
   <url>
+    <loc>https://learn-with-us-lac.vercel.app/formation-ia.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://learn-with-us-lac.vercel.app/formation-scrum.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://learn-with-us-lac.vercel.app/formation-sap.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://learn-with-us-lac.vercel.app/espace-client.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
