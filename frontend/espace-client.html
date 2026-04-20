@@ -5,7 +5,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Accédez à votre espace client LearnWithUs pour suivre vos formations Standard ou Premium en Intelligence Artificielle, SCRUM et SAP.">
+  <meta name="author" content="LearnWithUs">
   <title>Mon Espace Client — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -60,7 +63,7 @@
           <h3>Intelligence Artificielle</h3>
           <p>Découvrez les bases de l'IA et du prompt engineering avec nos modules d'introduction gratuits.</p>
           <p class="carte-info">Contenu limité — version d'introduction</p>
-          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
+          <button class="bouton-secondaire" onclick="afficherMessageFormation('standard')">Accéder</button>
         </div>
 
         <div class="carte">
@@ -68,7 +71,7 @@
           <h3>Agilité &amp; SCRUM</h3>
           <p>Initiez-vous à la méthode agile et au framework SCRUM avec nos modules gratuits.</p>
           <p class="carte-info">Contenu limité — version d'introduction</p>
-          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
+          <button class="bouton-secondaire" onclick="afficherMessageFormation('standard')">Accéder</button>
         </div>
 
         <div class="carte">
@@ -76,10 +79,12 @@
           <h3>SAP — Gestion d'entreprise</h3>
           <p>Apprenez les fondamentaux de SAP et des ERP avec nos modules d'introduction.</p>
           <p class="carte-info">Contenu limité — version d'introduction</p>
-          <button class="bouton-secondaire" onclick="alert('Contenu vidéo bientôt disponible !')">Accéder</button>
+          <button class="bouton-secondaire" onclick="afficherMessageFormation('standard')">Accéder</button>
         </div>
 
       </div>
+
+      <div id="message-formation-standard" class="message-info"></div>
     </div>
 
 
@@ -101,7 +106,7 @@
           <h3>Intelligence Artificielle <span class="badge-hd">HD</span></h3>
           <p>Formation complète : 10h de vidéo HD, exercices pratiques et certificat de complétion.</p>
           <span class="badge-premium">Contenu complet</span><br><br>
-          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
+          <button class="bouton-principal" onclick="afficherMessageFormation('premium')">Accéder en HD</button>
         </div>
 
         <div class="carte">
@@ -109,7 +114,7 @@
           <h3>Agilité &amp; SCRUM <span class="badge-hd">HD</span></h3>
           <p>Formation complète : 10h de vidéo HD, mises en situation et certificat de complétion.</p>
           <span class="badge-premium">Contenu complet</span><br><br>
-          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
+          <button class="bouton-principal" onclick="afficherMessageFormation('premium')">Accéder en HD</button>
         </div>
 
         <div class="carte">
@@ -117,10 +122,12 @@
           <h3>SAP — Gestion d'entreprise <span class="badge-hd">HD</span></h3>
           <p>Formation complète : 10h de vidéo HD, cas pratiques SAP et certificat de complétion.</p>
           <span class="badge-premium">Contenu complet</span><br><br>
-          <button class="bouton-principal" onclick="alert('Contenu disponible après souscription Premium')">Accéder en HD</button>
+          <button class="bouton-principal" onclick="afficherMessageFormation('premium')">Accéder en HD</button>
         </div>
 
       </div>
+
+      <div id="message-formation-premium" class="message-info"></div>
 
 
       <!-- Section d'appel à l'action pour passer à Premium -->

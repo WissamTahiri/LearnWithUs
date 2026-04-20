@@ -168,6 +168,25 @@ function afficherMessageAbonnement() {
 }
 
 
+/* Affiche un message sous les cartes de formation de l'espace client */
+function afficherMessageFormation(typeOffre) {
+  const zoneMessage = document.getElementById('message-formation-' + typeOffre)
+  if (!zoneMessage) return
+
+  if (typeOffre === 'standard') {
+    zoneMessage.textContent =
+      'Les contenus vidéo gratuits seront disponibles très prochainement. ' +
+      'Vous recevrez un email dès leur mise en ligne.'
+  } else {
+    zoneMessage.textContent =
+      'Cet accès est réservé aux abonnés Premium. ' +
+      'Souscrivez à l\'offre Premium ci-dessous pour accéder au contenu complet en HD.'
+  }
+
+  zoneMessage.classList.add('visible')
+}
+
+
 /* Initialisation au chargement de la page */
 document.addEventListener('DOMContentLoaded', function() {
 
