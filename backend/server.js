@@ -12,8 +12,11 @@ dotenv.config()
 
 /* Client Notion initialisé avec le token d'intégration */
 const notion = new Client({ auth: process.env.NOTION_TOKEN })
-const NOTION_DATABASE_ID          = process.env.NOTION_DATABASE_ID
-const NOTION_DATABASE_COMPTES_ID  = process.env.NOTION_DATABASE_COMPTES_ID
+const NOTION_DATABASE_ID           = process.env.NOTION_DATABASE_ID
+const NOTION_DATABASE_COMPTES_ID   = process.env.NOTION_DATABASE_COMPTES_ID
+/* Data source ID de la base "Comptes LearnWithUs" — requis pour les
+   requêtes (notion.dataSources.query dans le SDK @notionhq/client v5+) */
+const NOTION_DS_COMPTES_ID         = process.env.NOTION_DS_COMPTES_ID
 /* Secret utilisé pour signer les jetons JWT (à définir en prod via Render) */
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-a-remplacer-en-prod'
 
@@ -145,10 +148,12 @@ app.post('/api/contact', async function(req, res) {
 
 /* ===== UTILITAIRES COMPTES ===== */
 /* Cherche un compte dans la base Notion "Comptes LearnWithUs" par son email.
+   Utilise dataSources.query (API Notion 2025-09-03) car databases.query
+   a été supprimée dans @notionhq/client v5+.
    Retourne la page Notion trouvée ou null si aucun compte ne correspond. */
 async function chercherCompteParEmail(email) {
-  const reponse = await notion.databases.query({
-    database_id: NOTION_DATABASE_COMPTES_ID,
+  const reponse = await notion.dataSources.query({
+    data_source_id: NOTION_DS_COMPTES_ID,
     filter: {
       property: 'Email',
       title: { equals: email }
@@ -206,7 +211,7 @@ app.post('/api/creer-compte', async function(req, res) {
     })
   }
 
-  if (!NOTION_DATABASE_COMPTES_ID || !process.env.NOTION_TOKEN) {
+  if (!NOTION_DATABASE_COMPTES_ID || !NOTION_DS_COMPTES_ID || !process.env.NOTION_TOKEN) {
     return res.status(500).json({
       succes: false,
       message: 'Base de comptes non configurée sur le serveur'
