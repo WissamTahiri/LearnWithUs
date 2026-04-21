@@ -939,6 +939,19 @@ textarea {
   color: var(--couleur-blanc);
 }
 
+/* Bouton grisé quand la ressource n'est pas encore disponible
+   (ex : PDF à déposer par l'équipe) */
+.liste-ressources .ressource-lien-desactive {
+  font-weight: 600;
+  color: var(--couleur-texte-secondaire);
+  white-space: nowrap;
+  padding: 8px 14px;
+  border: 1px dashed var(--couleur-bordure);
+  border-radius: var(--rayon-bouton);
+  font-size: 0.85rem;
+  background-color: #F5F5F5;
+}
+
 
 /* Placeholder vidéo (la vidéo réelle sera tournée plus tard) */
 .video-placeholder {

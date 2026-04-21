@@ -74,49 +74,58 @@
     </div>
 
 
-    <!-- ========== COURS COMPLET (Premium) — orienté pratique ========== -->
+    <!-- ========== COURS COMPLET (Premium) — cours théorique + actualités ========== -->
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">⭐ COURS COMPLET PREMIUM</span>
-      <h2>Maîtriser l'IA générative : 5 cas pratiques pour automatiser votre travail</h2>
+      <h2>Intelligence Artificielle : le cours complet</h2>
 
-      <p><em>La vidéo et les slides qui accompagnent cette formation couvrent les concepts : Machine Learning, Deep Learning, IA générative, bases du prompt engineering. Cette partie écrite va plus loin : 5 cas d'usage concrets que vous pourrez reproduire immédiatement dans votre quotidien.</em></p>
+      <p><em>Cette partie écrite approfondit les concepts présentés dans la vidéo et les slides. Vous y trouverez les fondations théoriques, les grandes familles d'IA, le détail du fonctionnement des modèles génératifs, et une section "Actualités" sur ce qui bouge en ce moment dans le domaine.</em></p>
 
-      <h3>Cas 1 — Résumer une réunion d'1 h en 5 minutes</h3>
-      <p>Activez la transcription automatique de votre réunion (Teams, Meet, Zoom proposent cette fonction). À la fin, copiez le texte obtenu et utilisez ce prompt dans ChatGPT ou Claude :</p>
-      <p><em>"Tu es un assistant pro. Voici la transcription d'une réunion. Rédige un compte-rendu structuré avec : 1) les décisions prises, 2) les actions à mener (qui fait quoi, pour quand), 3) les sujets reportés. Reste factuel, pas d'interprétation. [Coller la transcription]"</em></p>
-      <p>Gain de temps constaté : 30 à 45 minutes par réunion, avec une meilleure traçabilité.</p>
+      <h3>1. D'où vient l'Intelligence Artificielle ?</h3>
+      <p>L'idée de machines capables de "penser" est aussi vieille que l'informatique. En <strong>1950</strong>, Alan Turing publie son célèbre article <em>Computing Machinery and Intelligence</em> et propose le test qui porte son nom. En <strong>1956</strong>, la conférence de Dartmouth réunit les pionniers du domaine et donne officiellement naissance au terme "Artificial Intelligence".</p>
+      <p>S'ensuivent plusieurs décennies d'enthousiasme puis de déceptions — les fameux <em>"hivers de l'IA"</em>. La vraie révolution arrive autour de 2012 avec la victoire du réseau de neurones AlexNet à la compétition ImageNet, qui prouve la supériorité du Deep Learning sur les approches traditionnelles. Depuis, le domaine progresse à un rythme effréné.</p>
 
-      <h3>Cas 2 — Rédiger ses emails pros en 30 secondes</h3>
-      <p>Utilisez un template mental simple : <strong>contexte + objectif + ton</strong>. Par exemple : <em>"Rédige un email en français, ton cordial et direct, pour remercier un prospect après un rendez-vous commercial, et proposer un créneau la semaine prochaine pour une démo produit. Maximum 80 mots."</em></p>
-      <p>Astuce : sauvegardez vos meilleurs prompts dans un document. Au bout de 2 semaines, vous aurez une bibliothèque personnelle qui accélère toute votre rédaction.</p>
-
-      <h3>Cas 3 — Faire une analyse SWOT de concurrence en 10 minutes</h3>
-      <p>Rassemblez quelques infos publiques sur un concurrent (site web, dernier communiqué, quelques avis clients). Puis demandez :</p>
-      <p><em>"Tu es un analyste business. À partir de ces éléments sur l'entreprise [nom], produis une matrice SWOT (Forces, Faiblesses, Opportunités, Menaces). Pour chaque case, 3 points maximum, un par ligne. Reste factuel et cite uniquement ce que tu peux déduire des infos fournies."</em></p>
-      <p>Vous obtenez une première structure d'analyse en 30 secondes, qu'il ne vous reste qu'à enrichir avec votre propre connaissance terrain.</p>
-
-      <h3>Cas 4 — Générer des visuels pour une présentation</h3>
-      <p>Pour illustrer une slide, évitez les images stock fades. Un bon prompt Midjourney ou DALL-E suit ce schéma : <strong>[sujet] + [style] + [éclairage/ambiance] + [format]</strong>. Exemple : <em>"Team of diverse people collaborating around a table, flat illustration style, soft warm colors, clean minimalist design, isometric perspective --ar 16:9"</em>.</p>
-      <p>Itérez : une image ne suffit jamais du premier coup. Variez 2-3 paramètres à chaque essai jusqu'à obtenir le visuel cible.</p>
-
-      <h3>Cas 5 — Automatiser son rapport mensuel</h3>
-      <p>Créez un prompt-template réutilisable chaque mois. Structure type : <em>"Voici mes chiffres du mois : [coller données]. Rédige un rapport mensuel de 1 page avec : 1) synthèse exécutive (3 phrases), 2) analyse des écarts vs objectifs, 3) 3 recommandations concrètes pour le mois suivant. Ton professionnel et orienté action."</em></p>
-
-      <h3>Les 3 pièges à éviter absolument</h3>
+      <h3>2. Machine Learning : comment les machines apprennent</h3>
+      <p>Le Machine Learning (apprentissage automatique) est la branche de l'IA qui permet à un programme d'apprendre à partir de données, sans être explicitement programmé pour chaque cas. On distingue trois grandes familles :</p>
       <ul>
-        <li><strong>Les hallucinations</strong> : l'IA peut inventer des chiffres, des sources, des citations. Toujours vérifier les faits importants avant utilisation.</li>
-        <li><strong>Les données confidentielles</strong> : ne copiez jamais d'informations clients, RH ou stratégiques dans un outil grand public. Utilisez uniquement des versions entreprise avec accord signé.</li>
-        <li><strong>La dépendance aveugle</strong> : gardez votre esprit critique. L'IA est un assistant, pas un décideur.</li>
+        <li><strong>Apprentissage supervisé</strong> : le modèle apprend à partir d'exemples étiquetés. On lui montre 10 000 emails marqués "spam / pas spam", il apprend à classifier les suivants.</li>
+        <li><strong>Apprentissage non supervisé</strong> : les données ne sont pas étiquetées. Le modèle cherche lui-même des regroupements. Utilisé par exemple pour segmenter automatiquement une base clients.</li>
+        <li><strong>Apprentissage par renforcement</strong> : le modèle apprend par essais-erreurs, en recevant des récompenses. C'est comme ça qu'AlphaGo a appris à battre les meilleurs joueurs de Go.</li>
+      </ul>
+      <p>Quel que soit le type d'apprentissage, le processus suit toujours les mêmes étapes : collecte des données, nettoyage, entraînement, validation, test, puis mise en production. La <strong>qualité des données</strong> est le facteur n°1 de réussite : un modèle entraîné sur des données biaisées produira toujours des résultats biaisés.</p>
+
+      <h3>3. Deep Learning : les réseaux de neurones profonds</h3>
+      <p>Le Deep Learning est un sous-ensemble du Machine Learning. Il utilise des <strong>réseaux de neurones artificiels</strong>, inspirés (très librement) du fonctionnement du cerveau humain. Chaque neurone reçoit des signaux d'entrée, les combine, et transmet un résultat au neurone suivant. En empilant des dizaines ou des centaines de couches de neurones, on obtient un réseau "profond" capable de résoudre des problèmes très complexes.</p>
+      <p>Deux architectures dominent aujourd'hui : les <strong>réseaux convolutifs (CNN)</strong> pour le traitement d'images (reconnaissance faciale, détection d'objets), et les <strong>Transformers</strong> pour le traitement du langage (ChatGPT, Claude, Gemini reposent tous dessus). Un Transformer utilise un mécanisme appelé "attention" qui lui permet de comprendre les liens entre les mots d'une phrase, même éloignés.</p>
+
+      <h3>4. L'IA générative : comprendre ChatGPT et ses cousins</h3>
+      <p>L'IA générative est la catégorie qui a explosé auprès du grand public depuis 2022. Les modèles comme ChatGPT, Claude ou Gemini sont appelés <strong>LLM</strong> (<em>Large Language Models</em>, grands modèles de langage). Ils ont été entraînés sur des centaines de milliards de mots extraits d'internet, de livres et d'articles.</p>
+      <p>Leur fonctionnement de base est simple à comprendre : étant donné une séquence de texte, ils prédisent le mot (plus exactement le <em>token</em>) le plus probable qui vient après. Répété des milliers de fois, ce mécanisme donne l'impression de pouvoir "raisonner", "écrire" ou "créer". En réalité, un LLM ne comprend pas au sens humain — il reproduit des patterns statistiques à grande échelle.</p>
+      <p>La <strong>fenêtre de contexte</strong> (quantité de texte que le modèle peut lire en une fois) est un indicateur clé : de 4 000 tokens il y a deux ans, on est passé à 200 000, voire 1 million aujourd'hui. Cela change radicalement les cas d'usage possibles (résumer un livre entier, analyser un code complet, etc.).</p>
+
+      <h3>5. Le prompt engineering : bien dialoguer avec une IA</h3>
+      <p>Le "prompt" est l'instruction que vous donnez au modèle. Mieux il est rédigé, meilleur sera le résultat. Les grandes règles :</p>
+      <ul>
+        <li><strong>Soyez précis</strong> — indiquez le contexte, le public cible, le format attendu, la longueur souhaitée.</li>
+        <li><strong>Donnez un rôle au modèle</strong> — commencer par <em>"Tu es un expert en…"</em> oriente significativement la réponse.</li>
+        <li><strong>Fournissez des exemples</strong> — deux ou trois exemples valent mieux qu'une longue explication.</li>
+        <li><strong>Demandez à raisonner étape par étape</strong> (<em>chain of thought</em>) — la précision augmente sensiblement sur les problèmes complexes.</li>
+        <li><strong>Itérez</strong> — un prompt se travaille. Affinez jusqu'à obtenir exactement ce que vous voulez.</li>
       </ul>
 
-      <h3>Checklist : comment choisir le bon outil IA pour votre tâche</h3>
+      <h3>6. Actualités 2026 — ce qui bouge en ce moment</h3>
+      <p>Le domaine évolue chaque mois. Voici les grandes tendances du moment que tout professionnel devrait connaître :</p>
       <ul>
-        <li>Texte (rédaction, synthèse, analyse) → ChatGPT, Claude, Gemini</li>
-        <li>Images illustratives → Midjourney, DALL-E, Leonardo</li>
-        <li>Recherche sourcée (avec vérifiabilité) → Perplexity, ChatGPT avec browsing</li>
-        <li>Code (génération, debug) → GitHub Copilot, Claude, Cursor</li>
-        <li>Tâches sensibles (RH, juridique, médical) → outils entreprise agréés uniquement</li>
+        <li><strong>Les agents autonomes</strong> — Au-delà de simples chatbots, les modèles récents (Claude agents, OpenAI Operators) peuvent naviguer sur le web, remplir des formulaires ou écrire du code en plusieurs étapes sans intervention humaine. C'est le saut majeur de 2025-2026.</li>
+        <li><strong>Le multimodal de bout en bout</strong> — Les modèles d'aujourd'hui voient, entendent, parlent et comprennent des vidéos. Vous pouvez montrer un schéma à ChatGPT et lui demander de l'expliquer, ou lui parler à l'oral et recevoir une réponse vocale instantanée.</li>
+        <li><strong>L'AI Act européen</strong> — Entré en vigueur progressivement depuis 2024, le règlement européen classe les IA par niveau de risque et impose des obligations strictes sur les modèles à haut impact. Les entreprises qui proposent de l'IA aux citoyens européens doivent s'y conformer.</li>
+        <li><strong>L'open source rattrape son retard</strong> — Des modèles comme Llama (Meta), Mistral (français) ou DeepSeek rivalisent désormais avec les meilleurs modèles fermés, tout en pouvant être déployés sur ses propres serveurs. Une bonne nouvelle pour la souveraineté des données.</li>
+        <li><strong>De nouveaux métiers émergent</strong> — <em>Prompt engineer</em>, <em>AI trainer</em>, <em>responsable éthique IA</em> : les profils hybrides métier + IA sont les plus recherchés en 2026, avec des salaires en forte croissance.</li>
       </ul>
+
+      <h3>7. Limites et éthique</h3>
+      <p>Une IA générative n'est jamais neutre. Elle reflète les biais des données qui l'ont entraînée (sur-représentation de l'anglais, stéréotypes culturels, etc.). Elle peut <strong>halluciner</strong>, c'est-à-dire inventer des faits, des citations ou des sources avec une confiance déconcertante. Elle peut également compromettre la vie privée si on lui transmet des données sensibles, et son empreinte environnementale (énergie, eau de refroidissement) est loin d'être négligeable.</p>
+      <p>La bonne pratique : utilisez l'IA comme un assistant, jamais comme un décideur. Vérifiez systématiquement les informations importantes. Ne transmettez pas de données confidentielles à un outil grand public. Et gardez votre esprit critique intact — c'est ce qui fera la différence entre les utilisateurs passifs et ceux qui en tirent un vrai avantage professionnel.</p>
     </div>
 
 
@@ -135,7 +144,7 @@
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">📝 QUIZ FINAL PREMIUM</span>
       <h2>Testez vos connaissances</h2>
-      <p>5 questions pour valider votre formation. Il faut au moins 60 % (3/5) pour réussir.</p>
+      <p>10 questions pour valider votre formation. Il faut au moins 60 % (6/10) pour réussir. Vous pouvez refaire le quiz autant de fois que vous le souhaitez.</p>
 
       <form id="quiz-formation" onsubmit="event.preventDefault(); validerQuiz('ia', BONNES_REPONSES_IA);">
 
@@ -184,10 +193,60 @@
           </div>
         </div>
 
+        <div class="quiz-question">
+          <p>6. Que signifie l'acronyme "LLM" ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q6" value="a"> Long Learning Machine</label>
+            <label><input type="radio" name="q6" value="b"> Large Language Model</label>
+            <label><input type="radio" name="q6" value="c"> Linear Logic Module</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>7. Quelle architecture de réseau de neurones sert de base aux modèles comme ChatGPT ou Claude ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q7" value="a"> Le réseau convolutif (CNN)</label>
+            <label><input type="radio" name="q7" value="b"> Le Transformer</label>
+            <label><input type="radio" name="q7" value="c"> L'arbre de décision</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>8. Lequel de ces outils est spécialisé dans la génération d'images ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q8" value="a"> Perplexity</label>
+            <label><input type="radio" name="q8" value="b"> Midjourney</label>
+            <label><input type="radio" name="q8" value="c"> GitHub Copilot</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>9. Qu'appelle-t-on "hallucination" en IA générative ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q9" value="a"> Une panne matérielle du serveur</label>
+            <label><input type="radio" name="q9" value="b"> Un texte illisible produit par erreur</label>
+            <label><input type="radio" name="q9" value="c"> Le fait d'inventer un fait, une source ou une citation avec assurance</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>10. Comment s'appelle le règlement européen qui encadre l'Intelligence Artificielle ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q10" value="a"> RGPD</label>
+            <label><input type="radio" name="q10" value="b"> AI Act</label>
+            <label><input type="radio" name="q10" value="c"> DMA</label>
+          </div>
+        </div>
+
         <button type="submit" class="bouton-principal">Valider mes réponses</button>
       </form>
 
       <div id="resultat-quiz" class="resultat-quiz"></div>
+
+      <button type="button" id="bouton-recommencer" class="bouton-secondaire"
+              onclick="reinitialiserQuiz()" style="display: none; margin-top: 16px;">
+        🔄 Recommencer le quiz
+      </button>
     </div>
 
 
@@ -204,8 +263,8 @@
             <div class="ressource-titre">Support de présentation — IA</div>
             <div class="ressource-description">12 slides au format PDF — support visuel de la vidéo</div>
           </div>
-          <!-- TODO : remplacer '#' par 'docs/slides-ia.pdf' une fois le PDF déposé -->
-          <a href="#" class="ressource-lien" download>Télécharger</a>
+          <!-- TODO : remplacer le span ci-dessous par <a href="docs/slides-ia.pdf" class="ressource-lien" download>Télécharger</a> une fois le PDF déposé -->
+          <span class="ressource-lien-desactive">Bientôt disponible</span>
         </li>
       </ul>
     </div>
@@ -224,7 +283,10 @@
 
   <!-- Bonnes réponses du quiz — lu par validerQuiz() dans main.js -->
   <script>
-    const BONNES_REPONSES_IA = { q1: 'b', q2: 'b', q3: 'b', q4: 'a', q5: 'b' }
+    const BONNES_REPONSES_IA = {
+      q1: 'b', q2: 'b', q3: 'b', q4: 'a', q5: 'b',
+      q6: 'b', q7: 'b', q8: 'b', q9: 'c', q10: 'b'
+    }
   </script>
   <script src="js/main.js"></script>
 

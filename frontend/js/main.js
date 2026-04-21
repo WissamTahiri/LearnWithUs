@@ -522,12 +522,43 @@ function validerQuiz(formationId, bonnesReponses) {
     (reussi ? '✅ Bravo ! ' : '❌ Continuez à apprendre ! ') +
     'Votre score : ' + score + '/' + total
 
+  /* Affiche le bouton "Recommencer" pour refaire le quiz à zéro */
+  const boutonRecommencer = document.getElementById('bouton-recommencer')
+  if (boutonRecommencer) boutonRecommencer.style.display = 'inline-block'
+
+  /* Désactive le bouton "Valider" tant qu'on n'a pas recommencé */
+  const boutonValider = document.querySelector('#quiz-formation button[type="submit"]')
+  if (boutonValider) boutonValider.disabled = true
+
   /* Mémorise le meilleur score localement pour l'afficher dans l'espace client */
   const cleScore = 'score-' + formationId
   const scorePrecedent = parseInt(localStorage.getItem(cleScore) || '0', 10)
   if (score > scorePrecedent) {
     localStorage.setItem(cleScore, score)
   }
+}
+
+/* Réinitialise le quiz : décoche toutes les réponses, cache le résultat
+   et réactive la soumission du formulaire. */
+function reinitialiserQuiz() {
+  const formulaire = document.getElementById('quiz-formation')
+  if (!formulaire) return
+
+  formulaire.reset()
+
+  const zoneResultat = document.getElementById('resultat-quiz')
+  if (zoneResultat) {
+    zoneResultat.classList.remove('visible', 'succes', 'echec')
+    zoneResultat.textContent = ''
+  }
+
+  const boutonRecommencer = document.getElementById('bouton-recommencer')
+  if (boutonRecommencer) boutonRecommencer.style.display = 'none'
+
+  const boutonValider = formulaire.querySelector('button[type="submit"]')
+  if (boutonValider) boutonValider.disabled = false
+
+  formulaire.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 
