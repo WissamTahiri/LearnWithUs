@@ -20,6 +20,9 @@ const NOTION_DS_COMPTES_ID         = process.env.NOTION_DS_COMPTES_ID
 /* Data source ID de la base "CRM LearnWithUs" — centralise tous les
    leads et clients (inscriptions, création compte, paiement, contact) */
 const NOTION_DS_CRM_ID             = process.env.NOTION_DS_CRM_ID
+/* Data source ID de la base "Transactions LearnWithUs" — historique des
+   paiements Premium. Aucune donnée bancaire n'est stockée (RGPD / PCI DSS) */
+const NOTION_DS_TRANSACTIONS_ID    = process.env.NOTION_DS_TRANSACTIONS_ID
 /* Secret utilisé pour signer les jetons JWT (à définir en prod via Render) */
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-a-remplacer-en-prod'
 
@@ -117,6 +120,45 @@ async function synchroniserCRM(donnees) {
     }
   } catch (e) {
     console.error('⚠️  Erreur sync CRM : ' + e.message)
+  }
+}
+
+
+/* ===== ENREGISTREMENT TRANSACTION =====
+   Enregistre une transaction dans la base Notion "Transactions".
+   /!\ AUCUNE donnée bancaire n'est stockée : uniquement les métadonnées
+   (email, montant, date, statut) pour respecter le RGPD et éviter la
+   conformité PCI DSS (exigée pour qui stocke des numéros de carte).
+   Dans un vrai SaaS, le numéro de carte n'arrive jamais sur le serveur :
+   il est envoyé directement au prestataire (Stripe, Adyen) qui renvoie
+   un token de transaction. */
+async function enregistrerTransaction(donnees) {
+  if (!NOTION_DS_TRANSACTIONS_ID || !process.env.NOTION_TOKEN) return null
+
+  const { email, formation, montant, statut } = donnees
+  const maintenant = new Date()
+  const aujourdhui = maintenant.toISOString().slice(0, 10)
+  /* Référence unique : TXN-YYYYMMDD-HHMMSS (lisible + triable) */
+  const reference = 'TXN-' + aujourdhui.replace(/-/g, '') + '-' +
+                    maintenant.toISOString().slice(11, 19).replace(/:/g, '')
+
+  try {
+    await notion.pages.create({
+      parent: { data_source_id: NOTION_DS_TRANSACTIONS_ID },
+      properties: {
+        'Référence':    { title: [{ text: { content: reference } }] },
+        'Email client': { email: email },
+        'Formation':    { select: { name: formation || 'Premium global' } },
+        'Montant':      { number: montant || 29 },
+        'Date':         { date: { start: aujourdhui } },
+        'Statut':       { select: { name: statut || 'Validé' } }
+      }
+    })
+    console.log('💳 Transaction enregistrée : ' + reference + ' (' + email + ')')
+    return reference
+  } catch (e) {
+    console.error('⚠️  Erreur enregistrement transaction : ' + e.message)
+    return null
   }
 }
 
@@ -496,6 +538,35 @@ app.post('/api/activer-premium', verifierJeton, async function(req, res) {
       source:   'Paiement Premium',
       pipeline: 'Client Premium'
     })
+
+    /* Enregistre la transaction dans Notion (sans donnée bancaire).
+       Le montant 29 € correspond au prix affiché sur paiement.html. */
+    const reference = await enregistrerTransaction({
+      email:     email,
+      formation: 'Premium global',
+      montant:   29,
+      statut:    'Validé'
+    })
+
+    /* Transmet au webhook n8n #4 (paiement) pour l'envoi du reçu
+       à l'étudiant et de la notification à l'équipe */
+    const urlWebhookPaiement = process.env.WEBHOOK_N8N_PAIEMENT_URL
+    if (urlWebhookPaiement) {
+      const compteInfo = lireCompte(pageCompte)
+      fetch(urlWebhookPaiement, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email:     email,
+          prenom:    compteInfo.prenom,
+          nom:       compteInfo.nom,
+          reference: reference,
+          montant:   29,
+          formation: 'Premium global',
+          date:      new Date().toISOString().slice(0, 10)
+        })
+      }).catch(e => console.error('⚠️  n8n paiement : ' + e.message))
+    }
 
     /* Génère un nouveau jeton avec le statut mis à jour */
     const compte = lireCompte(pageCompte)
