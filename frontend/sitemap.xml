@@ -51,6 +51,12 @@
   </url>
 
   <url>
+    <loc>https://learn-with-us-lac.vercel.app/paiement.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
     <loc>https://learn-with-us-lac.vercel.app/connexion.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
