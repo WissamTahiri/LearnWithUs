@@ -71,63 +71,84 @@
     </div>
 
 
-    <!-- ========== COURS COMPLET (Premium) — tutoriels pas à pas ========== -->
+    <!-- ========== COURS COMPLET (Premium) — cours théorique + actualités ========== -->
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">⭐ COURS COMPLET PREMIUM</span>
-      <h2>Transactions SAP courantes : 4 tutoriels pas à pas</h2>
+      <h2>SAP et les ERP : le cours complet</h2>
 
-      <p><em>La vidéo et les slides qui accompagnent cette formation présentent la vue d'ensemble de SAP : qu'est-ce qu'un ERP, les modules FI/MM/SD, le concept de T-Code et l'évolution vers S/4HANA. Cette partie écrite est un manuel pratique : 4 tutoriels détaillés pour réaliser les transactions les plus courantes que vous rencontrerez en stage ou en mission.</em></p>
+      <p><em>Cette partie écrite approfondit les concepts présentés dans la vidéo et les slides. Vous y trouverez l'histoire de SAP, le détail de son architecture, les grands modules fonctionnels, et une section "Actualités" sur l'évolution majeure en cours : la migration vers S/4HANA.</em></p>
 
-      <h3>Tuto 1 — Saisir une écriture comptable (FB01)</h3>
-      <ol>
-        <li>Dans la barre de commande SAP, tapez <strong>FB01</strong> puis Entrée.</li>
-        <li>Renseignez la <strong>date du document</strong>, la <strong>date comptable</strong>, le <strong>code société</strong> (souvent 4 caractères, ex : FR01) et la <strong>devise</strong>.</li>
-        <li>Choisissez le <strong>type de document</strong> (SA pour une écriture diverse, KR pour une facture fournisseur).</li>
-        <li>Saisissez la <strong>première ligne</strong> : code de mouvement (40 pour débit, 50 pour crédit), compte, montant, libellé.</li>
-        <li>Ajoutez les lignes suivantes jusqu'à équilibrer débit = crédit, puis cliquez sur <strong>Sauvegarder</strong> (ou F11).</li>
-      </ol>
-      <p>⚠️ Si vous voyez "Ecriture déséquilibrée" : vérifiez les codes 40/50 et les montants. La partie double est obligatoire.</p>
+      <h3>1. Comprendre la notion d'ERP</h3>
+      <p>Un <strong>ERP</strong> (<em>Enterprise Resource Planning</em>, "progiciel de gestion intégré" en français) est un logiciel qui centralise la gestion de toutes les fonctions d'une entreprise : finance, achats, ventes, stocks, ressources humaines, production. Avant les ERP, chaque métier avait ses propres outils, souvent incompatibles, et les données se dupliquaient dans tous les sens.</p>
+      <p>L'apport fondamental d'un ERP est l'<strong>intégration</strong> : une donnée saisie une fois (par exemple une commande client) est automatiquement répercutée dans tous les modules concernés — impact sur le stock, génération de la facture, mise à jour de la comptabilité. On gagne en fiabilité, en temps, et on obtient une vision 360° de l'activité en temps réel.</p>
 
-      <h3>Tuto 2 — Créer une commande d'achat (ME21N)</h3>
-      <ol>
-        <li>Tapez <strong>ME21N</strong> dans la barre de commande.</li>
-        <li>Sélectionnez le <strong>type de commande</strong> (NB pour commande standard) et le <strong>fournisseur</strong>.</li>
-        <li>Dans l'en-tête, renseignez l'<strong>organisation d'achat</strong>, le <strong>groupe d'acheteurs</strong> et la <strong>société</strong>.</li>
-        <li>Dans le tableau des postes, saisissez le <strong>code article</strong>, la <strong>quantité</strong>, le <strong>prix</strong> et le <strong>centre</strong>/<strong>magasin</strong> de livraison.</li>
-        <li>Vérifiez la date de livraison prévue, puis cliquez sur <strong>Sauvegarder</strong>. SAP affiche un numéro de commande à 10 chiffres — à communiquer au fournisseur.</li>
-      </ol>
+      <h3>2. L'histoire de SAP</h3>
+      <p><strong>SAP</strong> (Systeme, Anwendungen und Produkte in der Datenverarbeitung) a été fondé en <strong>1972 à Weinheim en Allemagne</strong> par cinq anciens ingénieurs d'IBM : Dietmar Hopp, Hasso Plattner, Hans-Werner Hector, Klaus Tschira et Claus Wellenreuther. Leur vision était d'offrir un logiciel de gestion standardisé, traitant les données en temps réel — une idée révolutionnaire pour l'époque.</p>
+      <p>SAP R/2 (1979) puis SAP R/3 (1992) ont établi l'entreprise comme leader mondial des ERP. Aujourd'hui, SAP équipe plus de <strong>400 000 clients</strong> dans 180 pays, dont 92 % des entreprises du classement Forbes Global 2000, et emploie près de 110 000 personnes. C'est la plus grande entreprise de logiciels européenne, cotée au DAX et au S&amp;P 500.</p>
 
-      <h3>Tuto 3 — Vérifier le stock d'un article (MMBE)</h3>
-      <ol>
-        <li>Tapez <strong>MMBE</strong>.</li>
-        <li>Renseignez le <strong>code article</strong> (obligatoire). Vous pouvez filtrer par <strong>centre</strong> et <strong>magasin</strong> si vous cherchez un emplacement précis.</li>
-        <li>Cliquez sur <strong>Exécuter</strong> (F8). SAP affiche les quantités disponibles par centre et par statut (disponible, en contrôle qualité, bloqué).</li>
-        <li>Double-cliquez sur une ligne pour voir le détail par lot / emplacement / date d'entrée.</li>
-      </ol>
-      <p>💡 Astuce : si vous ne connaissez pas le code article, utilisez <strong>MM03</strong> pour le chercher par libellé.</p>
-
-      <h3>Tuto 4 — Consulter une fiche client (VD03)</h3>
-      <ol>
-        <li>Tapez <strong>VD03</strong>.</li>
-        <li>Saisissez le <strong>numéro du client</strong> et la <strong>société</strong>. Cliquez Entrée.</li>
-        <li>Naviguez entre les onglets : <strong>Adresse</strong> (coordonnées), <strong>Contrôle</strong> (catégorie de compte, classification), <strong>Paiement</strong> (conditions de paiement, moyens acceptés), <strong>Interlocuteurs</strong> (personnes à contacter).</li>
-        <li>Pour voir les commandes passées par ce client, utilisez ensuite <strong>VA05</strong> (liste des commandes de vente).</li>
-      </ol>
-
-      <h3>Astuces de productivité SAP</h3>
+      <h3>3. L'architecture SAP : 3 couches</h3>
+      <p>SAP fonctionne selon une architecture classique à 3 couches :</p>
       <ul>
-        <li><strong>Favoris</strong> : faites un clic droit sur un T-Code dans le menu puis "Ajouter aux favoris". Vous y accéderez en 1 clic.</li>
-        <li><strong>Variantes d'écran</strong> : après avoir configuré un écran (filtres, colonnes…), sauvegardez la configuration en variante pour la retrouver à chaque session.</li>
-        <li><strong>Nouvelle fenêtre</strong> : tapez <strong>/O</strong> suivi d'un T-Code pour ouvrir une seconde session en parallèle sans perdre la première.</li>
-        <li><strong>Retour rapide</strong> : <strong>/N</strong> revient au menu principal, <strong>/NEX</strong> ferme la session.</li>
+        <li><strong>Couche présentation</strong> — l'interface utilisateur. Historiquement <strong>SAP GUI</strong> (client lourd installé sur chaque poste), aujourd'hui de plus en plus remplacé par <strong>Fiori</strong>, une interface web responsive et moderne.</li>
+        <li><strong>Couche application</strong> — les serveurs qui exécutent la logique métier (calculs, règles de gestion, transactions). Cette couche contient tous les modules SAP.</li>
+        <li><strong>Couche base de données</strong> — stockage des données. Historiquement bases Oracle ou IBM DB2, aujourd'hui <strong>SAP HANA</strong>, une base de données in-memory qui révolutionne les performances.</li>
+      </ul>
+      <p>Chaque écran ou fonction dans SAP est identifié par un <strong>T-Code</strong> (transaction code). Exemple : FB01 pour saisir une écriture comptable, ME21N pour créer une commande d'achat, VA01 pour créer une commande client. Mémoriser les T-Codes les plus courants fait gagner un temps précieux.</p>
+
+      <h3>4. Module FI — Financial Accounting</h3>
+      <p>Le module <strong>FI</strong> gère l'ensemble de la comptabilité générale de l'entreprise : journaux, écritures, comptes clients et fournisseurs, immobilisations, déclarations réglementaires. Il produit les états financiers officiels (bilan, compte de résultat, grand livre).</p>
+      <p>Particularité : chaque écriture comptable SAP respecte le principe de la <strong>partie double</strong> (total des débits = total des crédits). Les T-Codes les plus utilisés : FB01 (saisie), FBL1N (extraction comptes fournisseurs), FBL5N (comptes clients), F-53 (paiement fournisseur).</p>
+
+      <h3>5. Module MM — Materials Management</h3>
+      <p>Le module <strong>MM</strong> couvre tout le cycle des achats et des stocks, aussi appelé <strong>Procure to Pay</strong> (P2P). Les grandes étapes :</p>
+      <ul>
+        <li>Demande d'achat interne (besoin exprimé par un service)</li>
+        <li>Appel d'offres et sélection du fournisseur</li>
+        <li>Création de la commande d'achat (ME21N)</li>
+        <li>Réception de marchandises (MIGO)</li>
+        <li>Réception et contrôle de la facture (MIRO) — contrôle dit "à 3 voies" : commande / réception / facture</li>
+        <li>Paiement (déclenché côté FI)</li>
       </ul>
 
-      <h3>Pièges fréquents des nouveaux utilisateurs</h3>
+      <h3>6. Module SD — Sales and Distribution</h3>
+      <p>Le module <strong>SD</strong> couvre tout le cycle des ventes, appelé <strong>Order to Cash</strong> (O2C) :</p>
       <ul>
-        <li><strong>Confondre date du document et date comptable</strong> : la première est celle du justificatif, la seconde est celle d'imputation dans la comptabilité.</li>
-        <li><strong>Oublier l'organisation d'achat / société</strong> : SAP rejette la transaction. Toujours vérifier ces champs en premier.</li>
-        <li><strong>Quitter sans sauvegarder</strong> : SAP ne prévient pas toujours. Prenez l'habitude de F11 avant de changer d'écran.</li>
-        <li><strong>Travailler en production au lieu du <em>mandant test</em></strong> : une écriture mal saisie en production est difficile à annuler. Validez toujours le mandant en haut à droite (ex : 400 = test, 100 = prod).</li>
+        <li>Établissement d'un devis (VA21)</li>
+        <li>Commande de vente (VA01)</li>
+        <li>Livraison — sortie de stock (VL01N)</li>
+        <li>Facturation client (VF01)</li>
+        <li>Encaissement (déclenché côté FI)</li>
+      </ul>
+      <p>La force de SAP réside dans l'<strong>intégration entre modules</strong> : une commande de vente dans SD génère automatiquement un mouvement de stock dans MM et une facture client dans FI. Cette cohérence évite les ressaisies et garantit la fiabilité des données.</p>
+
+      <h3>7. Actualités 2026 — SAP dans le grand virage S/4HANA</h3>
+      <p>Le secteur SAP vit actuellement sa plus grande transformation depuis 30 ans. Voici ce qu'il faut absolument savoir aujourd'hui :</p>
+      <ul>
+        <li><strong>Fin de support de SAP ECC en 2027</strong> (prolongé jusqu'à 2030 avec un support étendu payant) — Toutes les entreprises doivent migrer vers S/4HANA d'ici là. Cela représente un <strong>marché de migration gigantesque</strong>, dont le pic est attendu entre 2025 et 2028.</li>
+        <li><strong>S/4HANA Cloud (Public et Private Edition)</strong> — SAP pousse fortement son offre cloud, qui simplifie la maintenance et permet des cycles d'évolution beaucoup plus rapides (mise à jour trimestrielle). Le "RISE with SAP" est le package commercial qui accompagne cette bascule.</li>
+        <li><strong>Fiori et l'expérience utilisateur moderne</strong> — L'ancienne interface SAP GUI, redoutée des utilisateurs, cède progressivement la place à Fiori, conçu "mobile-first" avec des tuiles personnalisables. Les consultants maîtrisant Fiori sont particulièrement recherchés.</li>
+        <li><strong>L'IA intégrée dans SAP (Joule)</strong> — Lancé en 2023, <strong>Joule</strong> est le copilote IA de SAP. Il permet de piloter le système en langage naturel, de générer des rapports, et sera progressivement intégré à tous les modules. L'IA appliquée à l'ERP est un axe majeur de développement 2025-2027.</li>
+        <li><strong>Le marché de l'emploi SAP en France</strong> — Consultants SAP juniors : 40-55 k€ / an. Confirmés : 55-80 k€. Experts et managers : 80-120 k€ et plus. Profils les plus recherchés : S/4HANA Finance, S/4HANA MM/SD, Fiori developers, Business Technology Platform (BTP).</li>
+        <li><strong>SAP Business Technology Platform (BTP)</strong> — La nouvelle plateforme cloud de SAP pour étendre et personnaliser le système sans modifier le cœur. Essentiel pour les intégrations modernes (API, extensions, analytics).</li>
+      </ul>
+
+      <h3>8. Les autres modules importants à connaître</h3>
+      <p>Au-delà de FI, MM et SD, SAP couvre tous les métiers de l'entreprise :</p>
+      <ul>
+        <li><strong>CO</strong> (Controlling) — contrôle de gestion, analytique par centres de coûts</li>
+        <li><strong>HR</strong> / <strong>SuccessFactors</strong> — ressources humaines, paye, gestion de carrières</li>
+        <li><strong>PP</strong> (Production Planning) — planification de la production</li>
+        <li><strong>WM</strong> / <strong>EWM</strong> — gestion d'entrepôt</li>
+        <li><strong>PM</strong> (Plant Maintenance) — maintenance industrielle</li>
+        <li><strong>PS</strong> (Project System) — gestion de projets</li>
+      </ul>
+
+      <h3>9. Pièges fréquents des débutants</h3>
+      <ul>
+        <li><strong>Confondre date du document et date comptable</strong> — la première est celle du justificatif, la seconde est celle d'imputation</li>
+        <li><strong>Oublier l'organisation d'achat ou la société</strong> — SAP rejette la transaction tant que ces champs obligatoires ne sont pas renseignés</li>
+        <li><strong>Travailler en production au lieu du mandant test</strong> — une écriture mal saisie en production est difficile à annuler. Vérifier toujours le mandant en haut à droite de l'écran</li>
+        <li><strong>Ignorer les T-Codes</strong> — passer par le menu à chaque fois fait perdre beaucoup de temps, mémoriser les codes des fonctions utilisées au quotidien</li>
       </ul>
     </div>
 
@@ -147,7 +168,7 @@
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">📝 QUIZ FINAL PREMIUM</span>
       <h2>Testez vos connaissances</h2>
-      <p>5 questions pour valider votre formation. Il faut au moins 60 % (3/5) pour réussir.</p>
+      <p>10 questions pour valider votre formation. Il faut au moins 60 % (6/10) pour réussir. Vous pouvez refaire le quiz autant de fois que vous le souhaitez.</p>
 
       <form id="quiz-formation" onsubmit="event.preventDefault(); validerQuiz('sap', BONNES_REPONSES_SAP);">
 
@@ -196,10 +217,60 @@
           </div>
         </div>
 
+        <div class="quiz-question">
+          <p>6. En quelle année SAP a-t-il été fondé ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q6" value="a"> 1958</label>
+            <label><input type="radio" name="q6" value="b"> 1972</label>
+            <label><input type="radio" name="q6" value="c"> 1995</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>7. Qu'est-ce qu'un "T-Code" dans SAP ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q7" value="a"> Un code promotionnel pour les licences</label>
+            <label><input type="radio" name="q7" value="b"> Un code qui identifie une transaction ou un écran (ex : FB01, ME21N)</label>
+            <label><input type="radio" name="q7" value="c"> Un identifiant technique interne non utilisé par l'utilisateur</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>8. Quel est le nom de la nouvelle interface utilisateur moderne de SAP ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q8" value="a"> SAP GUI</label>
+            <label><input type="radio" name="q8" value="b"> Fiori</label>
+            <label><input type="radio" name="q8" value="c"> HANA Studio</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>9. Comment s'appelle le copilote IA intégré à SAP ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q9" value="a"> Joule</label>
+            <label><input type="radio" name="q9" value="b"> Jules</label>
+            <label><input type="radio" name="q9" value="c"> ERP.ai</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <p>10. Que signifie le cycle "Procure to Pay" (P2P) ?</p>
+          <div class="quiz-reponses">
+            <label><input type="radio" name="q10" value="a"> Le paiement direct entre deux particuliers</label>
+            <label><input type="radio" name="q10" value="b"> Le cycle complet d'achat : de la demande interne au paiement fournisseur</label>
+            <label><input type="radio" name="q10" value="c"> Un mode de financement pair-à-pair</label>
+          </div>
+        </div>
+
         <button type="submit" class="bouton-principal">Valider mes réponses</button>
       </form>
 
       <div id="resultat-quiz" class="resultat-quiz"></div>
+
+      <button type="button" id="bouton-recommencer" class="bouton-secondaire"
+              onclick="reinitialiserQuiz()" style="display: none; margin-top: 16px;">
+        🔄 Recommencer le quiz
+      </button>
     </div>
 
 
@@ -243,7 +314,10 @@
   </footer>
 
   <script>
-    const BONNES_REPONSES_SAP = { q1: 'b', q2: 'b', q3: 'b', q4: 'c', q5: 'a' }
+    const BONNES_REPONSES_SAP = {
+      q1: 'b', q2: 'b', q3: 'b', q4: 'c', q5: 'a',
+      q6: 'b', q7: 'b', q8: 'b', q9: 'a', q10: 'b'
+    }
   </script>
   <script src="js/main.js"></script>
 
