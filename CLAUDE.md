@@ -37,7 +37,8 @@ LearnWithUs/
 │   ├── .env.example             ← Modèle variables d'environnement
 │   ├── n8n-workflow-inscription.json ← Workflow n8n #1 (inscription)
 │   ├── n8n-workflow-contact.json     ← Workflow n8n #2 (contact)
-│   └── n8n-workflow-relance.json     ← Workflow n8n #3 (relance leads 7j)
+│   ├── n8n-workflow-relance.json     ← Workflow n8n #3 (relance leads 7j)
+│   └── n8n-workflow-paiement.json    ← Workflow n8n #4 (confirmation paiement)
 ├── vercel.json                  ← Config Vercel
 └── README.md                    ← Guide d'installation
 ```
@@ -99,8 +100,14 @@ LearnWithUs/
 - [x] Render CLI + monitoring — FAIT (21/04)
   - Render CLI installée localement, authentifiée, workspace configuré
   - Health check path configuré sur /api/health (évite timeouts de deploy)
+- [x] T4.5 (support) : Base Notion Transactions + Workflow n8n #4 (paiement) — FAIT (21/04)
+  - Base Notion "Transactions LearnWithUs" (Référence TXN-YYYYMMDD-HHMMSS, Email, Formation, Montant, Date, Statut)
+  - /!\ Aucune donnée bancaire stockée — RGPD + évite contrainte PCI DSS
+  - Backend : helper `enregistrerTransaction()` appelé depuis /api/activer-premium
+  - Workflow n8n #4 (n8n-workflow-paiement.json) : reçu client + notif équipe
+  - 2 env vars à ajouter sur Render : NOTION_DS_TRANSACTIONS_ID + WEBHOOK_N8N_PAIEMENT_URL
 - [ ] T3.3 : Schéma architecture SI (version complète)
-- [ ] T4.5 : Fonctionnalité IA Assistée + documentation
+- [ ] T4.5 (livrable) : Documentation IA Assistée (feature Paiement) — en cours
 - [ ] T4.6 : Mise à jour dossier de suivi projet (v2)
 
 ### Phase 5 : Finalisation (21/05 - 16/07) — À VENIR
@@ -133,10 +140,11 @@ npm start
   - WEBHOOK_N8N_URL (inscription formation)
   - WEBHOOK_N8N_CONTACT_URL (formulaire contact)
 - Authentification : bcrypt pour le hash mot de passe, JWT 7 jours signé avec JWT_SECRET (env var Render)
-- Base Notion "Comptes LearnWithUs" ≠ base "Inscriptions" ≠ base "CRM LearnWithUs" (3 bases distinctes, IDs différents)
-- Paiement fictif (pas de Stripe réel) : bascule simplement le champ Statut Notion à "Premium"
+- 4 bases Notion distinctes : "Inscriptions", "Comptes LearnWithUs", "CRM LearnWithUs", "Transactions LearnWithUs" (IDs séparés)
+- Paiement fictif (pas de Stripe réel) : bascule Statut Notion à "Premium" + log transaction + trigger n8n #4
+- /!\ AUCUNE donnée bancaire (carte, CVV, expiration) n'est stockée — conformité RGPD + évite PCI DSS. Uniquement métadonnées (email, montant, date, référence)
 - CRM Notion : alimenté en upsert (recherche par email, create si absent, update sinon). 4 points d'entrée : /api/inscription, /api/creer-compte, /api/activer-premium, /api/contact
-- NOTION_DS_CRM_ID à configurer sur Render pour activer la sync CRM (sinon les routes répondent normalement mais n'alimentent pas le CRM)
+- Env vars Render à configurer : NOTION_DS_CRM_ID, NOTION_DS_TRANSACTIONS_ID, WEBHOOK_N8N_PAIEMENT_URL (sinon les routes répondent mais n'alimentent pas ces composants)
 - Render CLI installée localement pour monitoring des deploys et logs (voir reference_render.md en mémoire)
 
 ## Durée des formations (design validé)
