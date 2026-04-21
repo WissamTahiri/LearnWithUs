@@ -36,7 +36,8 @@ LearnWithUs/
 │   ├── package.json             ← Dépendances Node.js
 │   ├── .env.example             ← Modèle variables d'environnement
 │   ├── n8n-workflow-inscription.json ← Workflow n8n #1 (inscription)
-│   └── n8n-workflow-contact.json     ← Workflow n8n #2 (contact)
+│   ├── n8n-workflow-contact.json     ← Workflow n8n #2 (contact)
+│   └── n8n-workflow-relance.json     ← Workflow n8n #3 (relance leads 7j)
 ├── vercel.json                  ← Config Vercel
 └── README.md                    ← Guide d'installation
 ```
@@ -83,9 +84,12 @@ LearnWithUs/
   - Placeholders PDF Gamma ("Bientôt disponible") en attente des supports
   - Vidéos : placeholders — **tournage en Phase 5 (T5.1-T5.3) puis intégration (T5.4)**
   - Blocage du contenu Premium via JS (floue + CTA pour non-connectés / Standard)
-- [x] T4.3 (partiel) : Workflow n8n #2 — Contact → Email équipe — FAIT (20/04)
-  - Workflow n8n dédié au formulaire contact (accusé réception + notification équipe)
-  - ⚠️ Le CRM-complet "Prospect → CRM" reste à définir : quels sont les besoins CRM au-delà des bases Notion déjà en place ?
+- [x] T4.3 : Workflow n8n #2 (contact) + CRM Notion + Workflow #3 (relance) — FAIT (21/04)
+  - Workflow n8n #2 dédié au formulaire contact (accusé réception + notification équipe)
+  - Base Notion "CRM LearnWithUs" créée (Nom complet, Email, Téléphone, Source, Formation, Pipeline: Lead → Contacté → Client Standard → Client Premium → Perdu, dates, notes, ID Lead auto)
+  - Backend : helper `synchroniserCRM()` branché sur /api/inscription, /api/creer-compte, /api/activer-premium, /api/contact (upsert par email)
+  - Workflow n8n #3 (n8n-workflow-relance.json) : cron quotidien 9h → query leads > 7 jours → email relance → Pipeline passe à "Contacté"
+  - Variable env à ajouter sur Render : NOTION_DS_CRM_ID = 272e0bb6-df6d-462d-8359-f704f9a3f18e
 - [x] Authentification + Comptes + Paiement (bonus Phase 4) — FAIT (20-21/04)
   - Base Notion "Comptes LearnWithUs" créée (email, mdp hashé bcrypt, statut, dates)
   - Backend : routes /api/creer-compte, /api/connexion, /api/activer-premium (JWT)
@@ -129,8 +133,10 @@ npm start
   - WEBHOOK_N8N_URL (inscription formation)
   - WEBHOOK_N8N_CONTACT_URL (formulaire contact)
 - Authentification : bcrypt pour le hash mot de passe, JWT 7 jours signé avec JWT_SECRET (env var Render)
-- Base Notion "Comptes LearnWithUs" ≠ base "Inscriptions" (2 bases distinctes, IDs différents)
+- Base Notion "Comptes LearnWithUs" ≠ base "Inscriptions" ≠ base "CRM LearnWithUs" (3 bases distinctes, IDs différents)
 - Paiement fictif (pas de Stripe réel) : bascule simplement le champ Statut Notion à "Premium"
+- CRM Notion : alimenté en upsert (recherche par email, create si absent, update sinon). 4 points d'entrée : /api/inscription, /api/creer-compte, /api/activer-premium, /api/contact
+- NOTION_DS_CRM_ID à configurer sur Render pour activer la sync CRM (sinon les routes répondent normalement mais n'alimentent pas le CRM)
 - Render CLI installée localement pour monitoring des deploys et logs (voir reference_render.md en mémoire)
 
 ## Durée des formations (design validé)

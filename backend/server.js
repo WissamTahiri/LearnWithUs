@@ -17,6 +17,9 @@ const NOTION_DATABASE_COMPTES_ID   = process.env.NOTION_DATABASE_COMPTES_ID
 /* Data source ID de la base "Comptes LearnWithUs" — requis pour les
    requêtes (notion.dataSources.query dans le SDK @notionhq/client v5+) */
 const NOTION_DS_COMPTES_ID         = process.env.NOTION_DS_COMPTES_ID
+/* Data source ID de la base "CRM LearnWithUs" — centralise tous les
+   leads et clients (inscriptions, création compte, paiement, contact) */
+const NOTION_DS_CRM_ID             = process.env.NOTION_DS_CRM_ID
 /* Secret utilisé pour signer les jetons JWT (à définir en prod via Render) */
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-a-remplacer-en-prod'
 
@@ -48,6 +51,74 @@ app.get('/api/health', function(req, res) {
     heure: new Date()
   })
 })
+
+
+/* ===== SYNCHRONISATION CRM =====
+   Cherche un contact dans le CRM par son email (retourne null si aucun). */
+async function chercherContactCRM(email) {
+  if (!NOTION_DS_CRM_ID) return null
+  try {
+    const reponse = await notion.dataSources.query({
+      data_source_id: NOTION_DS_CRM_ID,
+      filter: { property: 'Email', email: { equals: email } }
+    })
+    return reponse.results[0] || null
+  } catch (e) {
+    console.warn('Recherche CRM échouée : ' + e.message)
+    return null
+  }
+}
+
+/* Crée ou met à jour un contact dans le CRM Notion.
+   Appelée depuis les routes /api/inscription, /api/creer-compte,
+   /api/activer-premium et /api/contact pour alimenter le pipeline.
+   Si l'email existe déjà : met à jour pipeline + dernière action.
+   Sinon : crée une nouvelle entrée avec Pipeline="Lead" par défaut. */
+async function synchroniserCRM(donnees) {
+  if (!NOTION_DS_CRM_ID || !process.env.NOTION_TOKEN) return
+
+  const { nomComplet, email, telephone, source, formation, pipeline } = donnees
+  const aujourdhui = new Date().toISOString().slice(0, 10)
+
+  try {
+    const existant = await chercherContactCRM(email)
+
+    if (existant) {
+      /* Contact déjà présent : on met à jour pipeline + dernière action. */
+      const maj = {
+        'Dernière action': { date: { start: aujourdhui } }
+      }
+      if (pipeline)  maj['Pipeline']   = { select: { name: pipeline } }
+      if (telephone) maj['Téléphone']  = { phone_number: telephone }
+
+      await notion.pages.update({
+        page_id: existant.id,
+        properties: maj
+      })
+      console.log('🔄 CRM mis à jour : ' + email + (pipeline ? ' → ' + pipeline : ''))
+    } else {
+      /* Nouveau contact : création avec Pipeline="Lead" par défaut. */
+      const props = {
+        'Nom complet':      { title: [{ text: { content: nomComplet || email } }] },
+        'Email':            { email: email },
+        'Source':           { select: { name: source || 'Autre' } },
+        'Pipeline':         { select: { name: pipeline || 'Lead' } },
+        'Date 1er contact': { date: { start: aujourdhui } },
+        'Dernière action':  { date: { start: aujourdhui } }
+      }
+      if (telephone) props['Téléphone']           = { phone_number: telephone }
+      if (formation) props['Formation d\'intérêt'] = { select: { name: formation } }
+
+      await notion.pages.create({
+        parent: { data_source_id: NOTION_DS_CRM_ID },
+        properties: props
+      })
+      console.log('➕ CRM : nouveau contact ' + email + ' (source : ' + (source || 'Autre') + ')')
+    }
+  } catch (e) {
+    console.error('⚠️  Erreur sync CRM : ' + e.message)
+  }
+}
 
 
 /* ===== ROUTE INSCRIPTION ===== */
@@ -100,6 +171,16 @@ app.post('/api/inscription', async function(req, res) {
     }
   }
 
+  /* Ajout au CRM Notion (Pipeline="Lead", Source=Formulaire inscription) */
+  synchroniserCRM({
+    nomComplet: prenom + ' ' + nom,
+    email:      email,
+    telephone:  telephone,
+    source:     'Formulaire inscription',
+    formation:  formation,
+    pipeline:   'Lead'
+  })
+
   res.json({
     succes: true,
     message: 'Inscription de ' + prenom + ' enregistrée avec succès'
@@ -138,6 +219,14 @@ app.post('/api/contact', async function(req, res) {
       console.error('⚠️  Impossible de contacter n8n : ' + erreur.message)
     }
   }
+
+  /* Ajout au CRM Notion (Pipeline="Lead", Source=Formulaire contact) */
+  synchroniserCRM({
+    nomComplet: (prenom + ' ' + (nom || '')).trim(),
+    email:      email,
+    source:     'Formulaire contact',
+    pipeline:   'Lead'
+  })
 
   res.json({
     succes: true,
@@ -244,6 +333,14 @@ app.post('/api/creer-compte', async function(req, res) {
     })
 
     console.log('👤 Nouveau compte créé : ' + email)
+
+    /* Ajout au CRM Notion (Pipeline="Lead", Source=Création compte) */
+    synchroniserCRM({
+      nomComplet: prenom + ' ' + nom,
+      email:      email,
+      source:     'Création compte',
+      pipeline:   'Lead'
+    })
 
     /* Génère un jeton pour connecter automatiquement l'utilisateur */
     const utilisateur = { email, prenom, nom, statut: 'Standard' }
@@ -392,6 +489,13 @@ app.post('/api/activer-premium', verifierJeton, async function(req, res) {
     })
 
     console.log('⭐ Passage Premium : ' + email)
+
+    /* Mise à jour CRM : bascule Pipeline vers "Client Premium" */
+    synchroniserCRM({
+      email:    email,
+      source:   'Paiement Premium',
+      pipeline: 'Client Premium'
+    })
 
     /* Génère un nouveau jeton avec le statut mis à jour */
     const compte = lireCompte(pageCompte)

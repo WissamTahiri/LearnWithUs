@@ -1,0 +1,123 @@
+{
+  "name": "LearnWithUs — Relance Leads 7 jours",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "a1111111-b2c3-4d5e-6789-000000000001",
+      "name": "Chaque jour à 9h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "939d3423-51f8-465a-afcd-db792b849c04"
+        },
+        "returnAll": true,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Pipeline|select",
+              "condition": "equals",
+              "selectValue": "Lead"
+            },
+            {
+              "key": "Date 1er contact|date",
+              "condition": "before",
+              "date": "={{ $now.minus({ days: 7 }).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "options": {
+          "simple": true
+        }
+      },
+      "id": "a1111111-b2c3-4d5e-6789-000000000002",
+      "name": "Leads > 7 jours",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@learnwithus.fr",
+        "toEmail": "={{ $json.Email }}",
+        "subject": "🎓 Votre formation LearnWithUs vous attend",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <div style=\"background-color: #6B1F2A; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: white; margin: 0; font-size: 24px;\">LearnWithUs</h1>\n    <p style=\"color: #F7EEF0; margin: 6px 0 0;\">Formations Numériques</p>\n  </div>\n  <div style=\"background-color: #ffffff; padding: 32px; border: 1px solid #e0e0e0;\">\n    <h2 style=\"color: #6B1F2A; margin-top: 0;\">Bonjour {{ $json[\"Nom complet\"] }},</h2>\n    <p>Il y a quelques jours, vous vous êtes montré(e) intéressé(e) par nos formations. Nous voulions prendre de vos nouvelles.</p>\n    <p>Avez-vous eu l'occasion de poursuivre votre découverte ?</p>\n    <div style=\"background-color: #F7EEF0; padding: 16px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #6B1F2A;\">\n      <p style=\"margin: 0 0 8px;\"><strong>Pour rappel, nos 3 domaines :</strong></p>\n      <ul style=\"margin: 0; padding-left: 18px;\">\n        <li>Intelligence Artificielle (IA)</li>\n        <li>SCRUM — méthode agile</li>\n        <li>SAP — outils entreprise</li>\n      </ul>\n    </div>\n    <p>Notre équipe reste disponible pour répondre à toutes vos questions. N'hésitez pas à nous écrire.</p>\n    <div style=\"text-align: center; margin-top: 24px;\">\n      <a href=\"https://learn-with-us-lac.vercel.app/formations.html\"\n         style=\"background-color: #6B1F2A; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;\">\n        Voir les formations\n      </a>\n    </div>\n    <p style=\"margin-top: 24px;\">À très bientôt,</p>\n    <p><strong style=\"color: #6B1F2A;\">L'équipe LearnWithUs</strong></p>\n  </div>\n  <div style=\"background-color: #111111; padding: 16px; text-align: center; border-radius: 0 0 8px 8px;\">\n    <p style=\"color: #aaaaaa; margin: 0; font-size: 12px;\">© 2026 LearnWithUs — contact@learnwithus.fr</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "id": "a1111111-b2c3-4d5e-6789-000000000003",
+      "name": "Email de relance",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [720, 200]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Pipeline|select",
+              "selectValue": "Contacté"
+            },
+            {
+              "key": "Dernière action|date",
+              "date": "={{ $now.toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "id": "a1111111-b2c3-4d5e-6789-000000000004",
+      "name": "Pipeline → Contacté",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [720, 400]
+    }
+  ],
+  "connections": {
+    "Chaque jour à 9h": {
+      "main": [
+        [
+          { "node": "Leads > 7 jours", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Leads > 7 jours": {
+      "main": [
+        [
+          { "node": "Email de relance", "type": "main", "index": 0 },
+          { "node": "Pipeline → Contacté", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [{ "name": "LearnWithUs" }]
+}
