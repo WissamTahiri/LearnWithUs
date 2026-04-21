@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!--
+  admin.html — Dashboard de l'équipe administration de LearnWithUs
+  ================================================================
+  Page réservée aux emails listés dans ADMIN_EMAILS (variable d'env
+  côté Render). Le JS charge /api/admin/stats et affiche :
+  - Cartes KPI (inscriptions, comptes, leads, revenu, etc.)
+  - Dernières inscriptions et dernières transactions
+  - Répartition par formation et par pipeline CRM
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Espace administration de LearnWithUs — suivi des inscriptions, comptes, CRM et transactions.">
+  <meta name="author" content="LearnWithUs">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-burger" onclick="gereMenuMobile()" aria-label="Menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <main class="page-admin">
+    <div class="admin-conteneur">
+
+      <!-- En-tête de la page -->
+      <div class="admin-entete">
+        <div>
+          <h1>Dashboard Administration</h1>
+          <p class="admin-sous-titre">Vue d'ensemble de l'activité LearnWithUs</p>
+        </div>
+        <button class="bouton-secondaire" onclick="chargerDashboardAdmin()">🔄 Actualiser</button>
+      </div>
+
+      <!-- Zone de chargement / erreur -->
+      <div id="admin-message"></div>
+
+      <!-- Contenu du dashboard (rempli par main.js après fetch) -->
+      <div id="admin-contenu" style="display: none;">
+
+        <!-- Cartes KPI -->
+        <section class="admin-grille-kpi">
+          <div class="admin-carte">
+            <div class="admin-carte-icone">📝</div>
+            <div class="admin-carte-chiffre" id="kpi-inscriptions">—</div>
+            <div class="admin-carte-libelle">Inscriptions formation</div>
+          </div>
+          <div class="admin-carte">
+            <div class="admin-carte-icone">👤</div>
+            <div class="admin-carte-chiffre" id="kpi-comptes">—</div>
+            <div class="admin-carte-libelle">Comptes créés</div>
+          </div>
+          <div class="admin-carte">
+            <div class="admin-carte-icone">⭐</div>
+            <div class="admin-carte-chiffre" id="kpi-premium">—</div>
+            <div class="admin-carte-libelle">Clients Premium</div>
+          </div>
+          <div class="admin-carte">
+            <div class="admin-carte-icone">📬</div>
+            <div class="admin-carte-chiffre" id="kpi-leads">—</div>
+            <div class="admin-carte-libelle">Contacts CRM</div>
+          </div>
+          <div class="admin-carte">
+            <div class="admin-carte-icone">💳</div>
+            <div class="admin-carte-chiffre" id="kpi-transactions">—</div>
+            <div class="admin-carte-libelle">Transactions</div>
+          </div>
+          <div class="admin-carte admin-carte-mise-avant">
+            <div class="admin-carte-icone">💰</div>
+            <div class="admin-carte-chiffre" id="kpi-revenu">—</div>
+            <div class="admin-carte-libelle">Revenu total (validé)</div>
+          </div>
+        </section>
+
+        <!-- Répartitions : formations + pipeline CRM -->
+        <section class="admin-deux-colonnes">
+          <div class="admin-bloc">
+            <h2>Inscriptions par formation</h2>
+            <div id="repartition-formations"></div>
+          </div>
+          <div class="admin-bloc">
+            <h2>Pipeline CRM</h2>
+            <div id="repartition-pipeline"></div>
+          </div>
+        </section>
+
+        <!-- Tables : dernières inscriptions + dernières transactions -->
+        <section class="admin-deux-colonnes">
+          <div class="admin-bloc">
+            <h2>5 dernières inscriptions</h2>
+            <div id="table-inscriptions"></div>
+          </div>
+          <div class="admin-bloc">
+            <h2>5 dernières transactions</h2>
+            <div id="table-transactions"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

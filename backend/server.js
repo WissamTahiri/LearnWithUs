@@ -23,6 +23,15 @@ const NOTION_DS_CRM_ID             = process.env.NOTION_DS_CRM_ID
 /* Data source ID de la base "Transactions LearnWithUs" — historique des
    paiements Premium. Aucune donnée bancaire n'est stockée (RGPD / PCI DSS) */
 const NOTION_DS_TRANSACTIONS_ID    = process.env.NOTION_DS_TRANSACTIONS_ID
+/* Data source ID de la base "Inscriptions Formations" — requis pour le
+   dashboard admin (stats + dernières inscriptions) */
+const NOTION_DS_INSCRIPTIONS_ID    = process.env.NOTION_DS_INSCRIPTIONS_ID
+/* Liste des emails ayant accès à l'espace admin (séparés par des virgules
+   dans la variable d'environnement ADMIN_EMAILS) */
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(e => e.length > 0)
 /* Secret utilisé pour signer les jetons JWT (à définir en prod via Render) */
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-a-remplacer-en-prod'
 
@@ -306,14 +315,18 @@ function lireCompte(pageNotion) {
   }
 }
 
-/* Génère un jeton JWT valable 7 jours contenant les infos de l'utilisateur */
+/* Génère un jeton JWT valable 7 jours contenant les infos de l'utilisateur.
+   Ajoute également le drapeau `estAdmin` (basé sur la liste ADMIN_EMAILS)
+   directement sur l'objet utilisateur, qui est ensuite renvoyé au frontend. */
 function genererJeton(utilisateur) {
+  utilisateur.estAdmin = ADMIN_EMAILS.includes((utilisateur.email || '').toLowerCase())
   return jwt.sign(
     {
-      email:  utilisateur.email,
-      prenom: utilisateur.prenom,
-      nom:    utilisateur.nom,
-      statut: utilisateur.statut
+      email:    utilisateur.email,
+      prenom:   utilisateur.prenom,
+      nom:      utilisateur.nom,
+      statut:   utilisateur.statut,
+      estAdmin: utilisateur.estAdmin
     },
     JWT_SECRET,
     { expiresIn: '7d' }
@@ -590,6 +603,140 @@ app.post('/api/activer-premium', verifierJeton, async function(req, res) {
     res.status(500).json({
       succes: false,
       message: 'Erreur lors de l\'activation de l\'abonnement'
+    })
+  }
+})
+
+
+/* ===== MIDDLEWARE ADMIN =====
+   Vérifie que l'utilisateur connecté (via JWT) est dans la liste
+   ADMIN_EMAILS. À utiliser APRÈS verifierJeton. */
+function verifierAdmin(req, res, next) {
+  const email = (req.utilisateur.email || '').toLowerCase()
+  if (ADMIN_EMAILS.length === 0 || !ADMIN_EMAILS.includes(email)) {
+    return res.status(403).json({
+      succes: false,
+      message: 'Accès réservé à l\'équipe administration'
+    })
+  }
+  next()
+}
+
+
+/* ===== UTILITAIRE ADMIN =====
+   Liste toutes les pages d'une data source Notion (paginé en interne).
+   Pour un projet école on suppose moins de 1000 pages par base. */
+async function listerPages(dataSourceId) {
+  if (!dataSourceId) return []
+  const toutes = []
+  let cursor = undefined
+  do {
+    const requete = { data_source_id: dataSourceId, page_size: 100 }
+    if (cursor) requete.start_cursor = cursor
+    const reponse = await notion.dataSources.query(requete)
+    toutes.push(...reponse.results)
+    cursor = reponse.has_more ? reponse.next_cursor : undefined
+  } while (cursor)
+  return toutes
+}
+
+
+/* ===== ROUTE DASHBOARD ADMIN =====
+   Agrège les chiffres clés des 4 bases Notion (Inscriptions, Comptes,
+   CRM, Transactions) pour alimenter le dashboard admin.html. */
+app.get('/api/admin/stats', verifierJeton, verifierAdmin, async function(req, res) {
+
+  try {
+    /* Récupération des 4 bases en parallèle pour gagner du temps */
+    const [inscriptions, comptes, crm, transactions] = await Promise.all([
+      listerPages(NOTION_DS_INSCRIPTIONS_ID),
+      listerPages(NOTION_DS_COMPTES_ID),
+      listerPages(NOTION_DS_CRM_ID),
+      listerPages(NOTION_DS_TRANSACTIONS_ID)
+    ])
+
+    /* Tri par date de création décroissante (plus récentes en premier) */
+    const triRecent = (a, b) => new Date(b.created_time) - new Date(a.created_time)
+    inscriptions.sort(triRecent)
+    comptes.sort(triRecent)
+    crm.sort(triRecent)
+    transactions.sort(triRecent)
+
+    /* Comptes : répartition Standard / Premium */
+    const comptesParStatut = { Standard: 0, Premium: 0 }
+    comptes.forEach(c => {
+      const statut = c.properties?.Statut?.select?.name
+      if (statut === 'Premium') comptesParStatut.Premium++
+      else comptesParStatut.Standard++
+    })
+
+    /* Inscriptions : répartition par formation */
+    const inscriptionsParFormation = { IA: 0, SCRUM: 0, SAP: 0 }
+    inscriptions.forEach(i => {
+      const f = i.properties?.Formation?.select?.name
+      if (f && inscriptionsParFormation[f] !== undefined) inscriptionsParFormation[f]++
+    })
+
+    /* CRM : répartition par étape de pipeline */
+    const leadsParPipeline = {
+      'Lead':            0,
+      'Contacté':        0,
+      'Client Standard': 0,
+      'Client Premium':  0,
+      'Perdu':           0
+    }
+    crm.forEach(l => {
+      const p = l.properties?.Pipeline?.select?.name
+      if (p && leadsParPipeline[p] !== undefined) leadsParPipeline[p]++
+    })
+
+    /* Transactions : revenu total (somme des montants validés) */
+    const totalRevenu = transactions.reduce((somme, t) => {
+      const statut = t.properties?.Statut?.select?.name
+      if (statut !== 'Validé') return somme
+      return somme + (t.properties?.Montant?.number || 0)
+    }, 0)
+
+    /* 5 dernières inscriptions (format allégé pour l'affichage) */
+    const dernieresInscriptions = inscriptions.slice(0, 5).map(p => ({
+      prenom:    p.properties?.Prénom?.title?.[0]?.text?.content || '',
+      nom:       p.properties?.Nom?.rich_text?.[0]?.text?.content || '',
+      email:     p.properties?.Email?.email || '',
+      formation: p.properties?.Formation?.select?.name || '',
+      date:      p.created_time
+    }))
+
+    /* 5 dernières transactions (format allégé pour l'affichage) */
+    const dernieresTransactions = transactions.slice(0, 5).map(t => ({
+      reference: t.properties?.Référence?.title?.[0]?.text?.content || '',
+      email:     t.properties?.['Email client']?.email || '',
+      formation: t.properties?.Formation?.select?.name || '',
+      montant:   t.properties?.Montant?.number || 0,
+      statut:    t.properties?.Statut?.select?.name || '',
+      date:      t.created_time
+    }))
+
+    res.json({
+      succes: true,
+      stats: {
+        totalInscriptions:      inscriptions.length,
+        totalComptes:           comptes.length,
+        totalLeads:             crm.length,
+        totalTransactions:      transactions.length,
+        totalRevenu:            totalRevenu,
+        comptesParStatut:       comptesParStatut,
+        inscriptionsParFormation: inscriptionsParFormation,
+        leadsParPipeline:       leadsParPipeline,
+        dernieresInscriptions:  dernieresInscriptions,
+        dernieresTransactions:  dernieresTransactions
+      }
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur /api/admin/stats : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur lors du chargement des statistiques'
     })
   }
 })

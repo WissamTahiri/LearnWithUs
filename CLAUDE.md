@@ -23,6 +23,7 @@ LearnWithUs/
 │   ├── connexion.html           ← Connexion au compte (fonctionnelle)
 │   ├── inscription-compte.html  ← Création de compte (fonctionnelle)
 │   ├── paiement.html            ← Paiement fictif → passage Premium
+│   ├── admin.html               ← Dashboard admin (KPI + dernières activités)
 │   ├── formation-ia.html        ← Cours IA (intro gratuite + Premium)
 │   ├── formation-scrum.html     ← Cours SCRUM (intro + Premium)
 │   ├── formation-sap.html       ← Cours SAP (intro + Premium)
@@ -106,6 +107,11 @@ LearnWithUs/
   - Backend : helper `enregistrerTransaction()` appelé depuis /api/activer-premium
   - Workflow n8n #4 (n8n-workflow-paiement.json) : reçu client + notif équipe
   - 2 env vars à ajouter sur Render : NOTION_DS_TRANSACTIONS_ID + WEBHOOK_N8N_PAIEMENT_URL
+- [x] Dashboard admin (bonus Phase 4) — FAIT (21/04)
+  - Page admin.html (noindex) : 6 cartes KPI, 2 blocs répartition (formations + pipeline CRM), 2 tableaux (dernières inscriptions + transactions)
+  - Backend : middleware `verifierAdmin` (check contre ADMIN_EMAILS), route GET /api/admin/stats agrégeant les 4 bases Notion en parallèle
+  - JWT enrichi d'un drapeau `estAdmin` → lien "🔐 Admin" visible dans la nav uniquement pour les admins
+  - 2 env vars à ajouter sur Render : ADMIN_EMAILS (liste séparée par virgules) + NOTION_DS_INSCRIPTIONS_ID
 - [ ] T3.3 : Schéma architecture SI (version complète)
 - [ ] T4.5 (livrable) : Documentation IA Assistée (feature Paiement) — en cours
 - [ ] T4.6 : Mise à jour dossier de suivi projet (v2)
