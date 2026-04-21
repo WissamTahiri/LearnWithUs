@@ -19,16 +19,24 @@ LearnWithUs/
 │   ├── formations.html          ← Catalogue + formulaire inscription
 │   ├── espace-client.html       ← Onglets Standard/Premium
 │   ├── contact.html             ← Formulaire contact + infos
-│   ├── faq.html                 ← 8 questions accordéon
-│   ├── connexion.html           ← Page de connexion (interface Phase 4)
-│   ├── inscription-compte.html  ← Création de compte (interface Phase 4)
+│   ├── faq.html                 ← 10 questions accordéon
+│   ├── connexion.html           ← Connexion au compte (fonctionnelle)
+│   ├── inscription-compte.html  ← Création de compte (fonctionnelle)
+│   ├── paiement.html            ← Paiement fictif → passage Premium
+│   ├── formation-ia.html        ← Cours IA (intro gratuite + Premium)
+│   ├── formation-scrum.html     ← Cours SCRUM (intro + Premium)
+│   ├── formation-sap.html       ← Cours SAP (intro + Premium)
+│   ├── favicon.svg              ← Icône site
+│   ├── robots.txt               ← Indexation SEO
+│   ├── sitemap.xml              ← Plan du site SEO
 │   ├── css/style.css            ← Styles communs
-│   └── js/main.js               ← JavaScript commun
+│   └── js/main.js               ← JS commun (auth, quiz, paiement)
 ├── backend/
 │   ├── server.js                ← Serveur Express (API)
 │   ├── package.json             ← Dépendances Node.js
 │   ├── .env.example             ← Modèle variables d'environnement
-│   └── n8n-workflow-inscription.json ← Workflow n8n (à importer)
+│   ├── n8n-workflow-inscription.json ← Workflow n8n #1 (inscription)
+│   └── n8n-workflow-contact.json     ← Workflow n8n #2 (contact)
 ├── vercel.json                  ← Config Vercel
 └── README.md                    ← Guide d'installation
 ```
@@ -67,8 +75,26 @@ LearnWithUs/
   - Corrections : faute 'learnnwithus.fr', alert() remplacés par messages propres
   - Contenu enrichi : section "Chiffres clés" (accueil), +2 FAQ (prérequis, CPF), adresse (contact)
   - SEO de base : meta description + author sur 7 pages, favicon.svg, sitemap.xml, robots.txt
-- [ ] T4.2 : Intégration contenus e-learning (vidéos)
-- [ ] T4.3 : Workflow n8n #2 Prospect → CRM
+- [x] T4.2 : Intégration contenus e-learning (pages formations) — FAIT (21/04)
+  - 3 pages formation créées (formation-ia.html, formation-scrum.html, formation-sap.html)
+  - Structure par page : intro gratuite (teaser) + cours théorique + vidéo (placeholder) + quiz 10 Q + ressources
+  - Cours complets avec section "Actualités 2026" pour chaque domaine
+  - Quiz 10 questions avec bouton Recommencer (score stocké en localStorage)
+  - Placeholders PDF Gamma ("Bientôt disponible") en attente des supports
+  - Vidéos : placeholders — **tournage en Phase 5 (T5.1-T5.3) puis intégration (T5.4)**
+  - Blocage du contenu Premium via JS (floue + CTA pour non-connectés / Standard)
+- [x] T4.3 (partiel) : Workflow n8n #2 — Contact → Email équipe — FAIT (20/04)
+  - Workflow n8n dédié au formulaire contact (accusé réception + notification équipe)
+  - ⚠️ Le CRM-complet "Prospect → CRM" reste à définir : quels sont les besoins CRM au-delà des bases Notion déjà en place ?
+- [x] Authentification + Comptes + Paiement (bonus Phase 4) — FAIT (20-21/04)
+  - Base Notion "Comptes LearnWithUs" créée (email, mdp hashé bcrypt, statut, dates)
+  - Backend : routes /api/creer-compte, /api/connexion, /api/activer-premium (JWT)
+  - Frontend : pages connexion/inscription fonctionnelles, session localStorage
+  - Nav adaptative : pastille prénom + déconnexion si connecté
+  - Page paiement.html : formulaire carte fictif → bascule statut Premium dans Notion
+- [x] Render CLI + monitoring — FAIT (21/04)
+  - Render CLI installée localement, authentifiée, workspace configuré
+  - Health check path configuré sur /api/health (évite timeouts de deploy)
 - [ ] T3.3 : Schéma architecture SI (version complète)
 - [ ] T4.5 : Fonctionnalité IA Assistée + documentation
 - [ ] T4.6 : Mise à jour dossier de suivi projet (v2)
@@ -99,5 +125,14 @@ npm start
 ## Points importants
 - La constante URL_BACKEND dans frontend/js/main.js doit être mise à jour avec l'URL Render en production
 - Le fichier backend/.env doit être créé à partir de .env.example (ne jamais committer .env)
-- Le webhook n8n est connecté via WEBHOOK_N8N_URL = https://persia-esgi.app.n8n.cloud/webhook/learnwithus-inscription
-- Les pages connexion.html et inscription-compte.html sont des interfaces sans logique — auth à développer en Phase 4
+- Webhooks n8n configurés via 2 variables d'environnement sur Render :
+  - WEBHOOK_N8N_URL (inscription formation)
+  - WEBHOOK_N8N_CONTACT_URL (formulaire contact)
+- Authentification : bcrypt pour le hash mot de passe, JWT 7 jours signé avec JWT_SECRET (env var Render)
+- Base Notion "Comptes LearnWithUs" ≠ base "Inscriptions" (2 bases distinctes, IDs différents)
+- Paiement fictif (pas de Stripe réel) : bascule simplement le champ Statut Notion à "Premium"
+- Render CLI installée localement pour monitoring des deploys et logs (voir reference_render.md en mémoire)
+
+## Durée des formations (design validé)
+Chaque formation Premium dure ≥ 15 min au total :
+- Lecture intro (~1 min) + cours complet (~8 min) + vidéo (10 min) + quiz 10 Q (~5 min) = ~24 min
