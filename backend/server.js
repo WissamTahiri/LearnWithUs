@@ -269,6 +269,31 @@ app.post('/api/creer-compte', async function(req, res) {
 })
 
 
+/* ===== MIDDLEWARE JWT ===== */
+/* Vérifie le jeton JWT présent dans l'en-tête "Authorization: Bearer <token>".
+   Si valide, attache les infos utilisateur à req.utilisateur et passe la main. */
+function verifierJeton(req, res, next) {
+  const entete = req.headers.authorization
+  if (!entete || !entete.startsWith('Bearer ')) {
+    return res.status(401).json({
+      succes: false,
+      message: 'Authentification requise'
+    })
+  }
+
+  const token = entete.substring(7)
+  try {
+    req.utilisateur = jwt.verify(token, JWT_SECRET)
+    next()
+  } catch (erreur) {
+    return res.status(401).json({
+      succes: false,
+      message: 'Session expirée, veuillez vous reconnecter'
+    })
+  }
+}
+
+
 /* ===== ROUTE CONNEXION ===== */
 /* Vérifie email + mot de passe puis renvoie un jeton JWT si correct */
 app.post('/api/connexion', async function(req, res) {
@@ -336,6 +361,60 @@ app.post('/api/connexion', async function(req, res) {
     res.status(500).json({
       succes: false,
       message: 'Erreur serveur lors de la connexion'
+    })
+  }
+})
+
+
+/* ===== ROUTE ACTIVATION PREMIUM ===== */
+/* Bascule le statut du compte connecté de "Standard" à "Premium".
+   Appelée après le formulaire de paiement fictif (pas de vrai Stripe).
+   Renvoie un nouveau JWT avec le statut Premium pour mettre à jour la session. */
+app.post('/api/activer-premium', verifierJeton, async function(req, res) {
+
+  const email = req.utilisateur.email
+
+  try {
+    const pageCompte = await chercherCompteParEmail(email)
+    if (!pageCompte) {
+      return res.status(404).json({
+        succes: false,
+        message: 'Compte introuvable'
+      })
+    }
+
+    /* Met à jour le statut dans Notion */
+    await notion.pages.update({
+      page_id: pageCompte.id,
+      properties: {
+        'Statut': { select: { name: 'Premium' } }
+      }
+    })
+
+    console.log('⭐ Passage Premium : ' + email)
+
+    /* Génère un nouveau jeton avec le statut mis à jour */
+    const compte = lireCompte(pageCompte)
+    const utilisateur = {
+      email:  compte.email,
+      prenom: compte.prenom,
+      nom:    compte.nom,
+      statut: 'Premium'
+    }
+    const token = genererJeton(utilisateur)
+
+    res.json({
+      succes: true,
+      message: 'Abonnement Premium activé avec succès',
+      token:   token,
+      utilisateur: utilisateur
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur activation Premium : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur lors de l\'activation de l\'abonnement'
     })
   }
 })

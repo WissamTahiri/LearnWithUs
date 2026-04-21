@@ -214,17 +214,6 @@ function basculerFAQ(bouton) {
 }
 
 
-/* Affiche un message temporaire pour le bouton d'abonnement Premium */
-function afficherMessageAbonnement() {
-  const zoneMessage = document.getElementById('message-abonnement')
-  zoneMessage.className = 'message-succes'
-  zoneMessage.innerHTML =
-    'Intégration Stripe en cours de développement. ' +
-    'Contactez-nous sur la page ' +
-    '<a href="contact.html">Contact</a> pour un accès anticipé.'
-}
-
-
 /* ===== AUTHENTIFICATION ===== */
 /* Envoie le formulaire de création de compte au backend */
 async function envoyerCreationCompte(evenement) {
@@ -335,6 +324,141 @@ async function envoyerConnexion(evenement) {
 }
 
 
+/* ===== PAGE DE PAIEMENT ===== */
+/* Initialise la page paiement.html selon l'état de l'utilisateur :
+   - non connecté : invitation à créer un compte / se connecter
+   - déjà Premium : rien à faire, message + lien vers l'espace client
+   - Standard connecté : affiche le formulaire de carte */
+function initialiserPagePaiement() {
+  const vueFormulaire = document.getElementById('vue-formulaire')
+  const conteneur     = document.getElementById('conteneur-paiement')
+  if (!vueFormulaire || !conteneur) return
+
+  const session = lireSession()
+
+  /* Cas 1 : utilisateur non connecté */
+  if (!session || !session.utilisateur) {
+    vueFormulaire.style.display = 'none'
+    conteneur.insertAdjacentHTML('beforeend',
+      '<div class="etat-special">' +
+        '<h2>🔒 Connexion requise</h2>' +
+        '<p>Pour souscrire à l\'offre Premium, créez d\'abord un compte gratuit ou connectez-vous.</p>' +
+        '<a href="connexion.html" class="bouton-principal">Se connecter</a>' +
+        ' <a href="inscription-compte.html" class="bouton-secondaire">Créer un compte</a>' +
+      '</div>')
+    return
+  }
+
+  /* Cas 2 : utilisateur déjà Premium */
+  if (session.utilisateur.statut === 'Premium') {
+    vueFormulaire.style.display = 'none'
+    conteneur.insertAdjacentHTML('beforeend',
+      '<div class="etat-special">' +
+        '<h2>⭐ Vous êtes déjà Premium</h2>' +
+        '<p>Votre abonnement est actif. Profitez de l\'intégralité des cours, vidéos et supports.</p>' +
+        '<a href="espace-client.html" class="bouton-principal">Accéder à mon espace</a>' +
+      '</div>')
+    return
+  }
+
+  /* Cas 3 : Standard connecté — on active le formatage auto des champs
+     et on branche la soumission du formulaire au backend */
+  brancherFormatsCarte()
+  document.getElementById('formulaire-paiement')
+    .addEventListener('submit', envoyerPaiement)
+}
+
+/* Formate les champs de la carte à la volée (espaces tous les 4 chiffres,
+   slash automatique dans MM/AA, restriction aux chiffres pour CVV) */
+function brancherFormatsCarte() {
+  const numeroCarte = document.getElementById('numero-carte')
+  const expiration  = document.getElementById('expiration')
+  const cvv         = document.getElementById('cvv')
+
+  numeroCarte.addEventListener('input', function() {
+    const chiffres = numeroCarte.value.replace(/\D/g, '').slice(0, 16)
+    numeroCarte.value = chiffres.replace(/(.{4})/g, '$1 ').trim()
+  })
+
+  expiration.addEventListener('input', function() {
+    let chiffres = expiration.value.replace(/\D/g, '').slice(0, 4)
+    if (chiffres.length >= 3) {
+      chiffres = chiffres.slice(0, 2) + '/' + chiffres.slice(2)
+    }
+    expiration.value = chiffres
+  })
+
+  cvv.addEventListener('input', function() {
+    cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4)
+  })
+}
+
+/* Envoie la demande d'activation Premium au backend.
+   Les données de la carte ne sont PAS transmises — aucun vrai paiement.
+   Seul le jeton JWT sert à identifier l'utilisateur côté serveur. */
+async function envoyerPaiement(evenement) {
+  evenement.preventDefault()
+
+  const zoneMessage = document.getElementById('message-paiement')
+  const bouton      = evenement.target.querySelector('button[type="submit"]')
+  const texteInitial = bouton.textContent
+
+  /* Vérifications visuelles côté client (format des champs) */
+  const numero = document.getElementById('numero-carte').value.replace(/\s/g, '')
+  const expi   = document.getElementById('expiration').value
+  const cvv    = document.getElementById('cvv').value
+  const nom    = document.getElementById('nom-carte').value.trim()
+
+  if (nom.length < 2 || numero.length < 13 || !/^\d\d\/\d\d$/.test(expi) || cvv.length < 3) {
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Merci de vérifier les informations de la carte.'
+    return
+  }
+
+  const session = lireSession()
+  if (!session) {
+    window.location.href = 'connexion.html'
+    return
+  }
+
+  bouton.disabled = true
+  bouton.textContent = 'Paiement en cours...'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/activer-premium', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + session.token
+      }
+    })
+    const resultat = await reponse.json()
+
+    if (resultat.succes) {
+      /* Remplace la session locale par la nouvelle (statut = Premium) */
+      sauverSession(resultat.token, resultat.utilisateur)
+      zoneMessage.className = 'message-succes'
+      zoneMessage.textContent = '✅ Paiement validé ! Votre abonnement Premium est actif. Redirection...'
+      setTimeout(function() {
+        window.location.href = 'espace-client.html'
+      }, 1500)
+    } else {
+      zoneMessage.className = 'message-erreur'
+      zoneMessage.textContent = resultat.message || 'Erreur lors du paiement. Réessayez.'
+      bouton.disabled = false
+      bouton.textContent = texteInitial
+    }
+
+  } catch (erreur) {
+    console.error('Erreur paiement :', erreur)
+    zoneMessage.className = 'message-erreur'
+    zoneMessage.textContent = 'Impossible de contacter le serveur. Réessayez.'
+    bouton.disabled = false
+    bouton.textContent = texteInitial
+  }
+}
+
+
 /* ===== PAGES DE FORMATION ===== */
 /* Gère l'accès au contenu Premium sur les pages formation-*.html
    - Non connecté : sections Premium floutées + CTA "Créer un compte"
@@ -416,6 +540,11 @@ document.addEventListener('DOMContentLoaded', function() {
   /* Pages formation-*.html : configure l'accès au contenu Premium */
   if (document.querySelector('.contenu-premium')) {
     configurerAccesFormation()
+  }
+
+  /* Page paiement.html : initialise selon l'état de l'utilisateur */
+  if (document.getElementById('conteneur-paiement')) {
+    initialiserPagePaiement()
   }
 
   /* Formulaire de connexion — présent uniquement sur connexion.html */
