@@ -55,6 +55,15 @@ function majNavigation() {
         session.utilisateur.prenom +
       '</a>'
 
+    /* Si l'utilisateur est admin, on insère un lien vers le dashboard
+       (visible uniquement pour les emails listés dans ADMIN_EMAILS côté backend). */
+    if (session.utilisateur.estAdmin) {
+      const liAdmin = document.createElement('li')
+      liAdmin.innerHTML =
+        '<a href="admin.html" class="lien-admin">🔐 Admin</a>'
+      liensNav.appendChild(liAdmin)
+    }
+
     const liDeconnexion = document.createElement('li')
     liDeconnexion.innerHTML =
       '<a href="#" onclick="deconnecter(); return false;">Déconnexion</a>'
@@ -562,6 +571,170 @@ function reinitialiserQuiz() {
 }
 
 
+/* ============================================================
+   DASHBOARD ADMIN (admin.html)
+   ============================================================ */
+
+/* Formate une date ISO en "JJ/MM HH:MM" pour les tableaux du dashboard */
+function formatDateCourte(isoDate) {
+  if (!isoDate) return ''
+  const d = new Date(isoDate)
+  const jour  = String(d.getDate()).padStart(2, '0')
+  const mois  = String(d.getMonth() + 1).padStart(2, '0')
+  const heure = String(d.getHours()).padStart(2, '0')
+  const min   = String(d.getMinutes()).padStart(2, '0')
+  return jour + '/' + mois + ' ' + heure + ':' + min
+}
+
+/* Construit une barre de répartition pour un objet { clé: valeur } */
+function construireBarres(donnees, conteneurId) {
+  const conteneur = document.getElementById(conteneurId)
+  if (!conteneur) return
+
+  const valeurs = Object.values(donnees)
+  const max = Math.max(...valeurs, 1)
+
+  conteneur.innerHTML = Object.keys(donnees).map(function(cle) {
+    const valeur = donnees[cle]
+    const pourcentage = Math.round((valeur / max) * 100)
+    return (
+      '<div class="admin-barre">' +
+        '<span class="admin-barre-libelle">' + cle + '</span>' +
+        '<div class="admin-barre-fond">' +
+          '<div class="admin-barre-remplie" style="width:' + pourcentage + '%"></div>' +
+        '</div>' +
+        '<span class="admin-barre-valeur">' + valeur + '</span>' +
+      '</div>'
+    )
+  }).join('')
+}
+
+/* Construit le tableau HTML des dernières inscriptions */
+function construireTableauInscriptions(lignes) {
+  const conteneur = document.getElementById('table-inscriptions')
+  if (!conteneur) return
+
+  if (!lignes || lignes.length === 0) {
+    conteneur.innerHTML = '<p class="admin-tableau-vide">Aucune inscription pour l\'instant.</p>'
+    return
+  }
+
+  const html =
+    '<table class="admin-tableau-compact">' +
+      '<thead><tr>' +
+        '<th>Prénom</th><th>Formation</th><th>Date</th>' +
+      '</tr></thead><tbody>' +
+      lignes.map(function(l) {
+        return '<tr>' +
+          '<td>' + (l.prenom || '—') + ' ' + (l.nom || '') + '</td>' +
+          '<td><span class="admin-badge-formation">' + (l.formation || '—') + '</span></td>' +
+          '<td>' + formatDateCourte(l.date) + '</td>' +
+        '</tr>'
+      }).join('') +
+      '</tbody></table>'
+
+  conteneur.innerHTML = html
+}
+
+/* Construit le tableau HTML des dernières transactions */
+function construireTableauTransactions(lignes) {
+  const conteneur = document.getElementById('table-transactions')
+  if (!conteneur) return
+
+  if (!lignes || lignes.length === 0) {
+    conteneur.innerHTML = '<p class="admin-tableau-vide">Aucune transaction pour l\'instant.</p>'
+    return
+  }
+
+  const html =
+    '<table class="admin-tableau-compact">' +
+      '<thead><tr>' +
+        '<th>Référence</th><th>Email</th><th>Montant</th>' +
+      '</tr></thead><tbody>' +
+      lignes.map(function(l) {
+        return '<tr>' +
+          '<td style="font-family:monospace;font-size:0.8rem;">' + (l.reference || '—') + '</td>' +
+          '<td>' + (l.email || '—') + '</td>' +
+          '<td><strong>' + (l.montant || 0) + ' €</strong></td>' +
+        '</tr>'
+      }).join('') +
+      '</tbody></table>'
+
+  conteneur.innerHTML = html
+}
+
+/* Charge les statistiques depuis /api/admin/stats et remplit le dashboard.
+   Protège aussi la page : si l'utilisateur n'est pas admin (403), redirection. */
+async function chargerDashboardAdmin() {
+  const session = lireSession()
+  const zoneMessage = document.getElementById('admin-message')
+  const zoneContenu = document.getElementById('admin-contenu')
+
+  /* Vérification locale avant même de faire l'appel API */
+  if (!session || !session.token) {
+    window.location.href = 'connexion.html'
+    return
+  }
+  if (!session.utilisateur.estAdmin) {
+    zoneMessage.innerHTML =
+      '<div class="admin-message-erreur">⛔ Accès réservé à l\'équipe administration.</div>'
+    return
+  }
+
+  zoneMessage.innerHTML = '<div class="admin-message-chargement">⏳ Chargement des statistiques…</div>'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/stats', {
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    })
+
+    if (reponse.status === 401) {
+      /* Token expiré : on déconnecte et redirige */
+      deconnecter()
+      return
+    }
+    if (reponse.status === 403) {
+      zoneMessage.innerHTML =
+        '<div class="admin-message-erreur">⛔ Votre compte n\'a pas les droits admin.</div>'
+      return
+    }
+
+    const resultat = await reponse.json()
+    if (!resultat.succes) {
+      zoneMessage.innerHTML =
+        '<div class="admin-message-erreur">⚠️ ' + (resultat.message || 'Erreur inconnue') + '</div>'
+      return
+    }
+
+    const s = resultat.stats
+
+    /* Remplissage des cartes KPI */
+    document.getElementById('kpi-inscriptions').textContent  = s.totalInscriptions
+    document.getElementById('kpi-comptes').textContent       = s.totalComptes
+    document.getElementById('kpi-premium').textContent       = s.comptesParStatut.Premium
+    document.getElementById('kpi-leads').textContent         = s.totalLeads
+    document.getElementById('kpi-transactions').textContent  = s.totalTransactions
+    document.getElementById('kpi-revenu').textContent        = s.totalRevenu + ' €'
+
+    /* Répartitions (barres) */
+    construireBarres(s.inscriptionsParFormation, 'repartition-formations')
+    construireBarres(s.leadsParPipeline,         'repartition-pipeline')
+
+    /* Tableaux des dernières entrées */
+    construireTableauInscriptions(s.dernieresInscriptions)
+    construireTableauTransactions(s.dernieresTransactions)
+
+    zoneMessage.innerHTML = ''
+    zoneContenu.style.display = 'block'
+
+  } catch (erreur) {
+    console.error('Erreur chargement dashboard :', erreur)
+    zoneMessage.innerHTML =
+      '<div class="admin-message-erreur">⚠️ Impossible de contacter le serveur. Vérifiez votre connexion.</div>'
+  }
+}
+
+
 /* Initialisation au chargement de la page */
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -576,6 +749,11 @@ document.addEventListener('DOMContentLoaded', function() {
   /* Page paiement.html : initialise selon l'état de l'utilisateur */
   if (document.getElementById('conteneur-paiement')) {
     initialiserPagePaiement()
+  }
+
+  /* Page admin.html : charge le dashboard si on est admin */
+  if (document.getElementById('admin-contenu')) {
+    chargerDashboardAdmin()
   }
 
   /* Formulaire de connexion — présent uniquement sur connexion.html */

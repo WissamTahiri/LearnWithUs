@@ -1083,3 +1083,233 @@ textarea {
   font-size: 1.05rem;
   color: var(--couleur-texte-secondaire);
 }
+
+
+/* ============================================================
+   DASHBOARD ADMIN (admin.html)
+   ============================================================ */
+
+.page-admin {
+  min-height: calc(100vh - 70px);
+  padding: 40px 20px;
+  background-color: var(--couleur-fond);
+}
+
+.admin-conteneur {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.admin-entete h1 {
+  color: var(--couleur-titre);
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.admin-sous-titre {
+  color: var(--couleur-texte-secondaire);
+  font-size: 0.95rem;
+}
+
+.bouton-secondaire {
+  background-color: var(--couleur-blanc);
+  color: var(--couleur-principale);
+  border: 1.5px solid var(--couleur-principale);
+  padding: 10px 18px;
+  border-radius: var(--rayon-bouton);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.bouton-secondaire:hover {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+}
+
+/* Cartes KPI : grille responsive 2/3/6 colonnes selon taille écran */
+.admin-grille-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.admin-carte {
+  background-color: var(--couleur-blanc);
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+  padding: 22px 18px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.admin-carte:hover {
+  transform: translateY(-2px);
+}
+
+.admin-carte-icone {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.admin-carte-chiffre {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--couleur-principale);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.admin-carte-libelle {
+  color: var(--couleur-texte-secondaire);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Carte mise en avant (pour le revenu) */
+.admin-carte-mise-avant {
+  background-color: var(--couleur-principale);
+}
+.admin-carte-mise-avant .admin-carte-chiffre,
+.admin-carte-mise-avant .admin-carte-libelle {
+  color: var(--couleur-blanc);
+}
+
+/* Deux colonnes pour les blocs (empilé sur mobile) */
+.admin-deux-colonnes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .admin-deux-colonnes { grid-template-columns: 1fr; }
+}
+
+.admin-bloc {
+  background-color: var(--couleur-blanc);
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+  padding: 22px;
+}
+
+.admin-bloc h2 {
+  color: var(--couleur-titre);
+  font-size: 1.15rem;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--couleur-principale-clair);
+}
+
+/* Barre de répartition (pour formations et pipeline CRM) */
+.admin-barre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+}
+.admin-barre-libelle {
+  min-width: 110px;
+  color: var(--couleur-texte);
+  font-weight: 500;
+}
+.admin-barre-fond {
+  flex: 1;
+  height: 18px;
+  background-color: var(--couleur-principale-clair);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.admin-barre-remplie {
+  height: 100%;
+  background-color: var(--couleur-principale);
+  transition: width 0.4s ease;
+}
+.admin-barre-valeur {
+  min-width: 40px;
+  text-align: right;
+  color: var(--couleur-texte);
+  font-weight: 600;
+}
+
+/* Tableaux compacts */
+.admin-tableau-compact {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.admin-tableau-compact th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--couleur-texte-secondaire);
+  font-weight: 600;
+  border-bottom: 2px solid var(--couleur-bordure);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.admin-tableau-compact td {
+  padding: 10px;
+  border-bottom: 1px solid var(--couleur-bordure);
+  color: var(--couleur-texte);
+}
+.admin-tableau-compact tr:last-child td {
+  border-bottom: none;
+}
+.admin-tableau-compact .admin-tableau-vide {
+  text-align: center;
+  color: var(--couleur-texte-secondaire);
+  padding: 20px;
+  font-style: italic;
+}
+
+.admin-badge-formation {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--couleur-principale-clair);
+  color: var(--couleur-principale);
+}
+
+/* Lien Admin dans la navigation (badge rouge discret) */
+.lien-admin {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc) !important;
+  padding: 6px 12px;
+  border-radius: var(--rayon-bouton);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.lien-admin:hover {
+  background-color: var(--couleur-principale-hover);
+}
+
+/* Message d'erreur / chargement */
+.admin-message-erreur {
+  background-color: #FFF3CD;
+  color: #856404;
+  padding: 16px 20px;
+  border-radius: var(--rayon-carte);
+  border-left: 4px solid #F0A030;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.admin-message-chargement {
+  text-align: center;
+  color: var(--couleur-texte-secondaire);
+  padding: 40px;
+  font-style: italic;
+}
