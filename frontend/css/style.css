@@ -880,6 +880,66 @@ textarea {
   transform: translateY(-2px);
 }
 
+/* Liste des ressources (liens et documents) d'une formation Premium */
+.liste-ressources {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.liste-ressources li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-bouton);
+  margin-bottom: 10px;
+  background-color: var(--couleur-blanc);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.liste-ressources li:hover {
+  background-color: var(--couleur-principale-clair);
+  border-color: var(--couleur-principale);
+}
+
+.liste-ressources .ressource-icone {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.liste-ressources .ressource-texte {
+  flex: 1;
+}
+
+.liste-ressources .ressource-titre {
+  font-weight: 600;
+  color: var(--couleur-titre);
+  margin-bottom: 2px;
+}
+
+.liste-ressources .ressource-description {
+  font-size: 0.85rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+.liste-ressources a.ressource-lien {
+  font-weight: 600;
+  color: var(--couleur-principale);
+  white-space: nowrap;
+  padding: 8px 14px;
+  border: 1px solid var(--couleur-principale);
+  border-radius: var(--rayon-bouton);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.liste-ressources a.ressource-lien:hover {
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+}
+
+
 /* Placeholder vidéo (la vidéo réelle sera tournée plus tard) */
 .video-placeholder {
   background-color: #111111;
