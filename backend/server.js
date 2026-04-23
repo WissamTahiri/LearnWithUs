@@ -1,11 +1,12 @@
 /* server.js — Serveur backend de LearnWithUs
    Lance le serveur : npm run dev (dev) ou npm start (prod) */
 
-const express  = require('express')
-const cors     = require('cors')
-const dotenv   = require('dotenv')
-const bcrypt   = require('bcryptjs')
-const jwt      = require('jsonwebtoken')
+const express   = require('express')
+const cors      = require('cors')
+const dotenv    = require('dotenv')
+const bcrypt    = require('bcryptjs')
+const jwt       = require('jsonwebtoken')
+const rateLimit = require('express-rate-limit')
 const { Client } = require('@notionhq/client')
 
 dotenv.config()
@@ -52,6 +53,24 @@ app.use(cors({
 
 /* Parse le corps des requêtes POST en JSON */
 app.use(express.json())
+
+/* Render place un proxy devant les services — on fait confiance à sa première
+   en-tête X-Forwarded-For pour avoir la vraie IP client (requis par rate-limit) */
+app.set('trust proxy', 1)
+
+/* Limite 5 tentatives / 15 min par IP sur les endpoints sensibles (connexion,
+   création de compte, demande reset) pour bloquer les attaques par force
+   brute et le spam de création de compte. */
+const limiteurAuth = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max:      5,
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message: {
+    succes: false,
+    message: 'Trop de tentatives, réessayez dans 15 minutes.'
+  }
+})
 
 
 /* ===== ROUTE SANTÉ ===== */
@@ -172,71 +191,10 @@ async function enregistrerTransaction(donnees) {
 }
 
 
-/* ===== ROUTE INSCRIPTION ===== */
-/* Reçoit une inscription, la sauvegarde dans Notion et notifie n8n */
-app.post('/api/inscription', async function(req, res) {
-
-  const { prenom, nom, email, formation, telephone } = req.body
-
-  if (!prenom || !nom || !email || !formation) {
-    return res.status(400).json({
-      succes: false,
-      message: 'Champs obligatoires manquants : prénom, nom, email, formation'
-    })
-  }
-
-  console.log('✅ Nouvelle inscription : ' + prenom + ' ' + nom + ' → Formation : ' + formation)
-
-  /* Sauvegarde dans Notion si les variables d'environnement sont configurées */
-  if (NOTION_DATABASE_ID && process.env.NOTION_TOKEN) {
-    try {
-      await notion.pages.create({
-        parent: { database_id: NOTION_DATABASE_ID },
-        properties: {
-          'Prénom':    { title: [{ text: { content: prenom } }] },
-          'Nom':       { rich_text: [{ text: { content: nom } }] },
-          'Email':     { email: email },
-          'Formation': { select: { name: formation } },
-          'Téléphone': { phone_number: telephone || null },
-          'Statut':    { select: { name: 'Nouveau' } }
-        }
-      })
-      console.log('📋 Inscription sauvegardée dans Notion pour ' + email)
-    } catch (erreurNotion) {
-      console.error('⚠️  Erreur Notion : ' + erreurNotion.message)
-    }
-  }
-
-  /* Transmet au webhook n8n pour l'envoi des emails automatiques */
-  const urlWebhookN8n = process.env.WEBHOOK_N8N_URL
-  if (urlWebhookN8n) {
-    try {
-      await fetch(urlWebhookN8n, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom, nom, email, formation, telephone })
-      })
-      console.log('📨 Données transmises à n8n pour ' + email)
-    } catch (erreur) {
-      console.error('⚠️  Impossible de contacter n8n : ' + erreur.message)
-    }
-  }
-
-  /* Ajout au CRM Notion (Pipeline="Lead", Source=Formulaire inscription) */
-  synchroniserCRM({
-    nomComplet: prenom + ' ' + nom,
-    email:      email,
-    telephone:  telephone,
-    source:     'Formulaire inscription',
-    formation:  formation,
-    pipeline:   'Lead'
-  })
-
-  res.json({
-    succes: true,
-    message: 'Inscription de ' + prenom + ' enregistrée avec succès'
-  })
-})
+/* Ancien endpoint POST /api/inscription (formulaire formations.html) supprimé :
+   remplacé par le parcours unique "création de compte + formation d'intérêt"
+   depuis /api/creer-compte. L'ancienne base Notion "Inscriptions Formations"
+   est conservée pour archivage mais n'est plus alimentée. */
 
 
 /* ===== ROUTE CONTACT ===== */
@@ -337,14 +295,14 @@ function genererJeton(utilisateur) {
 /* ===== ROUTE CRÉATION DE COMPTE ===== */
 /* Crée un nouveau compte dans Notion avec mot de passe hashé (bcrypt)
    puis renvoie un jeton JWT pour connecter automatiquement l'utilisateur */
-app.post('/api/creer-compte', async function(req, res) {
+app.post('/api/creer-compte', limiteurAuth, async function(req, res) {
 
-  const { prenom, nom, email, motDePasse } = req.body
+  const { prenom, nom, email, motDePasse, telephone, formation } = req.body
 
   if (!prenom || !nom || !email || !motDePasse) {
     return res.status(400).json({
       succes: false,
-      message: 'Tous les champs sont obligatoires'
+      message: 'Prénom, nom, email et mot de passe sont obligatoires'
     })
   }
 
@@ -389,13 +347,40 @@ app.post('/api/creer-compte', async function(req, res) {
 
     console.log('👤 Nouveau compte créé : ' + email)
 
-    /* Ajout au CRM Notion (Pipeline="Lead", Source=Création compte) */
+    /* Ajout au CRM Notion (Pipeline="Lead", Source=Création compte)
+       avec éventuelles infos optionnelles (téléphone + formation d'intérêt) */
     synchroniserCRM({
       nomComplet: prenom + ' ' + nom,
       email:      email,
+      telephone:  telephone || undefined,
+      formation:  formation || undefined,
       source:     'Création compte',
       pipeline:   'Lead'
     })
+
+    /* Email de bienvenue via n8n (workflow #1, ex-inscription, recyclé)
+       si l'URL du webhook est configurée. Fire-and-forget.
+       On embarque un lien de vérification d'email (JWT signé, 7 jours). */
+    const urlWebhookBienvenue = process.env.WEBHOOK_N8N_URL
+    if (urlWebhookBienvenue) {
+      const tokenVerif = jwt.sign(
+        { email, purpose: 'verification' },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      )
+      const FRONT_URL = process.env.URL_FRONTEND || 'https://learn-with-us-lac.vercel.app'
+      const lienVerif = FRONT_URL + '/verification-email.html?token=' + tokenVerif
+
+      fetch(urlWebhookBienvenue, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prenom, nom, email,
+          formation: formation || '',
+          lienVerification: lienVerif
+        })
+      }).catch(e => console.error('⚠️  n8n bienvenue : ' + e.message))
+    }
 
     /* Génère un jeton pour connecter automatiquement l'utilisateur */
     const utilisateur = { email, prenom, nom, statut: 'Standard' }
@@ -448,7 +433,7 @@ function verifierJeton(req, res, next) {
 
 /* ===== ROUTE CONNEXION ===== */
 /* Vérifie email + mot de passe puis renvoie un jeton JWT si correct */
-app.post('/api/connexion', async function(req, res) {
+app.post('/api/connexion', limiteurAuth, async function(req, res) {
 
   const { email, motDePasse } = req.body
 
@@ -670,11 +655,12 @@ app.get('/api/admin/stats', verifierJeton, verifierAdmin, async function(req, re
       else comptesParStatut.Standard++
     })
 
-    /* Inscriptions : répartition par formation */
-    const inscriptionsParFormation = { IA: 0, SCRUM: 0, SAP: 0 }
-    inscriptions.forEach(i => {
-      const f = i.properties?.Formation?.select?.name
-      if (f && inscriptionsParFormation[f] !== undefined) inscriptionsParFormation[f]++
+    /* CRM : répartition par formation d'intérêt (remplace les inscriptions
+       par formation depuis la bascule vers le parcours compte unique) */
+    const crmParFormation = { IA: 0, SCRUM: 0, SAP: 0 }
+    crm.forEach(c => {
+      const f = c.properties?.['Formation d\'intérêt']?.select?.name
+      if (f && crmParFormation[f] !== undefined) crmParFormation[f]++
     })
 
     /* CRM : répartition par étape de pipeline */
@@ -716,6 +702,16 @@ app.get('/api/admin/stats', verifierJeton, verifierAdmin, async function(req, re
       date:      t.created_time
     }))
 
+    /* Liste complète des comptes pour la section "Gestion des comptes"
+       du dashboard admin (delete + changement de statut) */
+    const tousLesComptes = comptes.map(c => ({
+      email:  c.properties?.Email?.title?.[0]?.text?.content || '',
+      prenom: c.properties?.Prenom?.rich_text?.[0]?.text?.content || '',
+      nom:    c.properties?.Nom?.rich_text?.[0]?.text?.content || '',
+      statut: c.properties?.Statut?.select?.name || 'Standard',
+      date:   c.created_time
+    }))
+
     res.json({
       succes: true,
       stats: {
@@ -725,10 +721,11 @@ app.get('/api/admin/stats', verifierJeton, verifierAdmin, async function(req, re
         totalTransactions:      transactions.length,
         totalRevenu:            totalRevenu,
         comptesParStatut:       comptesParStatut,
-        inscriptionsParFormation: inscriptionsParFormation,
+        crmParFormation:        crmParFormation,
         leadsParPipeline:       leadsParPipeline,
         dernieresInscriptions:  dernieresInscriptions,
-        dernieresTransactions:  dernieresTransactions
+        dernieresTransactions:  dernieresTransactions,
+        tousLesComptes:         tousLesComptes
       }
     })
 
@@ -738,6 +735,275 @@ app.get('/api/admin/stats', verifierJeton, verifierAdmin, async function(req, re
       succes: false,
       message: 'Erreur lors du chargement des statistiques'
     })
+  }
+})
+
+
+/* ===== ROUTE SUPPRESSION COMPTE (utilisateur) =====
+   Permet à un utilisateur connecté de supprimer son propre compte
+   (droit à l'effacement RGPD). La page Notion est archivée (soft delete)
+   pour garder une trace technique. Le CRM n'est pas modifié : on conserve
+   l'historique du lead pour la comptabilité. */
+app.delete('/api/compte', verifierJeton, async function(req, res) {
+
+  const email = req.utilisateur.email
+
+  try {
+    const pageCompte = await chercherCompteParEmail(email)
+    if (!pageCompte) {
+      return res.status(404).json({
+        succes: false,
+        message: 'Compte introuvable'
+      })
+    }
+
+    await notion.pages.update({
+      page_id:  pageCompte.id,
+      archived: true
+    })
+
+    console.log('🗑️  Compte supprimé : ' + email)
+
+    res.json({
+      succes: true,
+      message: 'Votre compte a bien été supprimé'
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur suppression compte : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur lors de la suppression du compte'
+    })
+  }
+})
+
+
+/* ===== ROUTE ADMIN : SUPPRIMER UN COMPTE =====
+   Permet à un admin d'archiver le compte de n'importe quel utilisateur
+   (sauf le sien, par sécurité : un admin doit utiliser /api/compte). */
+app.delete('/api/admin/comptes/:email', verifierJeton, verifierAdmin, async function(req, res) {
+
+  const emailCible    = decodeURIComponent(req.params.email).toLowerCase()
+  const emailAdmin    = req.utilisateur.email.toLowerCase()
+
+  if (emailCible === emailAdmin) {
+    return res.status(400).json({
+      succes: false,
+      message: 'Vous ne pouvez pas supprimer votre propre compte via cette route'
+    })
+  }
+
+  try {
+    const pageCompte = await chercherCompteParEmail(emailCible)
+    if (!pageCompte) {
+      return res.status(404).json({
+        succes: false,
+        message: 'Compte introuvable'
+      })
+    }
+
+    await notion.pages.update({
+      page_id:  pageCompte.id,
+      archived: true
+    })
+
+    console.log('🗑️  [Admin ' + emailAdmin + '] Compte supprimé : ' + emailCible)
+
+    res.json({
+      succes: true,
+      message: 'Compte de ' + emailCible + ' supprimé'
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur suppression admin : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur lors de la suppression'
+    })
+  }
+})
+
+
+/* ===== ROUTE ADMIN : CHANGER LE STATUT D'UN COMPTE =====
+   Permet de basculer manuellement Standard ↔ Premium (ex : geste
+   commercial, résiliation anticipée). Ne déclenche aucun webhook. */
+app.put('/api/admin/comptes/:email/statut', verifierJeton, verifierAdmin, async function(req, res) {
+
+  const emailCible     = decodeURIComponent(req.params.email).toLowerCase()
+  const { nouveauStatut } = req.body
+
+  if (!['Standard', 'Premium'].includes(nouveauStatut)) {
+    return res.status(400).json({
+      succes: false,
+      message: 'Statut invalide (attendu : Standard ou Premium)'
+    })
+  }
+
+  try {
+    const pageCompte = await chercherCompteParEmail(emailCible)
+    if (!pageCompte) {
+      return res.status(404).json({
+        succes: false,
+        message: 'Compte introuvable'
+      })
+    }
+
+    await notion.pages.update({
+      page_id: pageCompte.id,
+      properties: {
+        'Statut': { select: { name: nouveauStatut } }
+      }
+    })
+
+    console.log('🔁 [Admin] Statut de ' + emailCible + ' → ' + nouveauStatut)
+
+    res.json({
+      succes: true,
+      message: 'Statut mis à jour : ' + nouveauStatut
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur changement statut : ' + erreur.message)
+    res.status(500).json({
+      succes: false,
+      message: 'Erreur lors du changement de statut'
+    })
+  }
+})
+
+
+/* ===== URL DU FRONT POUR CONSTRUIRE LES LIENS EMAIL =====
+   Utilisée par les emails de reset mot de passe et de vérification :
+   le backend doit embarquer un lien vers la bonne page frontend. */
+const URL_FRONT = process.env.URL_FRONTEND || 'https://learn-with-us-lac.vercel.app'
+
+
+/* ===== ROUTE DEMANDE DE RESET MOT DE PASSE =====
+   Génère un JWT dédié "purpose=reset" valable 15 minutes, appelle le
+   webhook n8n #5 (reset-mdp) pour envoyer le mail, et renvoie toujours
+   un succès (même si l'email n'existe pas) pour éviter l'énumération. */
+app.post('/api/mdp/demande', limiteurAuth, async function(req, res) {
+
+  const { email } = req.body
+  if (!email) {
+    return res.status(400).json({ succes: false, message: 'Email obligatoire' })
+  }
+
+  try {
+    const pageCompte = await chercherCompteParEmail(email)
+
+    if (pageCompte) {
+      const compte = lireCompte(pageCompte)
+
+      /* Le token de reset est un JWT signé avec le même secret que
+         les tokens de session — on le distingue via purpose='reset' */
+      const tokenReset = jwt.sign(
+        { email: compte.email, purpose: 'reset' },
+        JWT_SECRET,
+        { expiresIn: '15m' }
+      )
+      const lienReset = URL_FRONT + '/reset-mot-de-passe.html?token=' + tokenReset
+
+      const urlWebhook = process.env.WEBHOOK_N8N_RESET_URL
+      if (urlWebhook) {
+        fetch(urlWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email:  compte.email,
+            prenom: compte.prenom,
+            lien:   lienReset
+          })
+        }).catch(e => console.error('⚠️  n8n reset : ' + e.message))
+      } else {
+        /* Pas de webhook configuré : on log le lien côté serveur pour
+           permettre le test en dev sans dépendre de n8n. */
+        console.log('🔑 [RESET] ' + compte.email + ' → ' + lienReset)
+      }
+    }
+
+    /* Réponse volontairement générique pour ne pas révéler si l'email
+       existe ou non (protection contre l'énumération) */
+    res.json({
+      succes: true,
+      message: 'Si un compte existe avec cet email, un lien de réinitialisation vient de partir.'
+    })
+
+  } catch (erreur) {
+    console.error('⚠️  Erreur reset demande : ' + erreur.message)
+    res.status(500).json({ succes: false, message: 'Erreur serveur' })
+  }
+})
+
+
+/* ===== ROUTE CONFIRMATION DU RESET =====
+   Prend le JWT reçu par email + le nouveau mot de passe, vérifie le
+   token (expiration + purpose) et met à jour le hash bcrypt dans Notion. */
+app.post('/api/mdp/confirmer', async function(req, res) {
+
+  const { token, nouveauMdp } = req.body
+  if (!token || !nouveauMdp) {
+    return res.status(400).json({ succes: false, message: 'Token et nouveau mot de passe obligatoires' })
+  }
+  if (nouveauMdp.length < 8) {
+    return res.status(400).json({ succes: false, message: 'Mot de passe trop court (8 caractères min)' })
+  }
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET)
+    if (payload.purpose !== 'reset') {
+      return res.status(400).json({ succes: false, message: 'Token invalide' })
+    }
+
+    const pageCompte = await chercherCompteParEmail(payload.email)
+    if (!pageCompte) {
+      return res.status(404).json({ succes: false, message: 'Compte introuvable' })
+    }
+
+    const nouveauHash = await bcrypt.hash(nouveauMdp, 10)
+    await notion.pages.update({
+      page_id: pageCompte.id,
+      properties: {
+        'Mot de passe': { rich_text: [{ text: { content: nouveauHash } }] }
+      }
+    })
+
+    console.log('🔑 Mot de passe réinitialisé : ' + payload.email)
+
+    res.json({ succes: true, message: 'Mot de passe réinitialisé' })
+
+  } catch (erreur) {
+    if (erreur.name === 'TokenExpiredError') {
+      return res.status(400).json({ succes: false, message: 'Lien expiré (valable 15 minutes). Relancez une demande.' })
+    }
+    console.error('⚠️  Erreur reset confirmer : ' + erreur.message)
+    res.status(400).json({ succes: false, message: 'Lien invalide' })
+  }
+})
+
+
+/* ===== ROUTE VÉRIFICATION EMAIL =====
+   Confirme qu'un visiteur a bien cliqué sur le lien reçu à la création
+   de compte. Pour un projet école, on ne stocke pas l'état vérifié
+   (on ne bloque aucune fonctionnalité dessus) mais on valide la
+   signature JWT et on log le succès : cela suffit à démontrer la
+   démarche de vérification. */
+app.get('/api/verifier-email/:token', async function(req, res) {
+
+  const token = req.params.token
+  try {
+    const payload = jwt.verify(token, JWT_SECRET)
+    if (payload.purpose !== 'verification') {
+      return res.status(400).json({ succes: false, message: 'Token invalide' })
+    }
+    console.log('✉️  Email vérifié : ' + payload.email)
+    res.json({ succes: true, email: payload.email })
+  } catch (erreur) {
+    if (erreur.name === 'TokenExpiredError') {
+      return res.status(400).json({ succes: false, message: 'Lien de vérification expiré' })
+    }
+    res.status(400).json({ succes: false, message: 'Lien invalide' })
   }
 })
 

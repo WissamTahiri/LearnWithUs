@@ -1313,3 +1313,88 @@ textarea {
   padding: 40px;
   font-style: italic;
 }
+
+/* Boutons d'action dans le tableau de gestion des comptes */
+.admin-action {
+  padding: 5px 10px;
+  border: 1px solid var(--couleur-bordure);
+  background-color: var(--couleur-blanc);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--couleur-texte);
+  margin-right: 6px;
+  transition: all 0.2s;
+}
+.admin-action:hover {
+  background-color: var(--couleur-principale-clair);
+  border-color: var(--couleur-principale);
+}
+.admin-action-danger {
+  color: #C62828;
+  border-color: #E0B4B4;
+}
+.admin-action-danger:hover {
+  background-color: #FDECEA;
+  border-color: #C62828;
+}
+
+.admin-badge-statut {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.admin-badge-statut.standard {
+  background-color: #E8F4FD;
+  color: #1565C0;
+}
+.admin-badge-statut.premium {
+  background-color: #FFF3CD;
+  color: #856404;
+}
+
+
+/* ============================================================
+   ZONE DE DANGER (suppression de compte — RGPD)
+   ============================================================ */
+.zone-danger {
+  max-width: 700px;
+  margin: 40px auto 60px;
+  padding: 24px 28px;
+  background-color: #FFF8F8;
+  border: 1.5px solid #F5C2C7;
+  border-radius: var(--rayon-carte);
+}
+
+.zone-danger h3 {
+  color: #C62828;
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+
+.zone-danger p {
+  color: #6B6B6B;
+  font-size: 0.92rem;
+  margin-bottom: 16px;
+}
+
+.bouton-danger {
+  background-color: #C62828;
+  color: var(--couleur-blanc);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--rayon-bouton);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.bouton-danger:hover {
+  background-color: #A31515;
+}
+.bouton-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -67,9 +67,9 @@
       <!-- data-formation pré-sélectionne la formation dans le formulaire ci-dessous -->
       <div class="fiche-boutons">
         <a href="formation-ia.html" class="bouton-principal">Voir le cours</a>
-        <button class="bouton-secondaire bouton-inscription" data-formation="IA">
-          S'inscrire à cette formation
-        </button>
+        <a href="inscription-compte.html?formation=IA" class="bouton-secondaire">
+          Créer un compte
+        </a>
       </div>
     </div>
 
@@ -101,9 +101,9 @@
       </table>
       <div class="fiche-boutons">
         <a href="formation-scrum.html" class="bouton-principal">Voir le cours</a>
-        <button class="bouton-secondaire bouton-inscription" data-formation="SCRUM">
-          S'inscrire à cette formation
-        </button>
+        <a href="inscription-compte.html?formation=SCRUM" class="bouton-secondaire">
+          Créer un compte
+        </a>
       </div>
     </div>
 
@@ -135,48 +135,25 @@
       </table>
       <div class="fiche-boutons">
         <a href="formation-sap.html" class="bouton-principal">Voir le cours</a>
-        <button class="bouton-secondaire bouton-inscription" data-formation="SAP">
-          S'inscrire à cette formation
-        </button>
+        <a href="inscription-compte.html?formation=SAP" class="bouton-secondaire">
+          Créer un compte
+        </a>
       </div>
     </div>
 
   </div>
 
 
-  <!-- Formulaire d'inscription — id utilisé pour le scroll depuis les boutons -->
-  <section class="section-fond" id="formulaire-inscription">
-    <div class="section-contenu">
-      <h2>S'inscrire à une formation</h2>
-      <div class="formulaire-conteneur">
-        <form id="form-inscription">
-
-          <label for="prenom">Prénom *</label>
-          <input id="prenom" name="prenom" type="text" placeholder="Votre prénom" required>
-
-          <label for="nom">Nom *</label>
-          <input id="nom" name="nom" type="text" placeholder="Votre nom" required>
-
-          <label for="email">Adresse email *</label>
-          <input id="email" name="email" type="email" placeholder="votre@email.com" required>
-
-          <label for="formation">Formation choisie *</label>
-          <select id="formation" name="formation" required>
-            <option value="">-- Choisissez une formation --</option>
-            <option value="IA">Intelligence Artificielle</option>
-            <option value="SCRUM">Agilité &amp; SCRUM</option>
-            <option value="SAP">SAP — Gestion d'entreprise</option>
-          </select>
-
-          <label for="telephone">Téléphone (optionnel)</label>
-          <input id="telephone" name="telephone" type="tel" placeholder="06 12 34 56 78">
-
-          <button type="submit" class="bouton-principal">Envoyer ma demande d'inscription</button>
-
-        </form>
-        <!-- Zone remplie par JavaScript après soumission -->
-        <div id="message-inscription"></div>
-      </div>
+  <!-- Call-to-action unique : création de compte avec pré-sélection
+       de la formation via l'URL (?formation=IA / SCRUM / SAP) -->
+  <section class="section-fond">
+    <div class="section-contenu" style="text-align: center;">
+      <h2>Prêt à vous lancer ?</h2>
+      <p style="max-width: 640px; margin: 0 auto 24px; color: var(--couleur-texte-secondaire);">
+        Créez votre compte gratuit pour accéder à l'introduction de chaque formation.
+        Passez Premium à tout moment pour débloquer le cours complet, la vidéo et le quiz.
+      </p>
+      <a href="inscription-compte.html" class="bouton-principal">Créer mon compte gratuit</a>
     </div>
   </section>
 

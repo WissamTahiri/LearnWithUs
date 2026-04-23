@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--
+  reset-mot-de-passe.html — 2 modes selon la présence de ?token :
+  - sans token : formulaire "indiquez votre email"
+  - avec token : formulaire "nouveau mot de passe"
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Réinitialisez votre mot de passe LearnWithUs en toute sécurité.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mot de passe oublié — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-auth {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-color: var(--couleur-principale-clair);
+    }
+    .carte-auth {
+      background-color: var(--couleur-blanc);
+      border-radius: var(--rayon-carte);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
+    }
+    .auth-entete { text-align: center; margin-bottom: 28px; }
+    .auth-logo {
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--couleur-principale);
+      text-decoration: none; display: block; margin-bottom: 8px;
+    }
+    .auth-titre { font-size: 1.35rem; color: var(--couleur-titre); margin-bottom: 6px; }
+    .auth-sous-titre { color: var(--couleur-texte-secondaire); font-size: 0.9rem; }
+    .champ-groupe { margin-bottom: 18px; }
+    .champ-groupe label {
+      display: block; font-weight: 600; font-size: 0.9rem;
+      color: var(--couleur-titre); margin-bottom: 8px;
+    }
+    .champ-groupe input {
+      width: 100%; padding: 12px 16px;
+      border: 1px solid var(--couleur-bordure);
+      border-radius: var(--rayon-bouton);
+      font-size: 0.95rem; font-family: inherit;
+    }
+    .champ-groupe input:focus {
+      outline: none; border-color: var(--couleur-principale);
+      box-shadow: 0 0 0 3px rgba(107, 31, 42, 0.12);
+    }
+    .bouton-auth {
+      width: 100%; padding: 14px;
+      background-color: var(--couleur-principale);
+      color: var(--couleur-blanc); border: none;
+      border-radius: var(--rayon-bouton);
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: background-color 0.3s;
+    }
+    .bouton-auth:hover { background-color: var(--couleur-principale-hover); }
+    .bouton-auth:disabled { opacity: 0.6; cursor: not-allowed; }
+    #message-reset { margin-top: 16px; font-size: 0.92rem; }
+    #message-reset.message-succes { color: #2E7D32; }
+    #message-reset.message-erreur { color: #C62828; }
+    .retour-connexion {
+      display: block; text-align: center;
+      margin-top: 20px; font-size: 0.88rem;
+      color: var(--couleur-texte-secondaire);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <main class="page-auth">
+    <div class="carte-auth">
+
+      <div class="auth-entete">
+        <a href="index.html" class="auth-logo">LearnWithUs</a>
+        <h1 class="auth-titre" id="titre-reset">Mot de passe oublié</h1>
+        <p class="auth-sous-titre" id="sous-titre-reset">Indiquez votre email pour recevoir un lien de réinitialisation.</p>
+      </div>
+
+      <!-- Formulaire mode "demande" (visible si pas de ?token) -->
+      <form id="formulaire-demande-reset" novalidate>
+        <div class="champ-groupe">
+          <label for="email-reset">Adresse email</label>
+          <input type="email" id="email-reset" placeholder="exemple@email.com" required>
+        </div>
+        <button type="submit" class="bouton-auth">Envoyer le lien</button>
+      </form>
+
+      <!-- Formulaire mode "confirmation" (visible si ?token=... dans l'URL) -->
+      <form id="formulaire-confirmer-reset" style="display: none;" novalidate>
+        <div class="champ-groupe">
+          <label for="nouveau-mdp">Nouveau mot de passe</label>
+          <input type="password" id="nouveau-mdp" placeholder="Au moins 8 caractères" required>
+        </div>
+        <div class="champ-groupe">
+          <label for="confirmer-mdp">Confirmer le mot de passe</label>
+          <input type="password" id="confirmer-mdp" placeholder="Répétez le mot de passe" required>
+        </div>
+        <button type="submit" class="bouton-auth">Enregistrer le nouveau mot de passe</button>
+      </form>
+
+      <div id="message-reset"></div>
+
+      <a href="connexion.html" class="retour-connexion">← Retour à la connexion</a>
+
+    </div>
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
