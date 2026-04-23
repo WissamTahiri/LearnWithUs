@@ -143,6 +143,16 @@
 
     </div>
 
+    <!-- Zone de danger : suppression du compte (droit à l'effacement RGPD).
+         Visible uniquement aux utilisateurs connectés, gérée en JS. -->
+    <div id="zone-danger-compte" class="zone-danger" style="display: none;">
+      <h3>Supprimer mon compte</h3>
+      <p>Cette action est <strong>irréversible</strong> : votre compte sera définitivement supprimé
+      (droit à l'effacement — RGPD). Vos éventuelles transactions seront conservées pour la comptabilité.</p>
+      <button id="bouton-supprimer-compte" class="bouton-danger">Supprimer mon compte</button>
+      <div id="message-suppression"></div>
+    </div>
+
   </section>
 
 

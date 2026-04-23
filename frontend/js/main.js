@@ -79,60 +79,6 @@ function gereMenuMobile() {
 }
 
 
-/* Envoie les données du formulaire d'inscription au backend */
-async function envoyeInscription(evenement) {
-  evenement.preventDefault()
-
-  const donneesInscription = {
-    prenom:    document.getElementById('prenom').value,
-    nom:       document.getElementById('nom').value,
-    email:     document.getElementById('email').value,
-    formation: document.getElementById('formation').value,
-    telephone: document.getElementById('telephone').value
-  }
-
-  /* Désactive le bouton pendant l'envoi pour éviter les doublons */
-  const boutonEnvoi = evenement.target.querySelector('button[type="submit"]')
-  const texteOriginal = boutonEnvoi.textContent
-  boutonEnvoi.disabled = true
-  boutonEnvoi.textContent = 'Envoi en cours...'
-
-  try {
-    const reponse = await fetch(URL_BACKEND + '/api/inscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(donneesInscription)
-    })
-
-    const resultat = await reponse.json()
-    const zoneMessage = document.getElementById('message-inscription')
-
-    if (resultat.succes) {
-      zoneMessage.className = 'message-succes'
-      zoneMessage.textContent =
-        'Merci ' + donneesInscription.prenom + ' ! ' +
-        'Votre inscription a bien été reçue. ' +
-        'Un email de confirmation vous a été envoyé.'
-      document.getElementById('form-inscription').reset()
-    } else {
-      zoneMessage.className = 'message-erreur'
-      zoneMessage.textContent =
-        resultat.message || 'Une erreur est survenue. Veuillez réessayer.'
-    }
-
-  } catch (erreur) {
-    console.error('Erreur lors de l\'inscription :', erreur)
-    const zoneMessage = document.getElementById('message-inscription')
-    zoneMessage.className = 'message-erreur'
-    zoneMessage.textContent =
-      'Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.'
-  }
-
-  boutonEnvoi.disabled = false
-  boutonEnvoi.textContent = texteOriginal
-}
-
-
 /* Envoie les données du formulaire de contact au backend */
 async function envoyeContact(evenement) {
   evenement.preventDefault()
@@ -231,6 +177,8 @@ async function envoyerCreationCompte(evenement) {
   const prenom           = document.getElementById('prenom').value.trim()
   const nom              = document.getElementById('nom').value.trim()
   const email            = document.getElementById('email').value.trim()
+  const telephone        = document.getElementById('telephone').value.trim()
+  const formation        = document.getElementById('formation').value
   const motDePasse       = document.getElementById('mot-de-passe').value
   const confirmationMdp  = document.getElementById('confirmation-mdp').value
   const cguAcceptees     = document.getElementById('cgu').checked
@@ -263,7 +211,7 @@ async function envoyerCreationCompte(evenement) {
     const reponse = await fetch(URL_BACKEND + '/api/creer-compte', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prenom, nom, email, motDePasse })
+      body: JSON.stringify({ prenom, nom, email, telephone, formation, motDePasse })
     })
     const resultat = await reponse.json()
 
@@ -664,6 +612,243 @@ function construireTableauTransactions(lignes) {
   conteneur.innerHTML = html
 }
 
+/* Construit le tableau HTML de gestion des comptes (admin) */
+function construireTableauComptes(lignes) {
+  const conteneur = document.getElementById('table-comptes')
+  if (!conteneur) return
+
+  if (!lignes || lignes.length === 0) {
+    conteneur.innerHTML = '<p class="admin-tableau-vide">Aucun compte pour l\'instant.</p>'
+    return
+  }
+
+  const html =
+    '<table class="admin-tableau-compact">' +
+      '<thead><tr>' +
+        '<th>Nom</th><th>Email</th><th>Statut</th><th>Créé le</th><th>Actions</th>' +
+      '</tr></thead><tbody>' +
+      lignes.map(function(l) {
+        const nomComplet = ((l.prenom || '') + ' ' + (l.nom || '')).trim() || '—'
+        const badgeClasse = l.statut === 'Premium' ? 'premium' : 'standard'
+        const autreStatut = l.statut === 'Premium' ? 'Standard' : 'Premium'
+        const emailEchappe = encodeURIComponent(l.email)
+        return '<tr>' +
+          '<td>' + nomComplet + '</td>' +
+          '<td>' + (l.email || '—') + '</td>' +
+          '<td><span class="admin-badge-statut ' + badgeClasse + '">' + l.statut + '</span></td>' +
+          '<td>' + formatDateCourte(l.date) + '</td>' +
+          '<td>' +
+            '<button class="admin-action" onclick="changerStatutCompte(\'' + emailEchappe + '\',\'' + autreStatut + '\')">→ ' + autreStatut + '</button>' +
+            '<button class="admin-action admin-action-danger" onclick="supprimerCompteAdmin(\'' + emailEchappe + '\')">Supprimer</button>' +
+          '</td>' +
+        '</tr>'
+      }).join('') +
+      '</tbody></table>'
+
+  conteneur.innerHTML = html
+}
+
+/* Admin : bascule le statut d'un compte (Standard ↔ Premium) */
+async function changerStatutCompte(emailEncode, nouveauStatut) {
+  if (!confirm('Passer ce compte en ' + nouveauStatut + ' ?')) return
+  const session = lireSession()
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/comptes/' + emailEncode + '/statut', {
+      method:  'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + session.token,
+        'Content-Type':  'application/json'
+      },
+      body: JSON.stringify({ nouveauStatut: nouveauStatut })
+    })
+    const resultat = await reponse.json()
+    if (resultat.succes) {
+      chargerDashboardAdmin()
+    } else {
+      alert(resultat.message || 'Erreur lors du changement de statut')
+    }
+  } catch (e) {
+    alert('Impossible de contacter le serveur')
+  }
+}
+
+/* Admin : supprime un compte (après confirmation) */
+async function supprimerCompteAdmin(emailEncode) {
+  const emailLisible = decodeURIComponent(emailEncode)
+  if (!confirm('Supprimer définitivement le compte ' + emailLisible + ' ?\n\nCette action est irréversible.')) return
+  const session = lireSession()
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/comptes/' + emailEncode, {
+      method:  'DELETE',
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    })
+    const resultat = await reponse.json()
+    if (resultat.succes) {
+      chargerDashboardAdmin()
+    } else {
+      alert(resultat.message || 'Erreur lors de la suppression')
+    }
+  } catch (e) {
+    alert('Impossible de contacter le serveur')
+  }
+}
+
+
+/* ============================================================
+   RESET MOT DE PASSE & VÉRIFICATION EMAIL (Lot 3 — sécurité)
+   ============================================================ */
+
+/* Envoie la demande de reset (email seulement — le backend ne révèle
+   jamais si l'email existe pour éviter l'énumération) */
+async function envoyerDemandeReset(evenement) {
+  evenement.preventDefault()
+  const email = document.getElementById('email-reset').value.trim()
+  const zone  = document.getElementById('message-reset')
+  const bouton = evenement.target.querySelector('button[type="submit"]')
+  bouton.disabled = true
+  bouton.textContent = 'Envoi en cours...'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/mdp/demande', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email: email })
+    })
+    const resultat = await reponse.json()
+    zone.className = resultat.succes ? 'message-succes' : 'message-erreur'
+    zone.textContent = resultat.message
+  } catch (e) {
+    zone.className = 'message-erreur'
+    zone.textContent = 'Impossible de contacter le serveur.'
+  }
+  bouton.textContent = 'Envoyer le lien'
+  bouton.disabled = false
+}
+
+/* Confirme le nouveau mot de passe (JWT reset dans l'URL ?token=...) */
+async function envoyerConfirmationReset(evenement) {
+  evenement.preventDefault()
+  const nouveau    = document.getElementById('nouveau-mdp').value
+  const confirme   = document.getElementById('confirmer-mdp').value
+  const parametres = new URLSearchParams(window.location.search)
+  const token      = parametres.get('token')
+  const zone       = document.getElementById('message-reset')
+
+  if (nouveau !== confirme) {
+    zone.className = 'message-erreur'
+    zone.textContent = 'Les deux mots de passe ne correspondent pas.'
+    return
+  }
+  if (nouveau.length < 8) {
+    zone.className = 'message-erreur'
+    zone.textContent = 'Le mot de passe doit faire au moins 8 caractères.'
+    return
+  }
+
+  const bouton = evenement.target.querySelector('button[type="submit"]')
+  bouton.disabled = true
+  bouton.textContent = 'Enregistrement...'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/mdp/confirmer', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ token: token, nouveauMdp: nouveau })
+    })
+    const resultat = await reponse.json()
+    if (resultat.succes) {
+      zone.className = 'message-succes'
+      zone.textContent = '✓ Mot de passe modifié. Redirection vers la connexion…'
+      setTimeout(function() { window.location.href = 'connexion.html' }, 1800)
+    } else {
+      zone.className = 'message-erreur'
+      zone.textContent = resultat.message
+      bouton.textContent = 'Enregistrer le nouveau mot de passe'
+      bouton.disabled = false
+    }
+  } catch (e) {
+    zone.className = 'message-erreur'
+    zone.textContent = 'Impossible de contacter le serveur.'
+    bouton.textContent = 'Enregistrer le nouveau mot de passe'
+    bouton.disabled = false
+  }
+}
+
+/* Appelle /api/verifier-email au chargement de la page verification-email.html */
+async function traiterVerificationEmail() {
+  const parametres = new URLSearchParams(window.location.search)
+  const token      = parametres.get('token')
+  const carte      = document.getElementById('carte-verif')
+
+  if (!token) {
+    carte.innerHTML =
+      '<div class="icone-resultat">⚠️</div>' +
+      '<h1 class="titre-resultat">Lien incomplet</h1>' +
+      '<p class="message-resultat">Aucun token de vérification détecté.</p>' +
+      '<a href="connexion.html" class="bouton-retour">Retour à la connexion</a>'
+    return
+  }
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/verifier-email/' + token)
+    const resultat = await reponse.json()
+    if (resultat.succes) {
+      carte.innerHTML =
+        '<div class="icone-resultat">✅</div>' +
+        '<h1 class="titre-resultat">Email vérifié !</h1>' +
+        '<p class="message-resultat">Merci, votre adresse <strong>' + resultat.email + '</strong> est maintenant confirmée.</p>' +
+        '<a href="espace-client.html" class="bouton-retour">Accéder à mon espace</a>'
+    } else {
+      carte.innerHTML =
+        '<div class="icone-resultat">⚠️</div>' +
+        '<h1 class="titre-resultat">Lien invalide</h1>' +
+        '<p class="message-resultat">' + (resultat.message || 'Le lien a expiré ou est incorrect.') + '</p>' +
+        '<a href="connexion.html" class="bouton-retour">Retour à la connexion</a>'
+    }
+  } catch (e) {
+    carte.innerHTML =
+      '<div class="icone-resultat">⚠️</div>' +
+      '<h1 class="titre-resultat">Erreur réseau</h1>' +
+      '<p class="message-resultat">Impossible de contacter le serveur. Réessayez plus tard.</p>' +
+      '<a href="index.html" class="bouton-retour">Retour à l\'accueil</a>'
+  }
+}
+
+
+/* Utilisateur : supprime son propre compte (RGPD — droit à l'effacement) */
+async function supprimerMonCompte() {
+  if (!confirm('Êtes-vous sûr(e) de vouloir supprimer votre compte ?\n\nCette action est irréversible.')) return
+  const session = lireSession()
+  if (!session) return
+
+  const bouton = document.getElementById('bouton-supprimer-compte')
+  const message = document.getElementById('message-suppression')
+  if (bouton) bouton.disabled = true
+  if (message) message.innerHTML = '<p style="color: var(--couleur-texte-secondaire); margin-top: 12px;">Suppression en cours…</p>'
+
+  try {
+    const reponse = await fetch(URL_BACKEND + '/api/compte', {
+      method:  'DELETE',
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    })
+    const resultat = await reponse.json()
+
+    if (resultat.succes) {
+      if (message) message.innerHTML = '<p style="color: #2E7D32; margin-top: 12px;">✓ Compte supprimé. Redirection…</p>'
+      setTimeout(function() {
+        deconnecter()
+      }, 1500)
+    } else {
+      if (message) message.innerHTML = '<p style="color: #C62828; margin-top: 12px;">⚠️ ' + (resultat.message || 'Erreur') + '</p>'
+      if (bouton) bouton.disabled = false
+    }
+  } catch (e) {
+    if (message) message.innerHTML = '<p style="color: #C62828; margin-top: 12px;">⚠️ Impossible de contacter le serveur</p>'
+    if (bouton) bouton.disabled = false
+  }
+}
+
+
 /* Charge les statistiques depuis /api/admin/stats et remplit le dashboard.
    Protège aussi la page : si l'utilisateur n'est pas admin (403), redirection. */
 async function chargerDashboardAdmin() {
@@ -718,12 +903,13 @@ async function chargerDashboardAdmin() {
     document.getElementById('kpi-revenu').textContent        = s.totalRevenu + ' €'
 
     /* Répartitions (barres) */
-    construireBarres(s.inscriptionsParFormation, 'repartition-formations')
-    construireBarres(s.leadsParPipeline,         'repartition-pipeline')
+    construireBarres(s.crmParFormation,   'repartition-formations')
+    construireBarres(s.leadsParPipeline,  'repartition-pipeline')
 
     /* Tableaux des dernières entrées */
     construireTableauInscriptions(s.dernieresInscriptions)
     construireTableauTransactions(s.dernieresTransactions)
+    construireTableauComptes(s.tousLesComptes)
 
     zoneMessage.innerHTML = ''
     zoneContenu.style.display = 'block'
@@ -757,6 +943,38 @@ document.addEventListener('DOMContentLoaded', function() {
     chargerDashboardAdmin()
   }
 
+  /* Page espace-client.html : zone de danger visible uniquement si connecté */
+  const zoneDanger = document.getElementById('zone-danger-compte')
+  if (zoneDanger) {
+    if (lireSession()) zoneDanger.style.display = 'block'
+    const boutonSuppr = document.getElementById('bouton-supprimer-compte')
+    if (boutonSuppr) boutonSuppr.addEventListener('click', supprimerMonCompte)
+  }
+
+  /* Page reset-mot-de-passe.html : bascule automatique demande / confirmation
+     selon la présence du paramètre ?token dans l'URL */
+  const formDemandeReset = document.getElementById('formulaire-demande-reset')
+  if (formDemandeReset) {
+    const parametres = new URLSearchParams(window.location.search)
+    const tokenReset = parametres.get('token')
+    const formConfirmer = document.getElementById('formulaire-confirmer-reset')
+
+    if (tokenReset) {
+      formDemandeReset.style.display = 'none'
+      formConfirmer.style.display = 'block'
+      document.getElementById('titre-reset').textContent = 'Nouveau mot de passe'
+      document.getElementById('sous-titre-reset').textContent = 'Choisissez un nouveau mot de passe (8 caractères minimum).'
+      formConfirmer.addEventListener('submit', envoyerConfirmationReset)
+    } else {
+      formDemandeReset.addEventListener('submit', envoyerDemandeReset)
+    }
+  }
+
+  /* Page verification-email.html : vérification automatique au chargement */
+  if (document.getElementById('carte-verif')) {
+    traiterVerificationEmail()
+  }
+
   /* Formulaire de connexion — présent uniquement sur connexion.html */
   const formulaireConnexion = document.getElementById('formulaire-connexion')
   if (formulaireConnexion) {
@@ -767,12 +985,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const formulaireCompte = document.getElementById('formulaire-inscription-compte')
   if (formulaireCompte) {
     formulaireCompte.addEventListener('submit', envoyerCreationCompte)
-  }
 
-  /* Formulaire d'inscription — présent uniquement sur formations.html */
-  const formulaireInscription = document.getElementById('form-inscription')
-  if (formulaireInscription) {
-    formulaireInscription.addEventListener('submit', envoyeInscription)
+    /* Si l'URL contient ?formation=IA|SCRUM|SAP (redirigé depuis formations.html),
+       on pré-sélectionne la formation d'intérêt dans le formulaire */
+    const parametres = new URLSearchParams(window.location.search)
+    const formationPreselectionnee = parametres.get('formation')
+    if (formationPreselectionnee) {
+      const selectFormation = document.getElementById('formation')
+      if (selectFormation) selectFormation.value = formationPreselectionnee
+    }
   }
 
   /* Formulaire de contact — présent uniquement sur contact.html */
@@ -786,22 +1007,5 @@ document.addEventListener('DOMContentLoaded', function() {
   if (boutonMenu) {
     boutonMenu.addEventListener('click', gereMenuMobile)
   }
-
-  /* Boutons "S'inscrire" — font défiler vers le formulaire
-     et pré-sélectionnent la formation via data-formation */
-  const boutonsInscription = document.querySelectorAll('.bouton-inscription')
-  boutonsInscription.forEach(function(bouton) {
-    bouton.addEventListener('click', function() {
-      const formationChoisie = bouton.dataset.formation
-      const selectFormation = document.getElementById('formation')
-      if (selectFormation && formationChoisie) {
-        selectFormation.value = formationChoisie
-      }
-      const sectionFormulaire = document.getElementById('formulaire-inscription')
-      if (sectionFormulaire) {
-        sectionFormulaire.scrollIntoView({ behavior: 'smooth' })
-      }
-    })
-  })
 
 })

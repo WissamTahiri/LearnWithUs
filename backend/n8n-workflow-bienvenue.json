@@ -1,0 +1,90 @@
+{
+  "name": "LearnWithUs — Email de Bienvenue",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "learnwithus-bienvenue",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Reception Creation Compte",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "webhookId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@learnwithus.fr",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=🎉 Bienvenue sur LearnWithUs, {{ $json.body.prenom }} !",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <div style=\"background-color: #6B1F2A; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: white; margin: 0; font-size: 24px;\">LearnWithUs</h1>\n    <p style=\"color: #F7EEF0; margin: 6px 0 0;\">Formations Numériques</p>\n  </div>\n  <div style=\"background-color: #ffffff; padding: 32px; border: 1px solid #e0e0e0;\">\n    <h2 style=\"color: #6B1F2A; margin-top: 0;\">Votre compte est créé 🎉</h2>\n    <p>Bonjour <strong>{{ $json.body.prenom }}</strong>,</p>\n    <p>Bienvenue chez LearnWithUs ! Votre compte a bien été créé et vous pouvez dès maintenant accéder à l'introduction gratuite de nos 3 formations.</p>\n    <div style=\"background-color: #F7EEF0; padding: 20px; border-radius: 6px; margin: 24px 0; border-left: 4px solid #6B1F2A;\">\n      <p style=\"margin: 0 0 10px; font-weight: bold; color: #6B1F2A;\">🎓 Ce qui vous attend en version gratuite</p>\n      <ul style=\"margin: 0; padding-left: 20px; color: #444;\">\n        <li>Introduction complète des 3 formations (IA, SCRUM, SAP)</li>\n        <li>Aperçu du programme et des compétences visées</li>\n      </ul>\n      <p style=\"margin: 12px 0 0; font-weight: bold; color: #6B1F2A;\">⭐ Avec Premium à 29 €/mois</p>\n      <ul style=\"margin: 0; padding-left: 20px; color: #444;\">\n        <li>Accès complet au cours de chaque formation</li>\n        <li>Vidéo de 10 minutes par formation</li>\n        <li>Quiz final pour valider vos acquis</li>\n      </ul>\n    </div>\n    <div style=\"text-align: center; margin: 28px 0;\">\n      <a href=\"https://learn-with-us-lac.vercel.app/espace-client.html\"\n         style=\"background-color: #6B1F2A; color: white; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold;\">\n        Accéder à mon espace\n      </a>\n    </div>\n    <div style=\"background-color: #F7F7F7; padding: 14px 18px; border-radius: 6px; margin-top: 20px; border-left: 3px solid #6B1F2A;\">\n      <p style=\"margin: 0 0 6px; font-weight: bold; font-size: 13px; color: #333;\">📧 Confirmer votre adresse email</p>\n      <p style=\"margin: 0 0 8px; font-size: 12px; color: #6B6B6B;\">Pour sécuriser votre compte, merci de cliquer sur le lien ci-dessous :</p>\n      <a href=\"{{ $json.body.lienVerification }}\" style=\"color: #6B1F2A; font-size: 13px; word-break: break-all;\">Valider mon email</a>\n    </div>\n    <p style=\"color: #6B6B6B; font-size: 13px; margin-top: 20px;\">Une question ? Contactez notre équipe via la <a href=\"https://learn-with-us-lac.vercel.app/contact.html\" style=\"color: #6B1F2A;\">page contact</a>.</p>\n    <p style=\"margin-top: 24px;\">À très vite,</p>\n    <p><strong style=\"color: #6B1F2A;\">L'équipe LearnWithUs</strong></p>\n  </div>\n  <div style=\"background-color: #111111; padding: 16px; text-align: center; border-radius: 0 0 8px 8px;\">\n    <p style=\"color: #aaaaaa; margin: 0; font-size: 12px;\">© 2026 LearnWithUs — contact@learnwithus.fr</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "name": "Email Bienvenue Etudiant",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [460, 160]
+    },
+    {
+      "parameters": {
+        "fromEmail": "contact@learnwithus.fr",
+        "toEmail": "hi95400@gmail.com, sanjay.mathini@gmail.com, wisstahiri91@gmail.com",
+        "subject": "=🆕 Nouveau compte LearnWithUs — {{ $json.body.prenom }} {{ $json.body.nom }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <div style=\"background-color: #111111; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: white; margin: 0; font-size: 20px;\">🆕 Nouveau compte créé</h1>\n  </div>\n  <div style=\"background-color: #ffffff; padding: 28px; border: 1px solid #e0e0e0;\">\n    <h2 style=\"color: #111111; margin-top: 0;\">Nouvel utilisateur</h2>\n    <table style=\"width: 100%; border-collapse: collapse;\">\n      <tr style=\"background-color: #F7EEF0;\">\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0; width: 35%;\">Prénom / Nom</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\">{{ $json.body.prenom }} {{ $json.body.nom }}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Email</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\"><a href=\"mailto:{{ $json.body.email }}\">{{ $json.body.email }}</a></td>\n      </tr>\n      <tr style=\"background-color: #F7EEF0;\">\n        <td style=\"padding: 10px 14px; font-weight: bold; border: 1px solid #e0e0e0;\">Formation d'intérêt</td>\n        <td style=\"padding: 10px 14px; border: 1px solid #e0e0e0;\"><strong style=\"color: #6B1F2A;\">{{ $json.body.formation || 'Non précisée' }}</strong></td>\n      </tr>\n    </table>\n    <p style=\"margin-top: 18px; color: #6B6B6B; font-size: 13px; font-style: italic;\">Ce compte a été ajouté automatiquement au CRM (pipeline : Lead).</p>\n  </div>\n  <div style=\"background-color: #6B1F2A; padding: 12px; text-align: center; border-radius: 0 0 8px 8px;\">\n    <p style=\"color: white; margin: 0; font-size: 12px;\">LearnWithUs — Notification automatique</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+      "name": "Notif Equipe",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [460, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"succes\": true, \"message\": \"Emails bienvenue envoyes\" }",
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+      "name": "Repondre au Backend",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Reception Creation Compte": {
+      "main": [
+        [
+          { "node": "Email Bienvenue Etudiant", "type": "main", "index": 0 },
+          { "node": "Notif Equipe", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Email Bienvenue Etudiant": {
+      "main": [
+        [
+          { "node": "Repondre au Backend", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Notif Equipe": {
+      "main": [
+        [
+          { "node": "Repondre au Backend", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [{ "name": "LearnWithUs" }]
+}

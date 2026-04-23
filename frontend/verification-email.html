@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+  verification-email.html — Page atterrie depuis le lien "Valider mon email"
+  du mail de bienvenue. Le JS appelle /api/verifier-email/:token au
+  chargement et affiche le résultat.
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vérifiez votre adresse email pour finaliser la création de votre compte LearnWithUs.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Vérification email — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-auth {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-color: var(--couleur-principale-clair);
+    }
+    .carte-auth {
+      background-color: var(--couleur-blanc);
+      border-radius: var(--rayon-carte);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+    }
+    .icone-resultat { font-size: 3.5rem; margin-bottom: 10px; }
+    .titre-resultat { font-size: 1.5rem; color: var(--couleur-titre); margin-bottom: 10px; }
+    .message-resultat { color: var(--couleur-texte-secondaire); margin-bottom: 24px; }
+    .bouton-retour {
+      display: inline-block;
+      background-color: var(--couleur-principale);
+      color: var(--couleur-blanc);
+      padding: 12px 24px;
+      border-radius: var(--rayon-bouton);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <main class="page-auth">
+    <div class="carte-auth" id="carte-verif">
+      <div class="icone-resultat">⏳</div>
+      <h1 class="titre-resultat">Vérification en cours…</h1>
+      <p class="message-resultat">Nous validons votre lien, merci de patienter.</p>
+    </div>
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -21,9 +21,11 @@ LearnWithUs/
 │   ├── contact.html             ← Formulaire contact + infos
 │   ├── faq.html                 ← 10 questions accordéon
 │   ├── connexion.html           ← Connexion au compte (fonctionnelle)
-│   ├── inscription-compte.html  ← Création de compte (fonctionnelle)
+│   ├── inscription-compte.html  ← Création de compte + formation d'intérêt
 │   ├── paiement.html            ← Paiement fictif → passage Premium
-│   ├── admin.html               ← Dashboard admin (KPI + dernières activités)
+│   ├── admin.html               ← Dashboard admin (KPI + gestion comptes)
+│   ├── reset-mot-de-passe.html  ← Mot de passe oublié (2 états : demande / confirmation)
+│   ├── verification-email.html  ← Page atterrie depuis l'email de bienvenue
 │   ├── formation-ia.html        ← Cours IA (intro gratuite + Premium)
 │   ├── formation-scrum.html     ← Cours SCRUM (intro + Premium)
 │   ├── formation-sap.html       ← Cours SAP (intro + Premium)
@@ -34,12 +36,17 @@ LearnWithUs/
 │   └── js/main.js               ← JS commun (auth, quiz, paiement)
 ├── backend/
 │   ├── server.js                ← Serveur Express (API)
+│   ├── utils.js                 ← Helpers purs (testables)
+│   ├── tests/utils.test.js      ← Tests unitaires (node --test)
 │   ├── package.json             ← Dépendances Node.js
 │   ├── .env.example             ← Modèle variables d'environnement
-│   ├── n8n-workflow-inscription.json ← Workflow n8n #1 (inscription)
-│   ├── n8n-workflow-contact.json     ← Workflow n8n #2 (contact)
-│   ├── n8n-workflow-relance.json     ← Workflow n8n #3 (relance leads 7j)
-│   └── n8n-workflow-paiement.json    ← Workflow n8n #4 (confirmation paiement)
+│   ├── n8n-workflow-bienvenue.json  ← Workflow n8n #1 (bienvenue création compte)
+│   ├── n8n-workflow-contact.json    ← Workflow n8n #2 (contact)
+│   ├── n8n-workflow-relance.json    ← Workflow n8n #3 (relance leads 7j)
+│   ├── n8n-workflow-paiement.json   ← Workflow n8n #4 (confirmation paiement)
+│   └── n8n-workflow-reset-mdp.json  ← Workflow n8n #5 (email reset mot de passe)
+├── docs/
+│   └── audit-seo.md             ← Procédure + template audit Lighthouse
 ├── vercel.json                  ← Config Vercel
 └── README.md                    ← Guide d'installation
 ```
@@ -112,8 +119,28 @@ LearnWithUs/
   - Backend : middleware `verifierAdmin` (check contre ADMIN_EMAILS), route GET /api/admin/stats agrégeant les 4 bases Notion en parallèle
   - JWT enrichi d'un drapeau `estAdmin` → lien "🔐 Admin" visible dans la nav uniquement pour les admins
   - 2 env vars à ajouter sur Render : ADMIN_EMAILS (liste séparée par virgules) + NOTION_DS_INSCRIPTIONS_ID
-- [ ] T3.3 : Schéma architecture SI (version complète)
-- [ ] T4.5 (livrable) : Documentation IA Assistée (feature Paiement) — en cours
+- [x] Refacto Option A — parcours unique compte (23/04)
+  - Formulaire d'inscription formations.html supprimé → CTA vers création de compte
+  - Champ "Formation d'intérêt" ajouté à inscription-compte.html (pré-sélection via ?formation=X)
+  - Route /api/inscription supprimée (obsolète), base "Inscriptions Formations" archivée (plus alimentée)
+  - Workflow n8n #1 recyclé en "Bienvenue" : trigger à la création de compte, contient le lien de vérification email
+  - Dashboard admin : "Inscriptions par formation" → "Comptes par formation d'intérêt" (données depuis la base CRM)
+- [x] Gestion des comptes (utilisateur + admin) (23/04)
+  - Route DELETE /api/compte : utilisateur supprime son propre compte (archivage Notion — droit à l'effacement RGPD)
+  - Routes DELETE /api/admin/comptes/:email + PUT /api/admin/comptes/:email/statut : admin CRUD
+  - Dashboard admin : tableau "Gestion des comptes" avec boutons Standard/Premium et Supprimer
+  - Espace-client.html : bloc "Zone de danger" avec bouton "Supprimer mon compte"
+- [x] Sécurité (23/04)
+  - express-rate-limit : 5 tentatives / 15 min sur /api/connexion et /api/creer-compte (anti-brute force)
+  - Reset mot de passe : POST /api/mdp/demande + POST /api/mdp/confirmer (JWT purpose='reset' valable 15 min). Nouveau workflow n8n #5 (n8n-workflow-reset-mdp.json)
+  - Vérification email : GET /api/verifier-email/:token (JWT purpose='verification' valable 7j). Lien inclus dans le mail de bienvenue
+  - Lien "Mot de passe oublié" ajouté sur connexion.html
+- [x] Tests unitaires + audit SEO (23/04)
+  - backend/utils.js : helpers purs extractables (genererReferenceTransaction, estAdminEmail, validerMotDePasse, parserAdminEmails)
+  - backend/tests/utils.test.js : 14 tests via node --test (node 18+ built-in runner)
+  - docs/audit-seo.md : procédure Lighthouse + template scores + pistes d'amélioration
+- [ ] T3.3 : Schéma architecture SI — livrables générés dans Downloads (.drawio + .pdf) — à intégrer au dossier de suivi
+- [ ] T4.5 (livrable) : Documentation IA Assistée (feature Paiement) — PDF généré
 - [ ] T4.6 : Mise à jour dossier de suivi projet (v2)
 
 ### Phase 5 : Finalisation (21/05 - 16/07) — À VENIR
