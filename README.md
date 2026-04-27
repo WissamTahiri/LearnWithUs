@@ -1,8 +1,10 @@
 # LearnWithUs — Site Web
 
-Site web complet pour **LearnWithUs**, un organisme de formation numerique proposant 3 formations : Intelligence Artificielle, Agilite & SCRUM, et SAP.
+Site web complet pour **LearnWithUs**, un organisme de formation numerique proposant 3 formations : Intelligence Artificielle, Agilite & SCRUM (en anglais), et SAP.
 
-**Stack technique** : HTML + CSS + JavaScript vanilla (frontend) / Node.js + Express (backend)
+**Stack technique** : HTML + CSS + JavaScript vanilla (frontend) / PHP 8.x procedural (backend) / Notion (base de donnees) / n8n.cloud (automatisations email)
+
+**Hebergement cible** : IONOS (mutualise, ~8 EUR/mois) - domaine `learnwithus.fr`
 
 
 ## Structure du projet
@@ -10,24 +12,63 @@ Site web complet pour **LearnWithUs**, un organisme de formation numerique propo
 ```
 LearnWithUs/
 |
-|-- frontend/                   <- Partie visible du site (ce que voit l'utilisateur)
-|   |-- index.html              <- Page Accueil (hero + cartes formations)
-|   |-- formations.html         <- Catalogue detaille + formulaire d'inscription
-|   |-- espace-client.html      <- Onglets Standard (gratuit) et Premium (29EUR/mois)
-|   |-- contact.html            <- Formulaire de contact + infos
-|   |-- faq.html                <- 8 questions frequentes en accordeon
-|   |-- css/
-|   |   |-- style.css           <- Styles communs a toutes les pages
-|   |-- js/
-|       |-- main.js             <- JavaScript commun (formulaires, menu, onglets, FAQ)
+|-- frontend/                       <- Partie visible du site
+|   |-- index.html                  <- Page Accueil
+|   |-- formations.html             <- Catalogue des 3 formations
+|   |-- formation-ia.html           <- Cours Intelligence Artificielle
+|   |-- formation-scrum.html        <- Cours SCRUM (en anglais)
+|   |-- formation-sap.html          <- Cours SAP
+|   |-- espace-client.html          <- Onglets Standard / Premium
+|   |-- parametres.html             <- Mes informations + suppression compte
+|   |-- contact.html                <- Formulaire de contact
+|   |-- faq.html                    <- Foire aux questions
+|   |-- connexion.html              <- Connexion utilisateur
+|   |-- inscription-compte.html     <- Creation de compte
+|   |-- paiement.html               <- Paiement Premium fictif
+|   |-- admin.html                  <- Dashboard administrateur
+|   |-- reset-mot-de-passe.html     <- Reinitialisation mot de passe
+|   |-- verification-email.html     <- Atterrissage du lien email bienvenue
+|   |-- 404.html                    <- Page d'erreur personnalisee
+|   |-- sitemap.xml / robots.txt    <- SEO
+|   |-- favicon.svg                 <- Icone du site
+|   |-- docs/supports/              <- PDF des supports de cours (Premium)
+|   |-- css/style.css               <- Styles communs
+|   |-- js/main.js                  <- JavaScript commun
 |
-|-- backend/                    <- Serveur qui recoit les donnees des formulaires
-|   |-- server.js               <- Serveur Node.js / Express (routes API)
-|   |-- package.json            <- Liste des modules Node.js necessaires
-|   |-- .env.example            <- Modele de variables d'environnement
+|-- backend-php/                    <- API PHP procedurale (zero dependance)
+|   |-- config.php                  <- Secrets (Notion token, IDs DB, etc.)
+|   |-- config.example.php          <- Modele a recopier en config.php
+|   |-- helpers/
+|   |   |-- notion.php              <- Wrapper API Notion via cURL
+|   |   |-- webhook.php             <- Appel webhooks n8n
+|   |   |-- crm.php                 <- Synchronisation CRM Notion
+|   |   |-- comptes.php             <- Recherche / lecture comptes
+|   |   |-- auth.php                <- Sessions PHP, exigerConnexion / Admin
+|   |   |-- rate-limit.php          <- Anti-bruteforce (5 / 15 min)
+|   |   |-- token.php               <- Tokens HMAC (reset, verif email)
+|   |   |-- transactions.php        <- Enregistrement paiements Notion
+|   |-- api/
+|   |   |-- _init.php               <- Bootstrap commun
+|   |   |-- health.php              <- Sonde de sante
+|   |   |-- contact.php             <- Formulaire contact
+|   |   |-- creer-compte.php        <- Creation compte + session
+|   |   |-- connexion.php           <- Login session
+|   |   |-- deconnexion.php         <- Detruit session
+|   |   |-- session.php             <- Renvoie utilisateur connecte
+|   |   |-- activer-premium.php     <- Bascule Standard -> Premium
+|   |   |-- supprimer-compte.php    <- RGPD - droit a l'effacement
+|   |   |-- mdp-demande.php         <- Demande lien reset mot de passe
+|   |   |-- mdp-confirmer.php       <- Applique nouveau mot de passe
+|   |   |-- verifier-email.php      <- Verification email bienvenue
+|   |   |-- admin/
+|   |       |-- stats.php           <- Dashboard admin (KPI agreges)
+|   |       |-- changer-statut.php  <- Standard / Premium par admin
+|   |       |-- supprimer-compte.php <- Admin archive un compte
+|   |-- data/                       <- Stockage rate-limit (gitignored)
 |
-|-- vercel.json                 <- Configuration deploiement Vercel (frontend)
-|-- README.md                   <- Ce fichier (guide d'installation)
+|-- .htaccess                       <- Configuration Apache (HTTPS, securite)
+|-- creer-zip.sh                    <- Script de generation du ZIP livrable
+|-- README.md                       <- Ce fichier
 ```
 
 
@@ -35,99 +76,87 @@ LearnWithUs/
 
 ### Prerequis
 
-- **Node.js** (version 18 ou superieure) : [nodejs.org](https://nodejs.org)
-- **Un editeur de code** : VS Code recommande ([code.visualstudio.com](https://code.visualstudio.com))
+- **MAMP** (Windows ou Mac) : [mamp.info](https://www.mamp.info/) - fournit Apache + PHP 8.x
+- **VS Code** ou tout editeur de code
 - **Un navigateur** : Chrome, Firefox, Edge
 
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-utilisateur/learnnwithus.git
-cd learnnwithus
+git clone https://github.com/votre-utilisateur/learnwithus.git
+cd learnwithus
 ```
 
-### 2. Installer les dependances du backend
+### 2. Configurer MAMP
+
+1. Ouvrez **MAMP > Preferences > Web Server**
+2. **Apache Document Root** : selectionnez le dossier racine de ce projet
+3. **PHP version** : choisissez 8.3.x ou superieur
+4. Verifiez dans le `php.ini` que les extensions sont activees :
+   - `extension=php_curl.dll` (decommente)
+   - `extension=php_openssl.dll` (decommente)
+   - `extension=php_mbstring.dll` (decommente)
+5. Configurez les certificats SSL pour cURL :
+   ```ini
+   [curl]
+   curl.cainfo = "C:\MAMP\bin\apache\bin\cacert.pem"
+   ```
+6. **Start Servers**
+
+### 3. Configurer le backend PHP
 
 ```bash
-cd backend
-npm install
+cd backend-php
+cp config.example.php config.php
 ```
 
-Cette commande lit le fichier `package.json` et telecharge les modules necessaires (Express, CORS, dotenv) dans un dossier `node_modules/`.
+Editez `config.php` et remplissez les valeurs :
 
-### 3. Configurer les variables d'environnement
+- `NOTION_TOKEN` - token d'integration Notion ([notion.so/my-integrations](https://www.notion.so/my-integrations))
+- `NOTION_DATABASE_COMPTES_ID` - ID de la base "Comptes LearnWithUs"
+- `NOTION_DS_*_ID` - IDs des 4 data sources (Comptes, CRM, Transactions, Inscriptions)
+- `WEBHOOK_N8N_*` - URLs des 5 webhooks n8n (cf. n8n.cloud)
+- `ADMIN_EMAILS` - liste des emails admin separes par virgules
+- `APP_SECRET` - chaine aleatoire 32+ caracteres : `php -r "echo bin2hex(random_bytes(32));"`
 
-```bash
-cp .env.example .env
-```
+### 4. Tester en local
 
-Ouvrez le fichier `.env` et remplissez les valeurs si necessaire. Pour commencer en local, les valeurs par defaut suffisent.
+Ouvrez dans votre navigateur :
 
-### 4. Lancer le serveur backend
-
-```bash
-npm start
-```
-
-Ou en mode developpement (redemarre automatiquement a chaque modification) :
-
-```bash
-npm run dev
-```
-
-Le serveur demarre sur `http://localhost:3000`. Verifiez en ouvrant `http://localhost:3000/api/health` dans votre navigateur.
-
-### 5. Ouvrir le frontend
-
-**Option A** — Ouvrir directement `frontend/index.html` dans votre navigateur (double-clic sur le fichier).
-
-**Option B** (recommandee) — Utiliser l'extension VS Code **Live Server** :
-1. Installez l'extension "Live Server" dans VS Code
-2. Clic droit sur `frontend/index.html` > "Open with Live Server"
-3. Le site s'ouvre automatiquement dans votre navigateur
-
-Live Server recharge automatiquement la page quand vous modifiez un fichier.
+- `http://localhost:8888/frontend/index.html` - page d'accueil
+- `http://localhost:8888/backend-php/api/health.php` - sonde de sante
+  (doit renvoyer `{"statut":"ok",...}`)
 
 
-## Deploiement Vercel (frontend)
+## Deploiement IONOS (production)
 
-1. Creez un compte sur [vercel.com](https://vercel.com)
-2. Cliquez sur "New Project"
-3. Connectez votre depot GitHub
-4. **Root Directory** : selectionnez `frontend`
-5. **Framework Preset** : selectionnez "Other"
-6. Cliquez sur "Deploy"
-7. Votre site est en ligne ! Notez l'URL (ex: `learnnwithus.vercel.app`)
+1. Souscrire un hebergement mutualise IONOS (~8 EUR/mois) avec PHP 8+
+2. Connecter le domaine `learnwithus.fr`
+3. Activer le certificat SSL Let's Encrypt (gratuit, auto)
+4. Uploader tous les fichiers via FTP / SFTP
+5. Creer `backend-php/config.php` directement sur le serveur (NE JAMAIS le committer sur Git)
+6. Mettre a jour `URL_SITE` dans `config.php` avec `https://learnwithus.fr`
+7. Tester l'URL publique
 
-
-## Deploiement Render (backend)
-
-1. Creez un compte sur [render.com](https://render.com)
-2. Cliquez sur "New" > "Web Service"
-3. Connectez votre depot GitHub
-4. **Root Directory** : `backend`
-5. **Build Command** : `npm install`
-6. **Start Command** : `npm start`
-7. Dans l'onglet **Environment**, ajoutez la variable :
-   - `WEBHOOK_N8N_URL` : l'URL de votre webhook n8n (une fois cree)
-8. Cliquez sur "Deploy"
-9. Notez l'URL Render (ex: `learnnwithus.onrender.com`)
-
-**Important** : Apres le deploiement Render, mettez a jour la constante `URL_BACKEND` dans `frontend/js/main.js` avec l'URL Render de votre backend.
+Le fichier `.htaccess` a la racine force HTTPS, bloque l'acces direct aux helpers PHP, ajoute les headers de securite et active la compression gzip.
 
 
-## Connecter au workflow n8n
+## Configuration n8n (5 workflows)
 
-1. Creez votre instance n8n (sur Railway, self-hosted, ou n8n.cloud)
-2. Creez un workflow avec un noeud **Webhook** comme declencheur
-3. Copiez l'URL du webhook
-4. Collez-la dans la variable `WEBHOOK_N8N_URL` :
-   - En local : dans le fichier `backend/.env`
-   - En production : dans les variables d'environnement Render
-5. n8n recevra les inscriptions et pourra envoyer des emails automatiques
+Importer dans n8n.cloud les 5 workflows JSON (livres separement sur Google Drive) :
+
+| # | Workflow | Declenche par |
+|---|---|---|
+| 1 | Bienvenue | Creation de compte (`/api/creer-compte.php`) |
+| 2 | Contact | Formulaire contact (`/api/contact.php`) |
+| 3 | Relance leads 7j | Cron quotidien 9h |
+| 4 | Paiement Premium | Activation Premium (`/api/activer-premium.php`) |
+| 5 | Reset mot de passe | Demande reset (`/api/mdp-demande.php`) |
+
+Apres import, recuperer chaque URL de webhook et la coller dans la constante correspondante de `config.php`.
 
 
 ## Aide
 
-- **Support** : contact@learnnwithus.fr
+- **Email** : contact@learnwithus.fr
 - **FAQ** : consultez la page FAQ du site

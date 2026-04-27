@@ -67,7 +67,7 @@
       <!-- data-formation pré-sélectionne la formation dans le formulaire ci-dessous -->
       <div class="fiche-boutons">
         <a href="formation-ia.html" class="bouton-principal">Voir le cours</a>
-        <a href="inscription-compte.html?formation=IA" class="bouton-secondaire">
+        <a href="inscription-compte.html?formation=IA" class="bouton-secondaire cta-creer-compte">
           Créer un compte
         </a>
       </div>
@@ -101,7 +101,7 @@
       </table>
       <div class="fiche-boutons">
         <a href="formation-scrum.html" class="bouton-principal">Voir le cours</a>
-        <a href="inscription-compte.html?formation=SCRUM" class="bouton-secondaire">
+        <a href="inscription-compte.html?formation=SCRUM" class="bouton-secondaire cta-creer-compte">
           Créer un compte
         </a>
       </div>
@@ -135,7 +135,7 @@
       </table>
       <div class="fiche-boutons">
         <a href="formation-sap.html" class="bouton-principal">Voir le cours</a>
-        <a href="inscription-compte.html?formation=SAP" class="bouton-secondaire">
+        <a href="inscription-compte.html?formation=SAP" class="bouton-secondaire cta-creer-compte">
           Créer un compte
         </a>
       </div>
@@ -144,9 +144,9 @@
   </div>
 
 
-  <!-- Call-to-action unique : création de compte avec pré-sélection
-       de la formation via l'URL (?formation=IA / SCRUM / SAP) -->
-  <section class="section-fond">
+  <!-- Bandeau CTA en bas de page — masqué par main.js si l'utilisateur
+       est déjà connecté (cas Standard ou Premium). -->
+  <section class="section-fond" id="cta-creation-compte">
     <div class="section-contenu" style="text-align: center;">
       <h2>Prêt à vous lancer ?</h2>
       <p style="max-width: 640px; margin: 0 auto 24px; color: var(--couleur-texte-secondaire);">
@@ -154,6 +154,20 @@
         Passez Premium à tout moment pour débloquer le cours complet, la vidéo et le quiz.
       </p>
       <a href="inscription-compte.html" class="bouton-principal">Créer mon compte gratuit</a>
+    </div>
+  </section>
+
+  <!-- Bandeau alternatif pour utilisateur Standard connecté : on remplace
+       "Créer un compte" par "Passer Premium". Masqué par défaut, montré
+       par main.js si l'utilisateur a un compte mais n'est pas Premium. -->
+  <section class="section-fond" id="cta-passer-premium" style="display: none;">
+    <div class="section-contenu" style="text-align: center;">
+      <h2>Débloquez le contenu complet</h2>
+      <p style="max-width: 640px; margin: 0 auto 24px; color: var(--couleur-texte-secondaire);">
+        Passez à l'offre Premium pour accéder aux cours complets, à la vidéo (10 min)
+        et au quiz final de chacune des 3 formations.
+      </p>
+      <a href="paiement.html" class="bouton-principal">Passer à Premium — 29€/mois</a>
     </div>
   </section>
 

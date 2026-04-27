@@ -2,54 +2,81 @@
 
 ## Projet
 **LearnWithUs** — Site web d'un organisme de formation numérique (IA, SCRUM, SAP).
-Projet scolaire réalisé en équipe avec une méthodologie agile.
+Projet scolaire 2MCSI ESGI réalisé par Wissam, Hilel et Sanjay avec une méthodologie agile.
 
 ## Stack technique
 - **Frontend** : HTML + CSS + JS vanilla (pas de framework)
-- **Backend** : Node.js + Express
-- **Hébergement prévu** : Vercel (front) / Render (back)
-- **Automatisation** : n8n (workflows email/CRM)
-- **Règles de code** : tout commenté en français, variables en français, pas de framework CSS/JS
+- **Backend** : PHP 8.x procédural (pas de framework, pas de Composer)
+- **Base de données** : Notion (4 bases via API REST)
+- **Hébergement** : IONOS (~8€/mois) — domaine `learnwithus.fr`
+- **Setup local** : MAMP (PHP 8.3.1)
+- **Automatisation** : n8n.cloud (5 workflows email/CRM)
+- **Règles de code** : tout commenté en français (~40% de la page), variables et fonctions en français, pas de framework CSS/JS
 
-## Structure
+## Structure du projet (post-migration PHP)
 ```
 LearnWithUs/
 ├── frontend/
 │   ├── index.html               ← Page Accueil
-│   ├── formations.html          ← Catalogue + formulaire inscription
+│   ├── formations.html          ← Catalogue (CTA création compte)
 │   ├── espace-client.html       ← Onglets Standard/Premium
-│   ├── contact.html             ← Formulaire contact + infos
+│   ├── parametres.html          ← Mes paramètres + suppression compte (RGPD)
+│   ├── contact.html             ← Formulaire contact
 │   ├── faq.html                 ← 10 questions accordéon
-│   ├── connexion.html           ← Connexion au compte (fonctionnelle)
+│   ├── connexion.html           ← Connexion (sessions PHP)
 │   ├── inscription-compte.html  ← Création de compte + formation d'intérêt
 │   ├── paiement.html            ← Paiement fictif → passage Premium
 │   ├── admin.html               ← Dashboard admin (KPI + gestion comptes)
-│   ├── reset-mot-de-passe.html  ← Mot de passe oublié (2 états : demande / confirmation)
-│   ├── verification-email.html  ← Page atterrie depuis l'email de bienvenue
+│   ├── reset-mot-de-passe.html  ← Mot de passe oublié (2 états)
+│   ├── verification-email.html  ← Page d'atterrissage du lien email bienvenue
 │   ├── formation-ia.html        ← Cours IA (intro gratuite + Premium)
 │   ├── formation-scrum.html     ← Cours SCRUM (intro + Premium)
 │   ├── formation-sap.html       ← Cours SAP (intro + Premium)
 │   ├── favicon.svg              ← Icône site
-│   ├── robots.txt               ← Indexation SEO
-│   ├── sitemap.xml              ← Plan du site SEO
 │   ├── css/style.css            ← Styles communs
 │   └── js/main.js               ← JS commun (auth, quiz, paiement)
-├── backend/
-│   ├── server.js                ← Serveur Express (API)
-│   ├── utils.js                 ← Helpers purs (testables)
-│   ├── tests/utils.test.js      ← Tests unitaires (node --test)
-│   ├── package.json             ← Dépendances Node.js
-│   ├── .env.example             ← Modèle variables d'environnement
-│   ├── n8n-workflow-bienvenue.json  ← Workflow n8n #1 (bienvenue création compte)
-│   ├── n8n-workflow-contact.json    ← Workflow n8n #2 (contact)
-│   ├── n8n-workflow-relance.json    ← Workflow n8n #3 (relance leads 7j)
-│   ├── n8n-workflow-paiement.json   ← Workflow n8n #4 (confirmation paiement)
-│   └── n8n-workflow-reset-mdp.json  ← Workflow n8n #5 (email reset mot de passe)
-├── docs/
-│   └── audit-seo.md             ← Procédure + template audit Lighthouse
-├── vercel.json                  ← Config Vercel
+├── backend-php/
+│   ├── config.php               ← Secrets (Notion token, IDs DBs, n8n URLs, APP_SECRET) — gitignored
+│   ├── helpers/
+│   │   ├── notion.php           ← Wrapper API Notion via cURL
+│   │   ├── webhook.php          ← Appel webhooks n8n
+│   │   ├── crm.php              ← Synchronisation CRM Notion (upsert)
+│   │   ├── comptes.php          ← Recherche / lecture comptes
+│   │   ├── auth.php             ← Sessions PHP, exigerConnexion, exigerAdmin
+│   │   ├── rate-limit.php       ← Anti-brute force (5 tentatives / 15 min)
+│   │   ├── token.php            ← HMAC tokens (reset mdp + vérif email)
+│   │   └── transactions.php     ← Enregistrement transactions Notion
+│   ├── api/
+│   │   ├── _init.php            ← Bootstrap (lireRequete, repondreJson, exigerMethode)
+│   │   ├── health.php           ← Sonde de santé
+│   │   ├── contact.php          ← Formulaire contact
+│   │   ├── creer-compte.php     ← Création compte + session
+│   │   ├── connexion.php        ← Login session
+│   │   ├── deconnexion.php      ← Détruit session
+│   │   ├── session.php          ← Renvoie l'utilisateur connecté
+│   │   ├── activer-premium.php  ← Bascule Standard → Premium
+│   │   ├── supprimer-compte.php ← Utilisateur supprime son compte (RGPD)
+│   │   ├── mdp-demande.php      ← Demande lien reset (token HMAC 15 min)
+│   │   ├── mdp-confirmer.php    ← Applique nouveau mdp
+│   │   ├── verifier-email.php   ← Vérifie token bienvenue (7 jours)
+│   │   └── admin/
+│   │       ├── stats.php        ← Dashboard admin agrégé
+│   │       ├── changer-statut.php  ← Standard ↔ Premium
+│   │       └── supprimer-compte.php ← Admin archive un compte
+│   └── data/                    ← Stocke fichiers rate-limit (gitignored)
 └── README.md                    ← Guide d'installation
+
+Note : tous les livrables (PDFs Phase 2, schémas archi, supports de cours,
+fiches de révision, doc IA assistée) ont été déplacés hors du projet vers
+"C:\Users\elhou\Documents\LearnWithUs Doc\" pour ne pas alourdir le ZIP
+final ni encombrer VS Code lors des démos. Sous-dossiers :
+- docs/        → architecture-si.* , audit-seo.md , IA_Assistee_*.pdf , phase2/*.html
+- supports/    → cours-ia.pdf, cours-scrum.pdf, cours-sap.pdf
+- fiches/      → 4 fiches HTML de révision (front #1, front #2, back #1, back #2)
 ```
+
+## Architecture en 1 phrase
+Le navigateur charge les pages HTML/CSS/JS depuis IONOS, soumet les formulaires au backend PHP (sessions cookies), qui parle à Notion (stockage) et à n8n.cloud (envois email).
 
 ## Phases du projet et avancement
 
@@ -57,128 +84,66 @@ LearnWithUs/
 - T1.1 à T1.5 : cadrage, rôles, outils — fait par l'équipe
 
 ### Phase 2 : Analyse & Planification (13/03 - 27/03) — TERMINÉE
-- T2.1 à T2.8 : cahier des charges, Use Case, BPMN, roadmap, RACI, risques, benchmark, archi SI — fait par l'équipe
+- T2.1 à T2.8 : cahier des charges, Use Case, BPMN, roadmap, RACI, risques, benchmark V1, archi SI v1 — fait par l'équipe
 
 ### Phase 3 : Prototypes & Archi (28/03 - 17/04) — TERMINÉE
-- [x] T3.1 : Création du site web (pages obligatoires) — FAIT (14/04)
-  - 5 pages HTML créées (index, formations, espace-client, contact, faq)
-  - 2 pages supplémentaires : connexion.html, inscription-compte.html
-  - CSS complet avec variables, responsive, composants
-  - JS complet (menu mobile, formulaires fetch, onglets, accordéon FAQ)
-  - Backend Express avec routes /api/health, /api/inscription, /api/contact
-- [x] T3.2 : Hébergement et mise en ligne — FAIT (14/04)
-  - Frontend : https://learn-with-us-lac.vercel.app/
-  - Backend  : https://learnwithus-backend.onrender.com
-- [x] T3.4 : Prototype Low Code v1 (base de données) — FAIT (14/04)
-  - Base Notion "Inscriptions" créée (Prénom, Nom, Email, Formation, Téléphone, Date, Statut)
-  - Backend connecté via SDK @notionhq/client
-  - Chaque inscription est sauvegardée automatiquement dans Notion
-- [x] T3.5 : Workflow n8n #1 — Inscription → Email — FAIT (15/04)
-  - Workflow importé depuis n8n-workflow-inscription.json
-  - Email de confirmation envoyé à l'étudiant
-  - Email de notification envoyé à l'équipe (3 adresses)
-  - Credential SMTP Gmail configurée
-- [x] T3.6 : Mise à jour dossier de suivi projet (v1) — FAIT (15/04)
+- T3.1 — Création du site web (HTML/CSS/JS)
+- T3.2 — Hébergement et mise en ligne (livré sur Vercel/Render à l'époque, **migré IONOS en Phase 4**)
+- T3.4 — Prototype Low Code v1 : 4 bases Notion connectées via API
+- T3.5 — Workflow n8n #1 (Bienvenue) fonctionnel
+- T3.6 — Dossier de suivi projet (v1)
 
 ### Phase 4 : Intégration & Auto. (18/04 - 21/05) — EN COURS
-- [x] T4.1 : Finalisation site web (contenu + SEO) — FAIT (20/04)
-  - Corrections : faute 'learnnwithus.fr', alert() remplacés par messages propres
-  - Contenu enrichi : section "Chiffres clés" (accueil), +2 FAQ (prérequis, CPF), adresse (contact)
-  - SEO de base : meta description + author sur 7 pages, favicon.svg, sitemap.xml, robots.txt
-- [x] T4.2 : Intégration contenus e-learning (pages formations) — FAIT (21/04)
-  - 3 pages formation créées (formation-ia.html, formation-scrum.html, formation-sap.html)
-  - Structure par page : intro gratuite (teaser) + cours théorique + vidéo (placeholder) + quiz 10 Q + ressources
-  - Cours complets avec section "Actualités 2026" pour chaque domaine
-  - Quiz 10 questions avec bouton Recommencer (score stocké en localStorage)
-  - Placeholders PDF Gamma ("Bientôt disponible") en attente des supports
-  - Vidéos : placeholders — **tournage en Phase 5 (T5.1-T5.3) puis intégration (T5.4)**
-  - Blocage du contenu Premium via JS (floue + CTA pour non-connectés / Standard)
-- [x] T4.3 : Workflow n8n #2 (contact) + CRM Notion + Workflow #3 (relance) — FAIT (21/04)
-  - Workflow n8n #2 dédié au formulaire contact (accusé réception + notification équipe)
-  - Base Notion "CRM LearnWithUs" créée (Nom complet, Email, Téléphone, Source, Formation, Pipeline: Lead → Contacté → Client Standard → Client Premium → Perdu, dates, notes, ID Lead auto)
-  - Backend : helper `synchroniserCRM()` branché sur /api/inscription, /api/creer-compte, /api/activer-premium, /api/contact (upsert par email)
-  - Workflow n8n #3 (n8n-workflow-relance.json) : cron quotidien 9h → query leads > 7 jours → email relance → Pipeline passe à "Contacté"
-  - Variable env à ajouter sur Render : NOTION_DS_CRM_ID = 272e0bb6-df6d-462d-8359-f704f9a3f18e
-- [x] Authentification + Comptes + Paiement (bonus Phase 4) — FAIT (20-21/04)
-  - Base Notion "Comptes LearnWithUs" créée (email, mdp hashé bcrypt, statut, dates)
-  - Backend : routes /api/creer-compte, /api/connexion, /api/activer-premium (JWT)
-  - Frontend : pages connexion/inscription fonctionnelles, session localStorage
-  - Nav adaptative : pastille prénom + déconnexion si connecté
-  - Page paiement.html : formulaire carte fictif → bascule statut Premium dans Notion
-- [x] Render CLI + monitoring — FAIT (21/04)
-  - Render CLI installée localement, authentifiée, workspace configuré
-  - Health check path configuré sur /api/health (évite timeouts de deploy)
-- [x] T4.5 (support) : Base Notion Transactions + Workflow n8n #4 (paiement) — FAIT (21/04)
-  - Base Notion "Transactions LearnWithUs" (Référence TXN-YYYYMMDD-HHMMSS, Email, Formation, Montant, Date, Statut)
-  - /!\ Aucune donnée bancaire stockée — RGPD + évite contrainte PCI DSS
-  - Backend : helper `enregistrerTransaction()` appelé depuis /api/activer-premium
-  - Workflow n8n #4 (n8n-workflow-paiement.json) : reçu client + notif équipe
-  - 2 env vars à ajouter sur Render : NOTION_DS_TRANSACTIONS_ID + WEBHOOK_N8N_PAIEMENT_URL
-- [x] Dashboard admin (bonus Phase 4) — FAIT (21/04)
-  - Page admin.html (noindex) : 6 cartes KPI, 2 blocs répartition (formations + pipeline CRM), 2 tableaux (dernières inscriptions + transactions)
-  - Backend : middleware `verifierAdmin` (check contre ADMIN_EMAILS), route GET /api/admin/stats agrégeant les 4 bases Notion en parallèle
-  - JWT enrichi d'un drapeau `estAdmin` → lien "🔐 Admin" visible dans la nav uniquement pour les admins
-  - 2 env vars à ajouter sur Render : ADMIN_EMAILS (liste séparée par virgules) + NOTION_DS_INSCRIPTIONS_ID
-- [x] Refacto Option A — parcours unique compte (23/04)
-  - Formulaire d'inscription formations.html supprimé → CTA vers création de compte
-  - Champ "Formation d'intérêt" ajouté à inscription-compte.html (pré-sélection via ?formation=X)
-  - Route /api/inscription supprimée (obsolète), base "Inscriptions Formations" archivée (plus alimentée)
-  - Workflow n8n #1 recyclé en "Bienvenue" : trigger à la création de compte, contient le lien de vérification email
-  - Dashboard admin : "Inscriptions par formation" → "Comptes par formation d'intérêt" (données depuis la base CRM)
-- [x] Gestion des comptes (utilisateur + admin) (23/04)
-  - Route DELETE /api/compte : utilisateur supprime son propre compte (archivage Notion — droit à l'effacement RGPD)
-  - Routes DELETE /api/admin/comptes/:email + PUT /api/admin/comptes/:email/statut : admin CRUD
-  - Dashboard admin : tableau "Gestion des comptes" avec boutons Standard/Premium et Supprimer
-  - Espace-client.html : bloc "Zone de danger" avec bouton "Supprimer mon compte"
-- [x] Sécurité (23/04)
-  - express-rate-limit : 5 tentatives / 15 min sur /api/connexion et /api/creer-compte (anti-brute force)
-  - Reset mot de passe : POST /api/mdp/demande + POST /api/mdp/confirmer (JWT purpose='reset' valable 15 min). Nouveau workflow n8n #5 (n8n-workflow-reset-mdp.json)
-  - Vérification email : GET /api/verifier-email/:token (JWT purpose='verification' valable 7j). Lien inclus dans le mail de bienvenue
-  - Lien "Mot de passe oublié" ajouté sur connexion.html
-- [x] Tests unitaires + audit SEO (23/04)
-  - backend/utils.js : helpers purs extractables (genererReferenceTransaction, estAdminEmail, validerMotDePasse, parserAdminEmails)
-  - backend/tests/utils.test.js : 14 tests via node --test (node 18+ built-in runner)
-  - docs/audit-seo.md : procédure Lighthouse + template scores + pistes d'amélioration
-- [ ] T3.3 : Schéma architecture SI — livrables générés dans Downloads (.drawio + .pdf) — à intégrer au dossier de suivi
-- [ ] T4.5 (livrable) : Documentation IA Assistée (feature Paiement) — PDF généré
-- [ ] T4.6 : Mise à jour dossier de suivi projet (v2)
+- [x] T4.1 — Finalisation site web (contenu + SEO)
+- [x] T4.2 — Intégration contenus e-learning (3 pages formation)
+- [x] T4.3 — Workflows n8n #2 (contact) + #3 (relance) + CRM Notion
+- [x] Authentification + Comptes + Paiement Premium
+- [x] T4.5 — Transactions + Workflow n8n #4 (paiement)
+- [x] Dashboard admin
+- [x] Sécurité : reset mdp, vérif email, rate-limit, sessions
+- [x] **Migration Node.js → PHP** (avril 2026) — pivot stratégique pour soutenance
+  - Justification : équipe non-dev, PHP au programme du cursus, crédibilité jury
+  - Backend complètement réécrit en PHP procédural (zéro dépendance externe)
+  - JWT remplacé par sessions PHP natives + tokens HMAC pour les liens email
+  - bcrypt → password_hash() natif, fetch → cURL natif
+  - Frontend adapté (`js/main.js`) : credentials cookie au lieu de Authorization Bearer
+- [ ] T3.3 — Schéma architecture SI v2 (post-migration PHP/IONOS)
+- [ ] T4.5 livrable — Documentation IA Assistée (PDF "IA_Assistee_LearnWithUs_Paiement.pdf")
+- [ ] T4.6 — Dossier de suivi projet v2
+- [ ] Déploiement IONOS — programmé après validation équipe
 
 ### Phase 5 : Finalisation (21/05 - 16/07) — À VENIR
-- [ ] T5.1-T5.3 : Tournage vidéos (IA, SCRUM, SAP)
-- [ ] T5.4 : Intégration finale des 3 vidéos sur le site
-- [ ] T5.5 : Prototype Low Code - version finale
-- [ ] T5.6 : Contrat de maintenance
-- [ ] T5.7 : Audit SEO & recommandations sécurité
-- [ ] T5.8 : Axes d'amélioration (optionnel)
-- [ ] T5.9-T5.10 : Dossier final, relecture, répétition
+- T5.1-T5.3 : Tournage vidéos (IA, SCRUM, SAP)
+- T5.4 : Intégration finale des 3 vidéos
+- T5.5 : Prototype Low Code version finale
+- T5.6 : Contrat de maintenance
+- T5.7 : Audit SEO & recommandations sécurité
+- T5.8 : Axes d'amélioration
+- T5.9-T5.10 : Dossier final + soutenance
 
 ## Commandes utiles
 ```bash
-# Installer les dépendances backend
-cd backend && npm install
+# Setup local : démarrer MAMP (PHP 8.3.1, Apache port 8888)
+# Document Root MAMP : C:\dev\Projet Annuel 2MCSI\LearnWithUs
 
-# Lancer le serveur backend en dev
-npm run dev
+# Tester le backend en CLI
+"/c/MAMP/bin/php/php8.3.1/php.exe" -c "/c/MAMP/conf/php8.3.1/php.ini" -l backend-php/api/contact.php
 
-# Lancer le serveur backend en production
-npm start
+# Lancer un serveur de test sans MAMP
+"/c/MAMP/bin/php/php8.3.1/php.exe" -c "/c/MAMP/conf/php8.3.1/php.ini" -S localhost:8765 -t .
 
-# Frontend : ouvrir index.html avec Live Server (VS Code)
+# Purger le rate-limit (si bloqué après trop de tentatives)
+rm backend-php/data/rl-*.json
 ```
 
 ## Points importants
-- La constante URL_BACKEND dans frontend/js/main.js doit être mise à jour avec l'URL Render en production
-- Le fichier backend/.env doit être créé à partir de .env.example (ne jamais committer .env)
-- Webhooks n8n configurés via 2 variables d'environnement sur Render :
-  - WEBHOOK_N8N_URL (inscription formation)
-  - WEBHOOK_N8N_CONTACT_URL (formulaire contact)
-- Authentification : bcrypt pour le hash mot de passe, JWT 7 jours signé avec JWT_SECRET (env var Render)
-- 4 bases Notion distinctes : "Inscriptions", "Comptes LearnWithUs", "CRM LearnWithUs", "Transactions LearnWithUs" (IDs séparés)
-- Paiement fictif (pas de Stripe réel) : bascule Statut Notion à "Premium" + log transaction + trigger n8n #4
-- /!\ AUCUNE donnée bancaire (carte, CVV, expiration) n'est stockée — conformité RGPD + évite PCI DSS. Uniquement métadonnées (email, montant, date, référence)
-- CRM Notion : alimenté en upsert (recherche par email, create si absent, update sinon). 4 points d'entrée : /api/inscription, /api/creer-compte, /api/activer-premium, /api/contact
-- Env vars Render à configurer : NOTION_DS_CRM_ID, NOTION_DS_TRANSACTIONS_ID, WEBHOOK_N8N_PAIEMENT_URL (sinon les routes répondent mais n'alimentent pas ces composants)
-- Render CLI installée localement pour monitoring des deploys et logs (voir reference_render.md en mémoire)
+- `backend-php/config.php` n'est PAS commit (gitignored). Contient : NOTION_TOKEN, IDs des 4 bases Notion, URLs des 5 webhooks n8n, ADMIN_EMAILS, APP_SECRET (HMAC).
+- Authentification = sessions PHP natives. `password_hash()` natif (équivalent bcrypt). Pas de JWT pour les sessions.
+- Tokens email (reset / vérification) = HMAC SHA256 maison (`helpers/token.php`), stateless, signés avec APP_SECRET.
+- 4 bases Notion : "Comptes LearnWithUs", "CRM LearnWithUs", "Transactions LearnWithUs", "Inscriptions Formations" (legacy, non alimentée).
+- Paiement fictif : aucune donnée bancaire stockée (RGPD + évite PCI DSS). Uniquement métadonnées (email, montant, date, référence).
+- CRM alimenté en upsert depuis 3 routes : creer-compte, activer-premium, contact.
+- Anti-brute force fichier-based dans `backend-php/data/` (5 tentatives / 15 min par IP).
 
 ## Durée des formations (design validé)
 Chaque formation Premium dure ≥ 15 min au total :

@@ -1,71 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- sitemap.xml — Liste des pages à indexer par les moteurs de recherche -->
+<!--
+  sitemap.xml — liste des URLs publiques pour les moteurs de recherche.
+  À mettre à jour si on ajoute / retire des pages publiques.
+  Les pages privées (admin, paiement, parametres, reset, verification)
+  sont exclues volontairement (elles ont aussi `noindex` dans le HTML).
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/</loc>
+    <loc>https://learnwithus.fr/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/formations.html</loc>
+    <loc>https://learnwithus.fr/formations.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/formation-ia.html</loc>
+    <loc>https://learnwithus.fr/formation-ia.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/formation-scrum.html</loc>
+    <loc>https://learnwithus.fr/formation-scrum.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/formation-sap.html</loc>
+    <loc>https://learnwithus.fr/formation-sap.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/espace-client.html</loc>
+    <loc>https://learnwithus.fr/contact.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://learnwithus.fr/faq.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/contact.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://learn-with-us-lac.vercel.app/faq.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://learn-with-us-lac.vercel.app/paiement.html</loc>
+    <loc>https://learnwithus.fr/connexion.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
-    <loc>https://learn-with-us-lac.vercel.app/connexion.html</loc>
+    <loc>https://learnwithus.fr/inscription-compte.html</loc>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://learn-with-us-lac.vercel.app/inscription-compte.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
 
 </urlset>

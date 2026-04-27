@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!--
+  parametres.html — Paramètres du compte utilisateur
+  ============================================================
+  Page accessible via la pastille prénom (en haut à droite)
+  une fois connecté. Affiche :
+    - Les informations du compte (email, prénom, nom, statut)
+    - La zone de danger (suppression du compte — droit RGPD)
+
+  La suppression archive la page Notion correspondante (soft
+  delete) puis détruit la session côté serveur.
+  ============================================================
+-->
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gérez les paramètres de votre compte LearnWithUs.">
+  <meta name="author" content="LearnWithUs">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mes informations — LearnWithUs</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============================================================
+       STYLES SPÉCIFIQUES À LA PAGE PARAMÈTRES
+       Carte centrée avec sections "Mon compte" puis "Zone danger".
+       ============================================================ */
+
+    .conteneur-parametres {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .carte-parametres {
+      background-color: var(--couleur-blanc);
+      border-radius: var(--rayon-carte);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .carte-parametres h2 {
+      margin-top: 0;
+      color: var(--couleur-titre);
+      font-size: 1.25rem;
+      border-bottom: 1px solid var(--couleur-bordure);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Liste clé/valeur pour les infos du compte */
+    .liste-infos {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .liste-infos li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--couleur-bordure);
+      font-size: 0.95rem;
+    }
+
+    .liste-infos li:last-child { border-bottom: none; }
+
+    .liste-infos .label {
+      color: var(--couleur-texte-secondaire);
+      font-weight: 600;
+    }
+
+    .liste-infos .valeur {
+      color: var(--couleur-texte);
+    }
+
+    /* Pastille de statut (Standard / Premium) */
+    .pastille-statut {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .pastille-statut.standard {
+      background-color: var(--couleur-bordure);
+      color: var(--couleur-texte);
+    }
+    .pastille-statut.premium {
+      background-color: var(--couleur-principale);
+      color: var(--couleur-blanc);
+    }
+
+    /* Zone de danger — fond rougeâtre pour signaler l'irréversibilité */
+    .carte-danger {
+      border: 1px solid #E8C7C7;
+      background-color: #FBF3F3;
+    }
+
+    .carte-danger h2 {
+      color: #C62828;
+      border-bottom-color: #E8C7C7;
+    }
+
+    .carte-danger p {
+      color: var(--couleur-texte);
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    .bouton-danger {
+      background-color: #C62828;
+      color: var(--couleur-blanc);
+      border: none;
+      padding: 11px 22px;
+      border-radius: var(--rayon-bouton);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .bouton-danger:hover { background-color: #A11E1E; }
+    .bouton-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* État "non connecté" : redirection vers connexion */
+    .message-non-connecte {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--couleur-texte-secondaire);
+    }
+
+    @media (max-width: 600px) {
+      .liste-infos li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navigation">
+    <div class="nav-contenu">
+      <a href="index.html" class="nav-logo">LearnWithUs</a>
+      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
+      <ul class="nav-liens">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="formations.html">Formations</a></li>
+        <li><a href="espace-client.html">Espace Client</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <div class="titre-page">
+    <h1>Mes informations</h1>
+    <p>Consultez les informations de votre compte LearnWithUs</p>
+  </div>
+
+
+  <main class="conteneur-parametres">
+
+    <!-- Bloc rempli par main.js si l'utilisateur n'est pas connecté -->
+    <div id="parametres-non-connecte" class="message-non-connecte" style="display: none;">
+      <p>Vous devez être connecté pour accéder à vos paramètres.</p>
+      <a href="connexion.html" class="bouton-principal">Se connecter</a>
+    </div>
+
+    <!-- Bloc principal : visible uniquement si connecté -->
+    <div id="parametres-contenu" style="display: none;">
+
+      <!-- Mes informations -->
+      <div class="carte-parametres">
+        <h2>Mon compte</h2>
+        <ul class="liste-infos">
+          <li>
+            <span class="label">Prénom</span>
+            <span class="valeur" id="info-prenom">—</span>
+          </li>
+          <li>
+            <span class="label">Nom</span>
+            <span class="valeur" id="info-nom">—</span>
+          </li>
+          <li>
+            <span class="label">Adresse email</span>
+            <span class="valeur" id="info-email">—</span>
+          </li>
+          <li>
+            <span class="label">Statut de l'abonnement</span>
+            <span class="valeur" id="info-statut">—</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Zone de danger -->
+      <div class="carte-parametres carte-danger">
+        <h2>⚠️ Zone de danger</h2>
+        <p>
+          La suppression de votre compte est <strong>irréversible</strong>. Vos données
+          personnelles seront effacées (droit à l'effacement — RGPD). Les transactions
+          déjà effectuées seront conservées pour la comptabilité.
+        </p>
+        <button id="bouton-supprimer-compte" class="bouton-danger">
+          Supprimer mon compte
+        </button>
+        <div id="message-suppression" style="margin-top: 16px;"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <footer class="footer">
+    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
+    <div class="footer-liens">
+      <a href="formations.html">Formations</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>

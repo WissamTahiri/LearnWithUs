@@ -1,0 +1,8 @@
+/* config.php contient les secrets de prod (token Notion, etc.)
+   on ne le commit JAMAIS. Seul config.example.php est dans Git. */
+config.php
+
+/* Logs PHP éventuels (rate-limit, debug) */
+data/*.json
+data/*.log
+!data/.gitkeep
