@@ -1286,15 +1286,19 @@ textarea {
 
 /* Lien Admin dans la navigation (badge rouge discret) */
 .lien-admin {
-  background-color: var(--couleur-principale);
-  color: var(--couleur-blanc) !important;
-  padding: 6px 12px;
-  border-radius: var(--rayon-bouton);
-  font-size: 0.85rem;
+  background-color: transparent;
+  color: var(--couleur-principale) !important;
+  padding: 4px 12px;
+  border: 1.5px solid var(--couleur-principale);
+  border-radius: 14px;
+  font-size: 0.82rem;
   font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 .lien-admin:hover {
-  background-color: var(--couleur-principale-hover);
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc) !important;
 }
 
 /* Message d'erreur / chargement */

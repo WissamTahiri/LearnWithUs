@@ -1,0 +1,91 @@
+# =============================================================
+# .htaccess racine — configuration Apache pour IONOS
+# =============================================================
+# À placer à la racine de l'hébergement IONOS (au-dessus de
+# frontend/ et backend-php/). Apache lit ce fichier
+# automatiquement à chaque requête.
+#
+# Ce que fait ce fichier :
+#   1. Force HTTPS (redirige http → https)
+#   2. Bloque l'accès direct aux helpers PHP et au config.php
+#   3. Pose les headers de sécurité HTTP standards
+#   4. Active la compression gzip pour les ressources textuelles
+#   5. Active le cache navigateur sur les assets statiques
+#   6. Redirige les erreurs 404 vers la page personnalisée
+# =============================================================
+
+
+# ----- 1. FORCE HTTPS -----
+# Si la requête arrive en HTTP, on redirige vers HTTPS (301).
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+
+# ----- 2. BLOQUER L'ACCES DIRECT AUX FICHIERS SENSIBLES -----
+# Empeche un visiteur de taper /backend-php/config.php ou
+# /backend-php/helpers/notion.php pour voir le code.
+
+# config.php : aucune URL ne doit y acceder en direct.
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Tout le dossier helpers/ est inaccessible en direct.
+RedirectMatch 403 ^/backend-php/helpers/
+
+# Le dossier data/ (rate-limit) est inaccessible aussi.
+RedirectMatch 403 ^/backend-php/data/
+
+# Le fichier .env (s'il existe) est bloque par securite.
+<Files ".env">
+    Require all denied
+</Files>
+
+
+# ----- 3. HEADERS DE SECURITE -----
+<IfModule mod_headers.c>
+    # Empeche le navigateur de "deviner" le type d'un fichier
+    Header set X-Content-Type-Options "nosniff"
+
+    # Empeche que la page soit affichee dans un iframe (clickjacking)
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Force HTTPS pendant 1 an (HSTS) - ne pas activer avant
+    # d'etre sur que tout fonctionne en HTTPS, sinon on bloque
+    # l'acces au site.
+    # Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Limite le referrer envoye aux sites tiers
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Empeche l'acces aux APIs sensibles non utilisees
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+
+# ----- 4. COMPRESSION GZIP -----
+# Reduit la taille des fichiers transmis (HTML, CSS, JS, JSON).
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+
+# ----- 5. CACHE NAVIGATEUR -----
+# Indique au navigateur combien de temps garder un fichier en cache.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+
+# ----- 6. PAGE D'ERREUR 404 -----
+# Utilise notre 404.html au lieu de la page Apache par defaut.
+ErrorDocument 404 /frontend/404.html

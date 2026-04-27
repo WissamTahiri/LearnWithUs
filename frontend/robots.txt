@@ -1,6 +1,19 @@
-# robots.txt — Autorise tous les robots à indexer le site LearnWithUs
+# robots.txt — instructions pour les moteurs de recherche
+# (Google, Bing, etc.). Référence le sitemap.xml et restreint
+# l'accès aux pages privées (admin, paiement, parametres, etc.).
+
 User-agent: *
 Allow: /
 
-# Référence du sitemap pour faciliter l'indexation
-Sitemap: https://learn-with-us-lac.vercel.app/sitemap.xml
+# Pages privées : on les bloque côté SEO en plus du noindex HTML.
+Disallow: /admin.html
+Disallow: /paiement.html
+Disallow: /parametres.html
+Disallow: /reset-mot-de-passe.html
+Disallow: /verification-email.html
+
+# Backend PHP : aucune raison de l'indexer.
+Disallow: /backend-php/
+
+# Sitemap pour aider l'indexation.
+Sitemap: https://learnwithus.fr/sitemap.xml
