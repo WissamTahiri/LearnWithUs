@@ -205,7 +205,6 @@ async function envoyerCreationCompte(evenement) {
   const prenom           = document.getElementById('prenom').value.trim()
   const nom              = document.getElementById('nom').value.trim()
   const email            = document.getElementById('email').value.trim()
-  const telephone        = document.getElementById('telephone').value.trim()
   const formation        = document.getElementById('formation').value
   const motDePasse       = document.getElementById('mot-de-passe').value
   const confirmationMdp  = document.getElementById('confirmation-mdp').value
@@ -240,7 +239,7 @@ async function envoyerCreationCompte(evenement) {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body:    JSON.stringify({ prenom, nom, email, telephone, formation, motDePasse })
+      body:    JSON.stringify({ prenom, nom, email, formation, motDePasse })
     })
     const resultat = await reponse.json()
 
@@ -809,50 +808,6 @@ async function envoyerConfirmationReset(evenement) {
 }
 
 
-/* Lance la vérification email au chargement de verification-email.html */
-async function traiterVerificationEmail() {
-  const parametres = new URLSearchParams(window.location.search)
-  const token      = parametres.get('token')
-  const carte      = document.getElementById('carte-verif')
-
-  if (!token) {
-    carte.innerHTML =
-      '<div class="icone-resultat">⚠️</div>' +
-      '<h1 class="titre-resultat">Lien incomplet</h1>' +
-      '<p class="message-resultat">Aucun token de vérification détecté.</p>' +
-      '<a href="connexion.html" class="bouton-retour">Retour à la connexion</a>'
-    return
-  }
-
-  try {
-    const reponse = await fetch(
-      URL_BACKEND + '/api/verifier-email.php?token=' + encodeURIComponent(token),
-      { credentials: 'include' }
-    )
-    const resultat = await reponse.json()
-    if (resultat.succes) {
-      carte.innerHTML =
-        '<div class="icone-resultat">✅</div>' +
-        '<h1 class="titre-resultat">Email vérifié !</h1>' +
-        '<p class="message-resultat">Merci, votre adresse <strong>' + resultat.email + '</strong> est maintenant confirmée.</p>' +
-        '<a href="espace-client.html" class="bouton-retour">Accéder à mon espace</a>'
-    } else {
-      carte.innerHTML =
-        '<div class="icone-resultat">⚠️</div>' +
-        '<h1 class="titre-resultat">Lien invalide</h1>' +
-        '<p class="message-resultat">' + (resultat.message || 'Le lien a expiré ou est incorrect.') + '</p>' +
-        '<a href="connexion.html" class="bouton-retour">Retour à la connexion</a>'
-    }
-  } catch (e) {
-    carte.innerHTML =
-      '<div class="icone-resultat">⚠️</div>' +
-      '<h1 class="titre-resultat">Erreur réseau</h1>' +
-      '<p class="message-resultat">Impossible de contacter le serveur. Réessayez plus tard.</p>' +
-      '<a href="index.html" class="bouton-retour">Retour à l\'accueil</a>'
-  }
-}
-
-
 /* Utilisateur : supprime son propre compte (RGPD — droit à l'effacement) */
 async function supprimerMonCompte() {
   if (!confirm('Êtes-vous sûr(e) de vouloir supprimer votre compte ?\n\nCette action est irréversible.')) return
@@ -1027,11 +982,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       formDemandeReset.addEventListener('submit', envoyerDemandeReset)
     }
-  }
-
-  /* Page verification-email.html */
-  if (document.getElementById('carte-verif')) {
-    traiterVerificationEmail()
   }
 
   /* Formulaire de connexion (connexion.html) */

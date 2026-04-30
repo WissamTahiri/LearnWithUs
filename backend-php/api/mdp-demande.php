@@ -38,7 +38,7 @@ if ($page) {
 
     /* Token signé valable 15 minutes */
     $token = genererToken($compte['email'], 'reset', 15 * 60);
-    $lien  = URL_SITE . '/frontend/reset-mot-de-passe.html?token=' . $token;
+    $lien  = URL_SITE . '/reset-mot-de-passe.html?token=' . $token;
 
     if (WEBHOOK_N8N_RESET_MDP) {
         appelerWebhook(WEBHOOK_N8N_RESET_MDP, [

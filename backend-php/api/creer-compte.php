@@ -7,7 +7,7 @@
    3. Hash bcrypt natif (password_hash)
    4. Création de la page dans la base Notion "Comptes"
    5. Sync CRM Notion (Pipeline=Lead, Source=Création compte)
-   6. Webhook n8n bienvenue (avec lien de vérif email signé)
+   6. Webhook n8n bienvenue (email simple, sans lien de vérif)
    7. Connexion automatique (session PHP)
    ============================================================= */
 
@@ -17,7 +17,6 @@ require_once __DIR__ . '/../helpers/auth.php';
 require_once __DIR__ . '/../helpers/rate-limit.php';
 require_once __DIR__ . '/../helpers/webhook.php';
 require_once __DIR__ . '/../helpers/crm.php';
-require_once __DIR__ . '/../helpers/token.php';
 
 exigerMethode('POST');
 
@@ -34,7 +33,6 @@ $prenom    = trim($d['prenom']     ?? '');
 $nom       = trim($d['nom']        ?? '');
 $email     = strtolower(trim($d['email'] ?? ''));
 $mdp       = $d['motDePasse']      ?? '';
-$telephone = trim($d['telephone']  ?? '');
 $formation = trim($d['formation']  ?? '');
 
 /* === Validations === */
@@ -88,7 +86,6 @@ if (!$creation) {
 synchroniserCRM([
     'nomComplet' => $prenom . ' ' . $nom,
     'email'      => $email,
-    'telephone'  => $telephone ?: null,
     'formation'  => $formation ?: null,
     'source'     => 'Création compte',
     'pipeline'   => 'Lead'
@@ -96,15 +93,11 @@ synchroniserCRM([
 
 /* === Email de bienvenue via n8n === */
 if (WEBHOOK_N8N_BIENVENUE) {
-    $tokenVerif = genererToken($email, 'verification', 7 * 24 * 60 * 60);
-    $lienVerif  = URL_SITE . '/frontend/verification-email.html?token=' . $tokenVerif;
-
     appelerWebhook(WEBHOOK_N8N_BIENVENUE, [
-        'prenom'           => $prenom,
-        'nom'              => $nom,
-        'email'            => $email,
-        'formation'        => $formation,
-        'lienVerification' => $lienVerif
+        'prenom'    => $prenom,
+        'nom'       => $nom,
+        'email'     => $email,
+        'formation' => $formation
     ]);
 }
 
