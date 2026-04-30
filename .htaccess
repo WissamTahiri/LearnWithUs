@@ -88,4 +88,4 @@ RedirectMatch 403 ^/backend-php/data/
 
 # ----- 6. PAGE D'ERREUR 404 -----
 # Utilise notre 404.html au lieu de la page Apache par defaut.
-ErrorDocument 404 /frontend/404.html
+ErrorDocument 404 /404.html

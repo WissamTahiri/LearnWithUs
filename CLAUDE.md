@@ -28,7 +28,6 @@ LearnWithUs/
 │   ├── paiement.html            ← Paiement fictif → passage Premium
 │   ├── admin.html               ← Dashboard admin (KPI + gestion comptes)
 │   ├── reset-mot-de-passe.html  ← Mot de passe oublié (2 états)
-│   ├── verification-email.html  ← Page d'atterrissage du lien email bienvenue
 │   ├── formation-ia.html        ← Cours IA (intro gratuite + Premium)
 │   ├── formation-scrum.html     ← Cours SCRUM (intro + Premium)
 │   ├── formation-sap.html       ← Cours SAP (intro + Premium)
@@ -58,7 +57,6 @@ LearnWithUs/
 │   │   ├── supprimer-compte.php ← Utilisateur supprime son compte (RGPD)
 │   │   ├── mdp-demande.php      ← Demande lien reset (token HMAC 15 min)
 │   │   ├── mdp-confirmer.php    ← Applique nouveau mdp
-│   │   ├── verifier-email.php   ← Vérifie token bienvenue (7 jours)
 │   │   └── admin/
 │   │       ├── stats.php        ← Dashboard admin agrégé
 │   │       ├── changer-statut.php  ← Standard ↔ Premium
@@ -139,7 +137,7 @@ rm backend-php/data/rl-*.json
 ## Points importants
 - `backend-php/config.php` n'est PAS commit (gitignored). Contient : NOTION_TOKEN, IDs des 4 bases Notion, URLs des 5 webhooks n8n, ADMIN_EMAILS, APP_SECRET (HMAC).
 - Authentification = sessions PHP natives. `password_hash()` natif (équivalent bcrypt). Pas de JWT pour les sessions.
-- Tokens email (reset / vérification) = HMAC SHA256 maison (`helpers/token.php`), stateless, signés avec APP_SECRET.
+- Tokens email (reset mot de passe) = HMAC SHA256 maison (`helpers/token.php`), stateless, signés avec APP_SECRET.
 - 4 bases Notion : "Comptes LearnWithUs", "CRM LearnWithUs", "Transactions LearnWithUs", "Inscriptions Formations" (legacy, non alimentée).
 - Paiement fictif : aucune donnée bancaire stockée (RGPD + évite PCI DSS). Uniquement métadonnées (email, montant, date, référence).
 - CRM alimenté en upsert depuis 3 routes : creer-compte, activer-premium, contact.

@@ -16,3 +16,8 @@ Thumbs.db
 
 # Fichiers Claude Code (contexte local)
 .claude/
+
+# Sécurité : tout config.php contient des secrets (Notion token, APP_SECRET)
+# Le seul committé est config.example.php (modèle sans valeurs réelles)
+config.php
+backend-php/config.php

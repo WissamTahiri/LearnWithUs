@@ -10,7 +10,6 @@ Disallow: /admin.html
 Disallow: /paiement.html
 Disallow: /parametres.html
 Disallow: /reset-mot-de-passe.html
-Disallow: /verification-email.html
 
 # Backend PHP : aucune raison de l'indexer.
 Disallow: /backend-php/

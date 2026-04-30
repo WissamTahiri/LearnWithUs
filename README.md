@@ -4,7 +4,9 @@ Site web complet pour **LearnWithUs**, un organisme de formation numerique propo
 
 **Stack technique** : HTML + CSS + JavaScript vanilla (frontend) / PHP 8.x procedural (backend) / Notion (base de donnees) / n8n.cloud (automatisations email)
 
-**Hebergement cible** : IONOS (mutualise, ~8 EUR/mois) - domaine `learnwithus.fr`
+**Hebergement** : IONOS (mutualise, ~8 EUR/mois) - PHP 8.4, SSL Sectigo Wildcard
+
+**URL de production** : https://learnwithus.fr
 
 
 ## Structure du projet
@@ -27,7 +29,6 @@ LearnWithUs/
 |   |-- paiement.html               <- Paiement Premium fictif
 |   |-- admin.html                  <- Dashboard administrateur
 |   |-- reset-mot-de-passe.html     <- Reinitialisation mot de passe
-|   |-- verification-email.html     <- Atterrissage du lien email bienvenue
 |   |-- 404.html                    <- Page d'erreur personnalisee
 |   |-- sitemap.xml / robots.txt    <- SEO
 |   |-- favicon.svg                 <- Icone du site
@@ -59,7 +60,6 @@ LearnWithUs/
 |   |   |-- supprimer-compte.php    <- RGPD - droit a l'effacement
 |   |   |-- mdp-demande.php         <- Demande lien reset mot de passe
 |   |   |-- mdp-confirmer.php       <- Applique nouveau mot de passe
-|   |   |-- verifier-email.php      <- Verification email bienvenue
 |   |   |-- admin/
 |   |       |-- stats.php           <- Dashboard admin (KPI agreges)
 |   |       |-- changer-statut.php  <- Standard / Premium par admin
@@ -128,22 +128,40 @@ Ouvrez dans votre navigateur :
   (doit renvoyer `{"statut":"ok",...}`)
 
 
-## Deploiement IONOS (production)
+## Deploiement IONOS (production - effectue le 28/04/2026)
 
-1. Souscrire un hebergement mutualise IONOS (~8 EUR/mois) avec PHP 8+
-2. Connecter le domaine `learnwithus.fr`
-3. Activer le certificat SSL Let's Encrypt (gratuit, auto)
-4. Uploader tous les fichiers via FTP / SFTP
-5. Creer `backend-php/config.php` directement sur le serveur (NE JAMAIS le committer sur Git)
-6. Mettre a jour `URL_SITE` dans `config.php` avec `https://learnwithus.fr`
-7. Tester l'URL publique
+Le site tourne en production sur `https://learnwithus.fr`. Les etapes suivies :
 
-Le fichier `.htaccess` a la racine force HTTPS, bloque l'acces direct aux helpers PHP, ajoute les headers de securite et active la compression gzip.
+1. **Souscription** : pack IONOS Hebergement Web Premium (~8 EUR/mois) avec PHP 8.4
+2. **Domaine** : `learnwithus.fr` connecte au pack via "Connecter a un espace Web", cible `/public`
+3. **SSL** : certificat **SSL Starter Wildcard** (Sectigo) gratuit inclus, couvre `learnwithus.fr` et `*.learnwithus.fr`, renouvellement auto tous les 180 jours
+4. **Upload** : tous les fichiers `frontend/*` + `.htaccess` + `backend-php/` deposes via SFTP (FileZilla) dans `/public/`
+5. **Config prod** : `backend-php/config.php` cree directement sur le serveur (jamais commit sur Git), seule difference vs local : `URL_SITE = 'https://learnwithus.fr'`
+6. **Permissions** : dossier `backend-php/data/` en 755 (writeable pour le rate-limit)
+
+Le fichier `.htaccess` a la racine force HTTPS (redirection 301), bloque l'acces direct au `config.php` et aux dossiers `helpers/` et `data/`, ajoute les headers de securite (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy), active la compression gzip et le cache navigateur, et redirige les 404 vers `/404.html`.
+
+
+## Email professionnel (IONOS)
+
+Une boite mail `contact@learnwithus.fr` (Email Basic 2 Go, gratuit avec le pack) est configuree pour :
+- Recevoir les messages depuis le formulaire de contact du site
+- **Etre l'expediteur SMTP des 5 workflows n8n** (point critique pour la delivrabilite : sans cela les emails partent depuis Gmail et sont rejetes par les FAI .fr a cause du SPF)
+
+Webmail accessible sur https://mail.ionos.fr.
 
 
 ## Configuration n8n (5 workflows)
 
-Importer dans n8n.cloud les 5 workflows JSON (livres separement sur Google Drive) :
+Workflows hebergees sur n8n.cloud (instance `persia-esgi`). Tous utilisent le **credential SMTP IONOS** suivant :
+
+```
+Host:     smtp.ionos.fr
+Port:     587
+User:     contact@learnwithus.fr
+Password: (mot de passe defini lors de la creation de la boite IONOS)
+STARTTLS: ACTIVE (NE PAS desactiver - sinon erreur 530 User not authenticated)
+```
 
 | # | Workflow | Declenche par |
 |---|---|---|
@@ -153,7 +171,7 @@ Importer dans n8n.cloud les 5 workflows JSON (livres separement sur Google Drive
 | 4 | Paiement Premium | Activation Premium (`/api/activer-premium.php`) |
 | 5 | Reset mot de passe | Demande reset (`/api/mdp-demande.php`) |
 
-Apres import, recuperer chaque URL de webhook et la coller dans la constante correspondante de `config.php`.
+Apres import des workflows JSON, chaque URL `Production` (pas `Test`) est collee dans la constante correspondante de `config.php`. Les 5 workflows doivent etre **actives** (toggle vert en haut a droite de l'editeur n8n) pour que les webhooks Production repondent.
 
 
 ## Aide

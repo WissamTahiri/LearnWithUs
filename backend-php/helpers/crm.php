@@ -23,8 +23,8 @@ function chercherContactCRM($email) {
 
 
 /* Crée ou met à jour un contact dans le CRM.
-   $donnees attend les clés : nomComplet, email, telephone (opt),
-   source (opt), formation (opt), pipeline (opt). */
+   $donnees attend les clés : nomComplet, email, source (opt),
+   formation (opt), pipeline (opt). */
 function synchroniserCRM($donnees) {
 
     /* Si l'ID CRM n'est pas configuré (TODO), on saute en silence */
@@ -49,9 +49,6 @@ function synchroniserCRM($donnees) {
         if (!empty($donnees['pipeline'])) {
             $maj['Pipeline'] = ['select' => ['name' => $donnees['pipeline']]];
         }
-        if (!empty($donnees['telephone'])) {
-            $maj['Téléphone'] = ['phone_number' => $donnees['telephone']];
-        }
         appelerNotion('PATCH', 'pages/' . $existant['id'], ['properties' => $maj]);
 
     } else {
@@ -64,9 +61,6 @@ function synchroniserCRM($donnees) {
             'Date 1er contact' => ['date'     => ['start' => $aujourdhui]],
             'Dernière action'  => ['date'     => ['start' => $aujourdhui]]
         ];
-        if (!empty($donnees['telephone'])) {
-            $props['Téléphone'] = ['phone_number' => $donnees['telephone']];
-        }
         if (!empty($donnees['formation'])) {
             $props["Formation d'intérêt"] = ['select' => ['name' => $donnees['formation']]];
         }

@@ -5,7 +5,6 @@
    Petit "JWT maison" en pur PHP, sans librairie externe.
    Utilisé pour les liens envoyés par email :
    - reset mot de passe (purpose='reset', durée 15 min)
-   - vérification email (purpose='verification', durée 7 jours)
 
    Format : <payload_base64>.<signature_hmac>
    Le payload contient email|purpose|exp et n'est pas chiffré

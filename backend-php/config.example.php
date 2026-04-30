@@ -51,7 +51,7 @@ const NOTION_DS_INSCRIPTIONS_ID  = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
    ============================================================= */
 
 /* Workflow #1 — Bienvenue : déclenché à la création de compte.
-   Envoie un email de bienvenue avec le lien de vérification. */
+   Envoie un email de bienvenue à l'utilisateur. */
 const WEBHOOK_N8N_BIENVENUE  = '';
 
 /* Workflow #2 — Contact : accusé de réception au visiteur +
@@ -82,7 +82,6 @@ const ADMIN_EMAILS = 'admin1@example.com,admin2@example.com';
    =============================================================
    Utilisé pour signer les tokens stateless envoyés par email :
    - Tokens de reset mot de passe (purpose='reset', durée 15 min)
-   - Tokens de vérification email (purpose='verification', 7 j)
 
    Doit être une chaîne aléatoire d'au moins 32 caractères.
    Pour en générer une rapidement :
@@ -95,7 +94,7 @@ const APP_SECRET = 'a-remplacer-par-une-chaine-aleatoire-de-32-caracteres-minimu
    5. URL DU SITE
    =============================================================
    Utilisée pour construire les liens absolus dans les emails
-   (vérification email, reset mot de passe).
+   (reset mot de passe).
 
    - Local MAMP   : http://localhost:8888
    - Prod IONOS   : https://learnwithus.fr
