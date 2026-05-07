@@ -67,7 +67,6 @@ LearnWithUs/
 |   |-- data/                       <- Stockage rate-limit (gitignored)
 |
 |-- .htaccess                       <- Configuration Apache (HTTPS, securite)
-|-- creer-zip.sh                    <- Script de generation du ZIP livrable
 |-- README.md                       <- Ce fichier
 ```
 
