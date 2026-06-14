@@ -914,6 +914,27 @@ async function chargerDashboardAdmin() {
 
 
 /* Initialisation au chargement de la page */
+/* =============================================================
+   Lecteurs vidéo des cours (pages formation-*.html)
+   La vidéo est servie depuis IONOS : frontend/videos/formation-*.mp4
+   Tant que le fichier n'est pas en ligne (404), on masque le lecteur
+   et on affiche un repli "bientôt disponible". */
+function initLecteursVideo() {
+  document.querySelectorAll('.video-cours').forEach(function(video) {
+    const conteneur = video.closest('.video-cours-conteneur')
+    if (!conteneur) return
+    const repli = conteneur.querySelector('.video-indisponible')
+    function afficherRepli() {
+      video.hidden = true
+      if (repli) repli.hidden = false
+    }
+    /* erreur sur la source (fichier absent) ou sur le lecteur lui-même */
+    const source = video.querySelector('source')
+    if (source) source.addEventListener('error', afficherRepli)
+    video.addEventListener('error', afficherRepli)
+  })
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
   /* Mise à jour de la navigation (toutes pages) */
@@ -923,6 +944,9 @@ document.addEventListener('DOMContentLoaded', function() {
   if (document.querySelector('.contenu-premium')) {
     configurerAccesFormation()
   }
+
+  /* Pages formation-*.html : lecteurs vidéo (repli si pas encore en ligne) */
+  initLecteursVideo()
 
   /* Page formations.html : adapte les CTA selon connexion / statut */
   if (document.getElementById('cta-creation-compte')) {

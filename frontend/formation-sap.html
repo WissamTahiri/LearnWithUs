@@ -157,9 +157,15 @@
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">🎥 VIDÉO PREMIUM — 10 MIN</span>
       <h2>Synthèse vidéo du cours</h2>
-      <div class="video-placeholder">
-        <div class="video-placeholder-icone">🎬</div>
-        <p>Vidéo de 10 minutes — à intégrer ici une fois tournée par l'équipe</p>
+      <div class="video-cours-conteneur">
+        <video class="video-cours" controls preload="metadata" playsinline>
+          <source src="videos/formation-sap.mp4" type="video/mp4">
+          Votre navigateur ne supporte pas la lecture vidéo.
+        </video>
+        <div class="video-placeholder video-indisponible" hidden>
+          <div class="video-placeholder-icone">🎬</div>
+          <p>Vidéo bientôt disponible — en cours de tournage par l'équipe.</p>
+        </div>
       </div>
     </div>
 

@@ -147,9 +147,15 @@
     <div class="formation-bloc contenu-premium">
       <span class="badge-section premium">🎥 PREMIUM VIDEO — 10 MIN</span>
       <h2>Course summary on video</h2>
-      <div class="video-placeholder">
-        <div class="video-placeholder-icone">🎬</div>
-        <p>10-minute video — to be embedded once the team has finished filming</p>
+      <div class="video-cours-conteneur">
+        <video class="video-cours" controls preload="metadata" playsinline>
+          <source src="videos/formation-scrum.mp4" type="video/mp4">
+          Your browser does not support video playback.
+        </video>
+        <div class="video-placeholder video-indisponible" hidden>
+          <div class="video-placeholder-icone">🎬</div>
+          <p>Video coming soon — currently being filmed by the team.</p>
+        </div>
       </div>
     </div>
 

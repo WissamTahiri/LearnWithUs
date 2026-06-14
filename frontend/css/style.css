@@ -971,6 +971,19 @@ textarea {
   font-size: 0.95rem;
 }
 
+/* Lecteur vidéo réel du cours (servi depuis IONOS) */
+.video-cours-conteneur {
+  margin-top: 10px;
+}
+
+.video-cours {
+  width: 100%;
+  display: block;
+  border-radius: var(--rayon-carte);
+  background-color: #000000;
+  aspect-ratio: 16 / 9;
+}
+
 /* Bloc quiz : questions avec choix multiples */
 .quiz-question {
   margin-bottom: 24px;
