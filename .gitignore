@@ -14,8 +14,10 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Fichiers Claude Code (contexte local)
+# Fichiers de contexte / notes locales
 .claude/
+CLAUDE.md
+*.local.md
 
 # Sécurité : tout config.php contient des secrets (Notion token, APP_SECRET)
 # Le seul committé est config.example.php (modèle sans valeurs réelles)
