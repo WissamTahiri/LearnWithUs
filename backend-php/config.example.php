@@ -96,10 +96,10 @@ const APP_SECRET = 'a-remplacer-par-une-chaine-aleatoire-de-32-caracteres-minimu
    Utilisée pour construire les liens absolus dans les emails
    (reset mot de passe).
 
-   - Local MAMP   : http://localhost:8888
+   - Local        : http://localhost:8000
    - Prod IONOS   : https://learnwithus.fr
    ============================================================= */
-const URL_SITE = 'http://localhost:8888';
+const URL_SITE = 'http://localhost:8000';
 
 
 /* =============================================================

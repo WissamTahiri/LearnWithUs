@@ -75,7 +75,7 @@ LearnWithUs/
 
 ### Prerequis
 
-- **MAMP** (Windows ou Mac) : [mamp.info](https://www.mamp.info/) - fournit Apache + PHP 8.x
+- **PHP 8.x** installe localement ([php.net/downloads](https://www.php.net/downloads)) avec les extensions cURL, OpenSSL et mbstring activees
 - **VS Code** ou tout editeur de code
 - **Un navigateur** : Chrome, Firefox, Edge
 
@@ -86,21 +86,23 @@ git clone https://github.com/votre-utilisateur/learnwithus.git
 cd learnwithus
 ```
 
-### 2. Configurer MAMP
+### 2. Lancer le serveur PHP local
 
-1. Ouvrez **MAMP > Preferences > Web Server**
-2. **Apache Document Root** : selectionnez le dossier racine de ce projet
-3. **PHP version** : choisissez 8.3.x ou superieur
-4. Verifiez dans le `php.ini` que les extensions sont activees :
-   - `extension=php_curl.dll` (decommente)
-   - `extension=php_openssl.dll` (decommente)
-   - `extension=php_mbstring.dll` (decommente)
-5. Configurez les certificats SSL pour cURL :
+Le projet ne necessite aucun serveur dedie : le serveur web integre de PHP suffit.
+
+1. Verifiez dans votre `php.ini` que les extensions sont activees :
+   - `extension=curl` (decommente)
+   - `extension=openssl` (decommente)
+   - `extension=mbstring` (decommente)
+2. Pour que cURL valide les certificats SSL, telechargez [cacert.pem](https://curl.se/ca/cacert.pem) et renseignez son chemin :
    ```ini
    [curl]
-   curl.cainfo = "C:\MAMP\bin\apache\bin\cacert.pem"
+   curl.cainfo = "/chemin/vers/cacert.pem"
    ```
-6. **Start Servers**
+3. Depuis la racine du projet, demarrez le serveur :
+   ```bash
+   php -S localhost:8000
+   ```
 
 ### 3. Configurer le backend PHP
 
@@ -122,8 +124,8 @@ Editez `config.php` et remplissez les valeurs :
 
 Ouvrez dans votre navigateur :
 
-- `http://localhost:8888/frontend/index.html` - page d'accueil
-- `http://localhost:8888/backend-php/api/health.php` - sonde de sante
+- `http://localhost:8000/frontend/index.html` - page d'accueil
+- `http://localhost:8000/backend-php/api/health.php` - sonde de sante
   (doit renvoyer `{"statut":"ok",...}`)
 
 

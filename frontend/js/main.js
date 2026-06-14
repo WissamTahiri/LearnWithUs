@@ -2,13 +2,13 @@
    Chargé sur toutes les pages. Gère : menu mobile, formulaires,
    onglets espace client, accordéon FAQ, authentification.
 
-   Backend : PHP servi par MAMP/IONOS (anciennement Node.js sur Render).
+   Backend : PHP servi par l'hébergement IONOS (anciennement Node.js sur Render).
    Authentification : sessions PHP natives (cookie), plus de JWT.
    Le cookie de session est envoyé automatiquement par le navigateur. */
 
 
 /* URL du backend — préfixe ajouté à chaque appel fetch.
-   - Local MAMP   : '/backend-php' (PHP servi à côté du frontend)
+   - Local        : '/backend-php' (PHP servi à côté du frontend)
    - Prod IONOS   : '' (PHP servi sous le même domaine que le front)
    En IONOS on basculera ici en J6. */
 const URL_BACKEND = '/backend-php'
