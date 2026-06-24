@@ -218,9 +218,9 @@ async function envoyerCreationCompte(evenement) {
     zoneMessage.textContent = 'Les deux mots de passe ne correspondent pas.'
     return
   }
-  if (motDePasse.length < 8) {
+  if (motDePasse.length < 8 || !/[A-Z]/.test(motDePasse) || !/[0-9]/.test(motDePasse)) {
     zoneMessage.className = 'message-erreur'
-    zoneMessage.textContent = 'Le mot de passe doit faire au moins 8 caractères.'
+    zoneMessage.textContent = 'Le mot de passe doit faire au moins 8 caractères, avec une majuscule et un chiffre.'
     return
   }
   if (!cguAcceptees) {
@@ -459,7 +459,7 @@ function configurerAccesFormation() {
         message.textContent =
           'Passez à Premium pour débloquer le cours complet, la vidéo de 10 min et le quiz final.'
         bouton.textContent = 'Passer à Premium'
-        bouton.href = 'espace-client.html'
+        bouton.href = 'paiement.html'
       } else {
         message.textContent =
           'Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.'
@@ -771,9 +771,9 @@ async function envoyerConfirmationReset(evenement) {
     zone.textContent = 'Les deux mots de passe ne correspondent pas.'
     return
   }
-  if (nouveau.length < 8) {
+  if (nouveau.length < 8 || !/[A-Z]/.test(nouveau) || !/[0-9]/.test(nouveau)) {
     zone.className = 'message-erreur'
-    zone.textContent = 'Le mot de passe doit faire au moins 8 caractères.'
+    zone.textContent = 'Le mot de passe doit faire au moins 8 caractères, avec une majuscule et un chiffre.'
     return
   }
 

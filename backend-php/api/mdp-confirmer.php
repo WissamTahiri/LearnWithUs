@@ -34,10 +34,10 @@ if (!$token || !$nouveauMdp) {
     ], 400);
 }
 
-if (strlen($nouveauMdp) < 8) {
+if (strlen($nouveauMdp) < 8 || !preg_match('/[A-Z]/', $nouveauMdp) || !preg_match('/[0-9]/', $nouveauMdp)) {
     repondreJson([
         'succes'  => false,
-        'message' => 'Mot de passe trop court (8 caractères mini)'
+        'message' => 'Le mot de passe doit faire au moins 8 caractères, avec une majuscule et un chiffre'
     ], 400);
 }
 

@@ -45,10 +45,10 @@ if (!$prenom || !$nom || !$email || !$mdp) {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     repondreJson(['succes' => false, 'message' => 'Email invalide'], 400);
 }
-if (strlen($mdp) < 8) {
+if (strlen($mdp) < 8 || !preg_match('/[A-Z]/', $mdp) || !preg_match('/[0-9]/', $mdp)) {
     repondreJson([
         'succes'  => false,
-        'message' => 'Le mot de passe doit faire au moins 8 caractères'
+        'message' => 'Le mot de passe doit faire au moins 8 caractères, avec une majuscule et un chiffre'
     ], 400);
 }
 
