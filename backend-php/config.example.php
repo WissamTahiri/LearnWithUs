@@ -99,7 +99,9 @@ const APP_SECRET = 'a-remplacer-par-une-chaine-aleatoire-de-32-caracteres-minimu
    - Local        : http://localhost:8000
    - Prod IONOS   : https://learnwithus.fr
    ============================================================= */
-const URL_SITE = 'http://localhost:8000';
+define('URL_SITE', php_sapi_name() === 'cli-server'
+    ? 'http://localhost:8000'
+    : 'https://learnwithus.fr');
 
 
 /* =============================================================

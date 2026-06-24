@@ -329,10 +329,12 @@ img {
   margin: 0 auto;
 }
 
-.section h2 {
+.section h2,
+.section-fond .section-contenu h2 {
   font-size: 1.8rem;
   color: var(--couleur-titre);
-  margin-bottom: 30px;
+  margin-top: 0;
+  margin-bottom: 45px;
   text-align: center;
 }
 
