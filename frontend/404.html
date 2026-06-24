@@ -3,6 +3,11 @@
   404.html — Page d'erreur "Not Found" personnalisée.
   Apache la sert automatiquement quand on tape une URL inexistante,
   grâce à la directive `ErrorDocument 404 /404.html` dans .htaccess.
+
+  Volontairement AUTONOME : tout le CSS est en ligne et les liens sont
+  en chemins absolus (/). Comme cette page peut être servie depuis
+  n'importe quelle URL (ex. /dossier/inconnu), un chemin relatif vers
+  css/style.css casserait et la page s'afficherait sans style.
 -->
 <html lang="fr">
 <head>
@@ -11,83 +16,79 @@
   <meta name="description" content="Page introuvable sur LearnWithUs.">
   <meta name="robots" content="noindex, nofollow">
   <title>Page introuvable — LearnWithUs</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <style>
-    .page-404 {
-      min-height: calc(100vh - 70px);
+    :root {
+      --bordeaux: #6B1F2A;
+      --bordeaux-clair: #F7EEF0;
+      --bordeaux-hover: #4A1620;
+      --titre: #1A1A1A;
+      --texte-secondaire: #6B6B6B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
-      background-color: var(--couleur-principale-clair);
+      padding: 24px;
+      background-color: var(--bordeaux-clair);
+      color: var(--titre);
     }
     .carte-404 {
-      background-color: var(--couleur-blanc);
-      border-radius: var(--rayon-carte);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 48px 40px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(107, 31, 42, 0.12);
+      padding: 56px 44px;
       text-align: center;
-      max-width: 480px;
+      max-width: 460px;
+      width: 100%;
     }
     .erreur-code {
-      font-size: 5rem;
-      font-weight: 700;
-      color: var(--couleur-principale);
-      letter-spacing: 4px;
+      font-size: 6rem;
+      font-weight: 800;
+      color: var(--bordeaux);
+      letter-spacing: 6px;
       line-height: 1;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .erreur-titre {
-      font-size: 1.4rem;
-      color: var(--couleur-titre);
-      margin-bottom: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
     .erreur-message {
-      color: var(--couleur-texte-secondaire);
-      margin-bottom: 28px;
-      line-height: 1.6;
+      color: var(--texte-secondaire);
+      font-size: 1rem;
+      line-height: 1.65;
+      margin-bottom: 32px;
     }
+    .bouton-accueil {
+      display: inline-block;
+      background-color: var(--bordeaux);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 13px 30px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+    .bouton-accueil:hover { background-color: var(--bordeaux-hover); }
   </style>
 </head>
 <body>
 
-  <nav class="navigation">
-    <div class="nav-contenu">
-      <a href="index.html" class="nav-logo">LearnWithUs</a>
-      <button class="menu-mobile" aria-label="Ouvrir le menu">☰</button>
-      <ul class="nav-liens">
-        <li><a href="index.html">Accueil</a></li>
-        <li><a href="formations.html">Formations</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="faq.html">FAQ</a></li>
-        <li><a href="connexion.html">Connexion</a></li>
-      </ul>
-    </div>
-  </nav>
+  <div class="carte-404">
+    <div class="erreur-code">404</div>
+    <h1 class="erreur-titre">Page introuvable</h1>
+    <p class="erreur-message">
+      La page que vous cherchez n'existe pas ou a été déplacée.
+      Pas de panique — vous pouvez retourner à l'accueil ou nous contacter
+      si vous pensez que c'est une erreur de notre part.
+    </p>
+    <a href="/" class="bouton-accueil">Retour à l'accueil</a>
+  </div>
 
-  <main class="page-404">
-    <div class="carte-404">
-      <div class="erreur-code">404</div>
-      <h1 class="erreur-titre">Page introuvable</h1>
-      <p class="erreur-message">
-        La page que vous cherchez n'existe pas ou a été déplacée.
-        Pas de panique — vous pouvez retourner à l'accueil ou nous contacter
-        si vous pensez que c'est une erreur de notre part.
-      </p>
-      <a href="index.html" class="bouton-principal">Retour à l'accueil</a>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <p>&copy; 2026 LearnWithUs — Tous droits réservés</p>
-    <div class="footer-liens">
-      <a href="formations.html">Formations</a>
-      <a href="contact.html">Contact</a>
-      <a href="faq.html">FAQ</a>
-    </div>
-  </footer>
-
-  <script src="js/main.js"></script>
 </body>
 </html>
