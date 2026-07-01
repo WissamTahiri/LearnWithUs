@@ -33,6 +33,7 @@ LearnWithUs/
 |   |-- sitemap.xml / robots.txt    <- SEO
 |   |-- favicon.svg                 <- Icone du site
 |   |-- docs/supports/              <- PDF des supports de cours (Premium)
+|   |-- videos/                     <- Videos des 3 formations (mp4)
 |   |-- css/style.css               <- Styles communs
 |   |-- js/main.js                  <- JavaScript commun
 |
@@ -120,6 +121,8 @@ Editez `config.php` et remplissez les valeurs :
 - `ADMIN_EMAILS` - liste des emails admin separes par virgules
 - `APP_SECRET` - chaine aleatoire 32+ caracteres : `php -r "echo bin2hex(random_bytes(32));"`
 
+Mot de passe utilisateur : 8 caracteres minimum, avec au moins 1 majuscule et 1 chiffre (verifie cote backend ET frontend).
+
 ### 4. Tester en local
 
 Ouvrez dans votre navigateur :
@@ -168,7 +171,7 @@ STARTTLS: ACTIVE (NE PAS desactiver - sinon erreur 530 User not authenticated)
 |---|---|---|
 | 1 | Bienvenue | Creation de compte (`/api/creer-compte.php`) |
 | 2 | Contact | Formulaire contact (`/api/contact.php`) |
-| 3 | Relance leads 7j | Cron quotidien 9h |
+| 3 | Relance leads 15j | Schedule (tous les 15 jours, 9h) |
 | 4 | Paiement Premium | Activation Premium (`/api/activer-premium.php`) |
 | 5 | Reset mot de passe | Demande reset (`/api/mdp-demande.php`) |
 
