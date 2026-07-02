@@ -13,6 +13,7 @@
 </head>
 
 <body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
   <nav class="navigation">
     <div class="nav-contenu">
@@ -30,7 +31,16 @@
   </nav>
 
 
-  <div class="titre-page">
+  <!-- Fil d'Ariane -->
+  <nav class="fil-ariane" aria-label="Fil d'Ariane">
+    <div class="fil-ariane-contenu">
+      <a href="index.html">Accueil</a>
+      <span class="fil-ariane-sep">›</span>
+      <span class="fil-ariane-actuel" aria-current="page">Formations</span>
+    </div>
+  </nav>
+
+  <div class="titre-page" id="contenu">
     <h1>Nos Formations</h1>
     <p>Choisissez votre formation et inscrivez-vous gratuitement</p>
   </div>
@@ -96,7 +106,7 @@
         </thead>
         <tbody>
           <tr><td>Standard</td><td>Start of the course in reading mode</td><td>Free</td></tr>
-          <tr><td>Premium</td><td>Full course + video (10 min) + final quiz</td><td>€29/month</td></tr>
+          <tr><td>Premium</td><td>Full course + video (23 min) + final quiz</td><td>€29/month</td></tr>
         </tbody>
       </table>
       <div class="fiche-boutons">
@@ -130,7 +140,7 @@
         </thead>
         <tbody>
           <tr><td>Standard</td><td>Début du cours en lecture</td><td>Gratuit</td></tr>
-          <tr><td>Premium</td><td>Cours complet + vidéo (10 min) + quiz final</td><td>29€/mois</td></tr>
+          <tr><td>Premium</td><td>Cours complet + vidéo (31 min) + quiz final</td><td>29€/mois</td></tr>
         </tbody>
       </table>
       <div class="fiche-boutons">
@@ -164,7 +174,7 @@
     <div class="section-contenu" style="text-align: center;">
       <h2>Débloquez le contenu complet</h2>
       <p style="max-width: 640px; margin: 0 auto 24px; color: var(--couleur-texte-secondaire);">
-        Passez à l'offre Premium pour accéder aux cours complets, à la vidéo (10 min)
+        Passez à l'offre Premium pour accéder aux cours complets, à la vidéo
         et au quiz final de chacune des 3 formations.
       </p>
       <a href="paiement.html" class="bouton-principal">Passer à Premium — 29€/mois</a>

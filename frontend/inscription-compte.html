@@ -215,6 +215,7 @@
 </head>
 
 <body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
   <!-- Navigation identique aux autres pages -->
   <nav class="navigation">
@@ -235,7 +236,7 @@
   <!-- ============================================================
        PAGE DE CRÉATION DE COMPTE
        ============================================================ -->
-  <main class="page-auth">
+  <main class="page-auth" id="contenu">
     <div class="carte-auth">
 
       <!-- En-tête -->
@@ -310,9 +311,9 @@
             required
           >
           <p class="force-mdp">Au moins 8 caractères, une majuscule et un chiffre.</p>
-          <div class="jauge-mdp" id="jauge-mdp" aria-hidden="true">
-            <div class="jauge-mdp-piste"><div class="jauge-mdp-remplie"></div></div>
-            <span class="jauge-mdp-libelle"></span>
+          <div class="jauge-mdp" id="jauge-mdp">
+            <div class="jauge-mdp-piste" aria-hidden="true"><div class="jauge-mdp-remplie"></div></div>
+            <span class="jauge-mdp-libelle" role="status" aria-live="polite"></span>
           </div>
         </div>
 

@@ -65,6 +65,18 @@ async function deconnecter() {
 /* Met à jour la nav selon l'état de connexion (cache localStorage) :
    - non connecté : lien "Connexion" visible
    - connecté    : pastille prénom + lien "Déconnexion" + (admin) */
+/* Neutralise le HTML d'une valeur avant injection via innerHTML : prenom, nom,
+   email, formation... proviennent du serveur, on evite toute injection de balise. */
+function echappeHtml(valeur) {
+  return String(valeur == null ? '' : valeur)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+
 function majNavigation() {
   const session = lireSession()
   const liensNav = document.querySelector('.nav-liens')
@@ -78,7 +90,7 @@ function majNavigation() {
     const parent = lienConnexion.parentElement
     parent.innerHTML =
       '<a href="parametres.html" class="badge-utilisateur">' +
-        session.utilisateur.prenom +
+        echappeHtml(session.utilisateur.prenom) +
       '</a>'
 
     /* Lien admin uniquement si estAdmin est vrai (calcul serveur) */
@@ -100,7 +112,12 @@ function majNavigation() {
 /* Ouvre/ferme le menu de navigation sur mobile */
 function gereMenuMobile() {
   const liensNavigation = document.querySelector('.nav-liens')
-  liensNavigation.classList.toggle('menu-ouvert')
+  const ouvert = liensNavigation.classList.toggle('menu-ouvert')
+  const bouton = document.querySelector('.menu-mobile')
+  if (bouton) {
+    bouton.setAttribute('aria-expanded', ouvert ? 'true' : 'false')
+    bouton.setAttribute('aria-label', ouvert ? 'Fermer le menu' : 'Ouvrir le menu')
+  }
 }
 
 
@@ -607,8 +624,8 @@ function construireTableauInscriptions(lignes) {
       lignes.map(function(l) {
         const nomComplet = ((l.prenom || '') + ' ' + (l.nom || '')).trim() || '—'
         return '<tr>' +
-          '<td>' + nomComplet + '</td>' +
-          '<td><span class="admin-badge-formation">' + (l.formation || '—') + '</span></td>' +
+          '<td>' + echappeHtml(nomComplet) + '</td>' +
+          '<td><span class="admin-badge-formation">' + echappeHtml(l.formation || '—') + '</span></td>' +
           '<td>' + formatDateCourte(l.date) + '</td>' +
         '</tr>'
       }).join('') +
@@ -633,8 +650,8 @@ function construireTableauTransactions(lignes) {
       '</tr></thead><tbody>' +
       lignes.map(function(l) {
         return '<tr>' +
-          '<td style="font-family:monospace;font-size:0.8rem;">' + (l.reference || '—') + '</td>' +
-          '<td>' + (l.email || '—') + '</td>' +
+          '<td style="font-family:monospace;font-size:0.8rem;">' + echappeHtml(l.reference || '—') + '</td>' +
+          '<td>' + echappeHtml(l.email || '—') + '</td>' +
           '<td><strong>' + (l.montant || 0) + ' €</strong></td>' +
         '</tr>'
       }).join('') +
@@ -665,9 +682,9 @@ function construireTableauComptes(lignes) {
            encodeURIComponent suffit car on ne fait pas d'apostrophes. */
         const emailEchappe = encodeURIComponent(l.email)
         return '<tr>' +
-          '<td>' + nomComplet + '</td>' +
-          '<td>' + (l.email || '—') + '</td>' +
-          '<td><span class="admin-badge-statut ' + badgeClasse + '">' + l.statut + '</span></td>' +
+          '<td>' + echappeHtml(nomComplet) + '</td>' +
+          '<td>' + echappeHtml(l.email || '—') + '</td>' +
+          '<td><span class="admin-badge-statut ' + badgeClasse + '">' + echappeHtml(l.statut) + '</span></td>' +
           '<td>' + formatDateCourte(l.date) + '</td>' +
           '<td>' +
             '<button class="admin-action" onclick="changerStatutCompte(\'' + emailEchappe + '\',\'' + autreStatut + '\')">→ ' + autreStatut + '</button>' +
@@ -1089,9 +1106,11 @@ function injecterBoutonTheme() {
   bouton.className = 'bascule-theme'
   bouton.setAttribute('aria-label', 'Changer de thème clair ou sombre')
 
+  const ICONE_LUNE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+  const ICONE_SOLEIL = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
   function majApparence() {
     const sombre = themeEstSombre()
-    bouton.textContent = sombre ? '☀️' : '🌙'
+    bouton.innerHTML = sombre ? ICONE_SOLEIL : ICONE_LUNE
     bouton.title = sombre ? 'Passer en thème clair' : 'Passer en thème sombre'
   }
 
@@ -1107,8 +1126,16 @@ function injecterBoutonTheme() {
   })
 
   majApparence()
-  const hamburger = navContenu.querySelector('.menu-mobile')
-  navContenu.insertBefore(bouton, hamburger)
+  // Regroupe le toggle à droite, juste avant la zone "compte" (lien Connexion
+  // ou pastille prénom), pour une barre de navigation plus nette.
+  const liensNav = navContenu.querySelector('.nav-liens')
+  const liTheme = document.createElement('li')
+  liTheme.className = 'nav-theme'
+  liTheme.appendChild(bouton)
+  const ancreCompte = liensNav.querySelector('a[href="connexion.html"], a.badge-utilisateur')
+  const liCompte = ancreCompte ? ancreCompte.closest('li') : null
+  if (liCompte) liensNav.insertBefore(liTheme, liCompte)
+  else liensNav.appendChild(liTheme)
 }
 
 

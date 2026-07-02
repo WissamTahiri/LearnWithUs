@@ -76,6 +76,7 @@
 </head>
 
 <body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 
   <nav class="navigation">
     <div class="nav-contenu">
@@ -92,7 +93,7 @@
   </nav>
 
 
-  <main class="page-auth">
+  <main class="page-auth" id="contenu">
     <div class="carte-auth">
 
       <div class="auth-entete">
@@ -115,9 +116,9 @@
         <div class="champ-groupe">
           <label for="nouveau-mdp">Nouveau mot de passe</label>
           <input type="password" id="nouveau-mdp" placeholder="Au moins 8 caractères" required>
-          <div class="jauge-mdp" id="jauge-mdp-reset" aria-hidden="true">
-            <div class="jauge-mdp-piste"><div class="jauge-mdp-remplie"></div></div>
-            <span class="jauge-mdp-libelle"></span>
+          <div class="jauge-mdp" id="jauge-mdp-reset">
+            <div class="jauge-mdp-piste" aria-hidden="true"><div class="jauge-mdp-remplie"></div></div>
+            <span class="jauge-mdp-libelle" role="status" aria-live="polite"></span>
           </div>
         </div>
         <div class="champ-groupe">

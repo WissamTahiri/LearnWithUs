@@ -1300,21 +1300,8 @@ textarea {
 }
 
 /* Lien Admin dans la navigation (badge rouge discret) */
-.lien-admin {
-  background-color: transparent;
-  color: var(--couleur-principale) !important;
-  padding: 4px 12px;
-  border: 1.5px solid var(--couleur-principale);
-  border-radius: 14px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-}
-.lien-admin:hover {
-  background-color: var(--couleur-principale);
-  color: var(--couleur-blanc) !important;
-}
+/* Styles .lien-admin obsoletes retires : la seule regle valide est
+   .nav-liens a.lien-admin (section « Navbar : disposition affinee »). */
 
 /* Message d'erreur / chargement */
 .admin-message-erreur {
@@ -1664,7 +1651,7 @@ body,
 .jauge-mdp[data-niveau="tres-fort"]  .jauge-mdp-remplie { width: 100%; background-color: #1B5E20; }
 
 .jauge-mdp[data-niveau="faible"]     .jauge-mdp-libelle { color: #C62828; }
-.jauge-mdp[data-niveau="moyen"]      .jauge-mdp-libelle { color: #EF6C00; }
+.jauge-mdp[data-niveau="moyen"]      .jauge-mdp-libelle { color: #B45309; }
 .jauge-mdp[data-niveau="fort"]       .jauge-mdp-libelle,
 .jauge-mdp[data-niveau="tres-fort"]  .jauge-mdp-libelle { color: #2E7D32; }
 
@@ -1707,4 +1694,155 @@ body,
 }
 [data-theme="sombre"] .carte-danger h2 {
   border-bottom-color: #5A2A2E;
+}
+
+
+/* ===== Retouches visuelles ===== */
+
+/* Footer en thème sombre : les liens utilisaient var(--couleur-blanc), qui
+   devient une couleur FONCEE en sombre -> texte foncé sur footer #111, quasi
+   illisible. On les force en clair (le footer reste sombre dans les 2 thèmes). */
+[data-theme="sombre"] .footer a {
+  color: #EDEBEC;
+}
+[data-theme="sombre"] .footer a:hover {
+  color: var(--couleur-principale);
+}
+
+/* Boutons d'action du dashboard admin : coins plus arrondis + texte en gras.
+   Le bouton "Supprimer" passe en rouge doux et se remplit en rouge au survol
+   (plus lisible et moins brut que le simple contour). */
+.admin-action {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: 1px solid var(--couleur-bordure);
+}
+.admin-action-danger {
+  color: #C62828;
+  border-color: #F0CDCD;
+  background-color: #FDF3F3;
+}
+.admin-action-danger:hover {
+  background-color: #C62828;
+  border-color: #C62828;
+  color: #FFFFFF;
+}
+
+/* Badge "Admin" de la navigation : pastille douce et arrondie, au lieu du
+   contour en majuscules un peu brut. Se remplit en bordeaux au survol. */
+/* Styles .lien-admin obsoletes retires : la seule regle valide est
+   .nav-liens a.lien-admin (section « Navbar : disposition affinee »). */
+
+
+/* ===== Navbar : disposition affinée ===== */
+
+/* Toggle de thème : pastille ronde discrète, regroupée à droite avec la zone
+   "compte" (au lieu de l'ancien placement flottant avant les liens). */
+.bascule-theme {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.05rem;
+}
+.nav-theme {
+  display: flex;
+  align-items: center;
+}
+
+/* "Connexion" présenté comme un bouton d'action principal (CTA), pas un lien
+   plat : hiérarchie plus claire. Couleurs bordeaux fixes, lisibles dans les
+   deux thèmes. */
+.nav-liens a[href="connexion.html"] {
+  background-color: #6B1F2A;
+  color: #FFFFFF;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.nav-liens a[href="connexion.html"]:hover {
+  background-color: #4A1520;
+  color: #FFFFFF;
+}
+
+/* Toggle de thème : icône SVG épurée (au lieu de l'emoji), teinte discrète. */
+.bascule-theme {
+  color: var(--couleur-texte-secondaire);
+  width: 36px;
+  height: 36px;
+}
+.bascule-theme:hover { color: var(--couleur-principale); }
+.bascule-theme svg { display: block; }
+
+/* Badge "Admin" : pastille outline nette et lisible, assortie à la pastille
+   prénom, qui se remplit en bordeaux au survol. */
+.nav-liens a.lien-admin {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  background-color: transparent;
+  color: var(--couleur-principale);
+  border: 1.5px solid var(--couleur-principale);
+  border-radius: 999px;
+  padding: 6px 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+.nav-liens a.lien-admin:hover {
+  background-color: #6B1F2A;
+  border-color: #6B1F2A;
+  color: #FFFFFF;
+}
+
+
+/* ===== Correctifs Loop Engineering ===== */
+
+/* Bouton "Supprimer" du dashboard admin : en theme sombre, le fond rose clair
+   fixe (#FDF3F3) tranchait sur la carte foncee. On l'aligne sur les zones de
+   danger sombres (rouge fonce), texte rose lisible. */
+[data-theme="sombre"] .admin-action-danger {
+  background-color: #2A1A1D;
+  border-color: #5A2A2E;
+  color: #E0929B;
+}
+[data-theme="sombre"] .admin-action-danger:hover {
+  background-color: #C62828;
+  border-color: #C62828;
+  color: #FFFFFF;
+}
+
+/* Jauge de force du mot de passe : en theme sombre, les libelles rouge/vert
+   fixes tombaient sous le seuil de contraste AA sur fond sombre. Teintes
+   eclaircies pour repasser au-dessus de 4.5:1. */
+[data-theme="sombre"] .jauge-mdp[data-niveau="faible"]     .jauge-mdp-libelle { color: #F28B82; }
+[data-theme="sombre"] .jauge-mdp[data-niveau="moyen"]      .jauge-mdp-libelle { color: #FFB74D; }
+[data-theme="sombre"] .jauge-mdp[data-niveau="fort"]       .jauge-mdp-libelle,
+[data-theme="sombre"] .jauge-mdp[data-niveau="tres-fort"]  .jauge-mdp-libelle { color: #81C784; }
+
+
+/* Lien d'evitement clavier (skip-link, WCAG 2.4.1) : hors ecran par defaut,
+   revele au focus clavier pour sauter la navigation et atteindre #contenu. */
+.lien-evitement {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 2000;
+  background-color: #6B1F2A;
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 0 0 8px 0;
+  font-weight: 600;
+  text-decoration: none;
+}
+.lien-evitement:focus {
+  left: 0;
 }
