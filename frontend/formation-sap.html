@@ -36,6 +36,17 @@
   </nav>
 
 
+  <!-- Fil d'Ariane : navigation contextuelle -->
+  <nav class="fil-ariane" aria-label="Fil d'Ariane">
+    <div class="fil-ariane-contenu">
+      <a href="index.html">Accueil</a>
+      <span class="fil-ariane-sep">›</span>
+      <a href="formations.html">Formations</a>
+      <span class="fil-ariane-sep">›</span>
+      <span class="fil-ariane-actuel" aria-current="page">SAP — Gestion d'entreprise</span>
+    </div>
+  </nav>
+
   <section class="formation-hero">
     <h1>💼 SAP — Gestion d'entreprise</h1>
     <p>Naviguez dans SAP avec confiance. Modules FI, MM et SD expliqués clairement pour comprendre comment les grandes entreprises gèrent leur activité.</p>
@@ -158,7 +169,7 @@
       <span class="badge-section premium">🎥 VIDÉO PREMIUM — 10 MIN</span>
       <h2>Synthèse vidéo du cours</h2>
       <div class="video-cours-conteneur">
-        <video class="video-cours" controls preload="metadata" playsinline>
+        <video class="video-cours" data-duree-min="31" controls preload="metadata" playsinline>
           <source src="videos/formation-sap.mp4" type="video/mp4">
           Votre navigateur ne supporte pas la lecture vidéo.
         </video>
@@ -281,7 +292,7 @@
 
 
     <!-- ========== RESSOURCES (Premium) ========== -->
-    <div class="formation-bloc contenu-premium">
+    <div class="formation-bloc contenu-premium bloc-ressources">
       <span class="badge-section premium">📚 RESSOURCES PREMIUM</span>
       <h2>Documents et liens utiles</h2>
       <p>Téléchargez le support de présentation et explorez notre outil d'apprentissage complémentaire pour aller plus loin.</p>
@@ -295,7 +306,7 @@
           </div>
           <!-- Téléchargement direct du PDF. L'attribut download force
                le téléchargement (au lieu d'ouvrir dans un onglet). -->
-          <a href="docs/supports/cours-sap.pdf" class="ressource-lien" download>📥 Télécharger</a>
+          <a href="docs/supports/cours-sap.pdf" class="ressource-lien" data-lecture-min="15" download>📥 Télécharger</a>
         </li>
         <li>
           <span class="ressource-icone">🔗</span>
@@ -303,7 +314,7 @@
             <div class="ressource-titre">HanaFlow — outil complémentaire</div>
             <div class="ressource-description">Site dédié au flux de données SAP HANA, créé par l'équipe LearnWithUs</div>
           </div>
-          <a href="https://hanaflow.vercel.app/" class="ressource-lien" target="_blank" rel="noopener">Visiter</a>
+          <a href="https://hanaflow.vercel.app/" class="ressource-lien" data-lecture-min="8" target="_blank" rel="noopener">Visiter</a>
         </li>
       </ul>
     </div>

@@ -39,6 +39,17 @@
 
 
   <!-- Bandeau de titre de la formation -->
+  <!-- Fil d'Ariane : navigation contextuelle -->
+  <nav class="fil-ariane" aria-label="Fil d'Ariane">
+    <div class="fil-ariane-contenu">
+      <a href="index.html">Accueil</a>
+      <span class="fil-ariane-sep">›</span>
+      <a href="formations.html">Formations</a>
+      <span class="fil-ariane-sep">›</span>
+      <span class="fil-ariane-actuel" aria-current="page">Intelligence Artificielle</span>
+    </div>
+  </nav>
+
   <section class="formation-hero">
     <h1>🤖 Intelligence Artificielle</h1>
     <p>Comprenez l'IA, maîtrisez le prompt engineering et apprenez à automatiser votre travail avec les outils d'IA générative.</p>
@@ -134,7 +145,7 @@
       <span class="badge-section premium">🎥 VIDÉO PREMIUM — 10 MIN</span>
       <h2>Synthèse vidéo du cours</h2>
       <div class="video-cours-conteneur">
-        <video class="video-cours" controls preload="metadata" playsinline>
+        <video class="video-cours" data-duree-min="10" controls preload="metadata" playsinline>
           <source src="videos/formation-ia.mp4" type="video/mp4">
           Votre navigateur ne supporte pas la lecture vidéo.
         </video>
@@ -257,7 +268,7 @@
 
 
     <!-- ========== RESSOURCES (Premium) ========== -->
-    <div class="formation-bloc contenu-premium">
+    <div class="formation-bloc contenu-premium bloc-ressources">
       <span class="badge-section premium">📚 RESSOURCES PREMIUM</span>
       <h2>Documents et liens utiles</h2>
       <p>Téléchargez le support de présentation et explorez la ressource externe sélectionnée par notre équipe pour aller plus loin.</p>
@@ -271,7 +282,7 @@
           </div>
           <!-- Téléchargement direct du PDF. L'attribut download force
                le téléchargement (au lieu d'ouvrir dans un onglet). -->
-          <a href="docs/supports/cours-ia.pdf" class="ressource-lien" download>📥 Télécharger</a>
+          <a href="docs/supports/cours-ia.pdf" class="ressource-lien" data-lecture-min="15" download>📥 Télécharger</a>
         </li>
         <li>
           <span class="ressource-icone">🔗</span>
@@ -279,7 +290,7 @@
             <div class="ressource-titre">OpenAI — Best practices for prompt engineering</div>
             <div class="ressource-description">Guide officiel d'OpenAI : techniques concrètes pour formuler des prompts efficaces avec ChatGPT et les LLM modernes</div>
           </div>
-          <a href="https://platform.openai.com/docs/guides/prompt-engineering" class="ressource-lien" target="_blank" rel="noopener">Visiter</a>
+          <a href="https://platform.openai.com/docs/guides/prompt-engineering" class="ressource-lien" data-lecture-min="10" target="_blank" rel="noopener">Visiter</a>
         </li>
       </ul>
     </div>

@@ -1417,3 +1417,294 @@ textarea {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+
+/* ============================================================
+   AMÉLIORATIONS FRONTEND (Phase 6)
+   Six fonctionnalités 100 % frontend, pilotées par main.js :
+   thème sombre, barre de progression de lecture, bouton retour
+   en haut, fil d'Ariane, estimation du temps de formation,
+   jauge de force du mot de passe.
+   ============================================================ */
+
+
+/* ===== THÈME SOMBRE ===== */
+/* On redéfinit les variables de couleur quand <html data-theme="sombre">.
+   main.js pose/retire cet attribut et mémorise le choix en localStorage. */
+[data-theme="sombre"] {
+  --couleur-principale: #E0929B;
+  --couleur-principale-clair: #2C2026;
+  --couleur-principale-hover: #EEA9B1;
+  --couleur-titre: #F3F1F2;
+  --couleur-texte: #DCD8DA;
+  --couleur-texte-secondaire: #A29AA0;
+  --couleur-fond: #141017;
+  --couleur-blanc: #1E1922;
+  --couleur-bordure: #3A3340;
+  --ombre-carte: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Transition douce lors de la bascule clair/sombre. */
+body,
+.navigation,
+.carte,
+.formation-bloc,
+.admin-carte,
+.admin-bloc {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Aplats bordeaux à texte blanc : on garde un bordeaux foncé lisible en sombre. */
+[data-theme="sombre"] .bouton-principal,
+[data-theme="sombre"] .bouton-auth,
+[data-theme="sombre"] .badge-utilisateur,
+[data-theme="sombre"] .onglet-bouton.actif,
+[data-theme="sombre"] .admin-carte-mise-avant,
+[data-theme="sombre"] .formation-hero,
+[data-theme="sombre"] .cta-premium {
+  background-color: #7A2531;
+  background-image: none;
+  color: #FDFDFD;
+}
+
+[data-theme="sombre"] .formation-hero h1,
+[data-theme="sombre"] .cta-premium h3 {
+  color: #FDFDFD;
+}
+
+[data-theme="sombre"] .bouton-principal:hover,
+[data-theme="sombre"] .bouton-auth:hover {
+  background-color: #96303E;
+}
+
+[data-theme="sombre"] .cta-premium .bouton-cta {
+  background-color: #FDFDFD;
+  color: #7A2531;
+}
+
+/* Champs de saisie lisibles en sombre. */
+[data-theme="sombre"] input,
+[data-theme="sombre"] select,
+[data-theme="sombre"] textarea {
+  background-color: #1E1922;
+  color: var(--couleur-texte);
+}
+
+/* Le dégradé du contenu Premium fond vers la carte foncée en sombre. */
+[data-theme="sombre"] .contenu-bloque::after {
+  background: linear-gradient(180deg, rgba(30, 25, 34, 0) 0%, rgba(30, 25, 34, 0.95) 80%);
+}
+
+/* Bouton de bascule de thème (injecté dans la navbar par main.js). */
+.bascule-theme {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 6px 8px;
+  margin-right: 6px;
+  border-radius: var(--rayon-bouton);
+  transition: background-color 0.2s;
+}
+
+.bascule-theme:hover {
+  background-color: var(--couleur-principale-clair);
+}
+
+
+/* ===== BARRE DE PROGRESSION DE LECTURE ===== */
+/* Barre fixée en haut, remplie au scroll (largeur pilotée par main.js). */
+.barre-progression-lecture {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  background-color: var(--couleur-principale);
+  z-index: 1100;
+  transition: width 0.1s linear;
+}
+
+
+/* ===== BOUTON "RETOUR EN HAUT" ===== */
+/* Pastille ronde en bas à droite, révélée par la classe .visible au scroll. */
+.bouton-haut {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: var(--couleur-principale);
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  line-height: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s, transform 0.2s, background-color 0.2s;
+  z-index: 900;
+}
+
+.bouton-haut.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.bouton-haut:hover {
+  transform: translateY(-3px);
+  background-color: var(--couleur-principale-hover);
+}
+
+[data-theme="sombre"] .bouton-haut {
+  background-color: #7A2531;
+  color: #FDFDFD;
+}
+
+
+/* ===== FIL D'ARIANE ===== */
+/* Navigation contextuelle "Accueil › Formations › [Formation]". */
+.fil-ariane {
+  background-color: var(--couleur-fond);
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.fil-ariane-contenu {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  font-size: 0.85rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+.fil-ariane-contenu a {
+  color: var(--couleur-principale);
+}
+
+.fil-ariane-contenu a:hover {
+  text-decoration: underline;
+}
+
+.fil-ariane-sep {
+  margin: 0 8px;
+  color: var(--couleur-texte-secondaire);
+}
+
+.fil-ariane-actuel {
+  color: var(--couleur-texte);
+  font-weight: 600;
+}
+
+
+/* ===== BADGE D'ESTIMATION DU TEMPS DE FORMATION ===== */
+/* Injecté par main.js : lecture du texte + durée vidéo + lecture ressources. */
+.formation-estimation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background-color: var(--couleur-blanc);
+  border: 1px solid var(--couleur-bordure);
+  border-left: 4px solid var(--couleur-principale);
+  border-radius: var(--rayon-bouton);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  box-shadow: var(--ombre-carte);
+}
+
+.formation-estimation-icone {
+  font-size: 1.4rem;
+}
+
+.formation-estimation-total {
+  font-weight: 700;
+  color: var(--couleur-titre);
+}
+
+.formation-estimation-detail {
+  font-size: 0.85rem;
+  color: var(--couleur-texte-secondaire);
+}
+
+
+/* ===== JAUGE DE FORCE DU MOT DE PASSE ===== */
+/* data-niveau (faible/moyen/fort/tres-fort) posé par main.js => largeur+couleur. */
+.jauge-mdp {
+  margin-top: 8px;
+}
+
+.jauge-mdp-piste {
+  height: 6px;
+  background-color: var(--couleur-bordure);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.jauge-mdp-remplie {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.jauge-mdp-libelle {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.jauge-mdp[data-niveau="faible"]     .jauge-mdp-remplie { width: 25%;  background-color: #C62828; }
+.jauge-mdp[data-niveau="moyen"]      .jauge-mdp-remplie { width: 50%;  background-color: #EF6C00; }
+.jauge-mdp[data-niveau="fort"]       .jauge-mdp-remplie { width: 75%;  background-color: #2E7D32; }
+.jauge-mdp[data-niveau="tres-fort"]  .jauge-mdp-remplie { width: 100%; background-color: #1B5E20; }
+
+.jauge-mdp[data-niveau="faible"]     .jauge-mdp-libelle { color: #C62828; }
+.jauge-mdp[data-niveau="moyen"]      .jauge-mdp-libelle { color: #EF6C00; }
+.jauge-mdp[data-niveau="fort"]       .jauge-mdp-libelle,
+.jauge-mdp[data-niveau="tres-fort"]  .jauge-mdp-libelle { color: #2E7D32; }
+
+
+/* ===== Correctifs (contrôle Phase 6) ===== */
+
+/* .bouton-auth n'était défini que dans les <style> inline des pages
+   inscription/reset ; on le remonte ici pour qu'il s'applique AUSSI à la
+   page paiement (bouton "Confirmer le paiement", qui apparaissait sans style). */
+.bouton-auth {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--couleur-principale);
+  color: var(--couleur-blanc);
+  border: none;
+  border-radius: var(--rayon-bouton);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.bouton-auth:hover { background-color: var(--couleur-principale-hover); }
+.bouton-auth:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Zone de danger (RGPD) : en thème sombre, on remplace le bloc rose clair par
+   un rouge foncé cohérent avec le reste (au lieu d'un encadré blanc criard). */
+[data-theme="sombre"] .zone-danger {
+  background-color: #2A1A1D;
+  border-color: #5A2A2E;
+}
+[data-theme="sombre"] .zone-danger p {
+  color: var(--couleur-texte-secondaire);
+}
+
+/* Zone de danger (parametres.html : classe .carte-danger, definie inline) en sombre. */
+[data-theme="sombre"] .carte-danger {
+  background-color: #2A1A1D;
+  border-color: #5A2A2E;
+}
+[data-theme="sombre"] .carte-danger h2 {
+  border-bottom-color: #5A2A2E;
+}

@@ -1040,4 +1040,211 @@ document.addEventListener('DOMContentLoaded', function() {
     boutonMenu.addEventListener('click', gereMenuMobile)
   }
 
+  /* ===== Améliorations frontend Phase 6 ===== */
+  injecterBoutonTheme()          /* bascule thème clair/sombre (toutes pages) */
+  injecterBoutonHaut()           /* bouton retour en haut (toutes pages) */
+  injecterBarreProgression()     /* barre de progression (pages formation) */
+  if (document.querySelector('.formation-contenu')) {
+    initEstimationFormation()    /* estimation du temps (pages formation) */
+  }
+  /* Jauge de force du mot de passe : inscription (#mot-de-passe) et
+     réinitialisation (#nouveau-mdp). Ne fait rien si la jauge est absente. */
+  initJaugeMotDePasse(document.getElementById('mot-de-passe'), document.getElementById('jauge-mdp'))
+  initJaugeMotDePasse(document.getElementById('nouveau-mdp'), document.getElementById('jauge-mdp-reset'))
+
 })
+
+
+/* ============================================================
+   AMÉLIORATIONS FRONTEND (Phase 6)
+   Six briques 100 % frontend : thème sombre, barre de progression
+   de lecture, bouton retour en haut, fil d'Ariane (statique HTML),
+   estimation du temps de formation, jauge de force du mot de passe.
+   Les fonctions sont appelées depuis le bloc DOMContentLoaded plus haut.
+   ============================================================ */
+
+
+/* ----- 1. THÈME SOMBRE ----- */
+
+/* Applique le thème mémorisé le plus tôt possible (limite le flash au chargement). */
+;(function appliquerThemeInitial() {
+  try {
+    if (localStorage.getItem('learnwithus_theme') === 'sombre') {
+      document.documentElement.setAttribute('data-theme', 'sombre')
+    }
+  } catch (e) {}
+})()
+
+function themeEstSombre() {
+  return document.documentElement.getAttribute('data-theme') === 'sombre'
+}
+
+/* Bouton de bascule 🌙/☀️ inséré dans la navbar (collé à droite). */
+function injecterBoutonTheme() {
+  const navContenu = document.querySelector('.nav-contenu')
+  if (!navContenu || navContenu.querySelector('.bascule-theme')) return
+
+  const bouton = document.createElement('button')
+  bouton.type = 'button'
+  bouton.className = 'bascule-theme'
+  bouton.setAttribute('aria-label', 'Changer de thème clair ou sombre')
+
+  function majApparence() {
+    const sombre = themeEstSombre()
+    bouton.textContent = sombre ? '☀️' : '🌙'
+    bouton.title = sombre ? 'Passer en thème clair' : 'Passer en thème sombre'
+  }
+
+  bouton.addEventListener('click', function() {
+    if (themeEstSombre()) {
+      document.documentElement.removeAttribute('data-theme')
+      try { localStorage.setItem('learnwithus_theme', 'clair') } catch (e) {}
+    } else {
+      document.documentElement.setAttribute('data-theme', 'sombre')
+      try { localStorage.setItem('learnwithus_theme', 'sombre') } catch (e) {}
+    }
+    majApparence()
+  })
+
+  majApparence()
+  const hamburger = navContenu.querySelector('.menu-mobile')
+  navContenu.insertBefore(bouton, hamburger)
+}
+
+
+/* ----- 2. BARRE DE PROGRESSION DE LECTURE (pages formation) ----- */
+function injecterBarreProgression() {
+  if (!document.querySelector('.formation-contenu')) return
+
+  const barre = document.createElement('div')
+  barre.className = 'barre-progression-lecture'
+  document.body.appendChild(barre)
+
+  function maj() {
+    const doc = document.documentElement
+    const hauteurDefilable = doc.scrollHeight - doc.clientHeight
+    const ratio = hauteurDefilable > 0 ? (doc.scrollTop / hauteurDefilable) : 0
+    barre.style.width = (ratio * 100) + '%'
+  }
+  window.addEventListener('scroll', maj, { passive: true })
+  window.addEventListener('resize', maj)
+  maj()
+}
+
+
+/* ----- 3. BOUTON "RETOUR EN HAUT" ----- */
+function injecterBoutonHaut() {
+  const bouton = document.createElement('button')
+  bouton.type = 'button'
+  bouton.className = 'bouton-haut'
+  bouton.setAttribute('aria-label', 'Revenir en haut de la page')
+  bouton.textContent = '↑'
+  bouton.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+  document.body.appendChild(bouton)
+
+  function majVisibilite() {
+    bouton.classList.toggle('visible', window.scrollY > 300)
+  }
+  window.addEventListener('scroll', majVisibilite, { passive: true })
+  majVisibilite()
+}
+
+
+/* ----- 5. ESTIMATION DU TEMPS DE FORMATION -----
+   temps = lecture du texte (200 mots/min) + durée vidéo (vraie durée si
+   connue, sinon repli data-duree-min) + lecture des ressources jointes
+   (somme des data-lecture-min). */
+function initEstimationFormation() {
+  const contenu = document.querySelector('.formation-contenu')
+  if (!contenu) return
+
+  const MOTS_PAR_MINUTE = 200
+
+  // 1) Mots du texte (intro + cours + quiz), hors bloc Ressources.
+  let mots = 0
+  contenu.querySelectorAll('.formation-bloc').forEach(function(bloc) {
+    if (bloc.classList.contains('bloc-ressources')) return
+    const texte = (bloc.innerText || bloc.textContent || '').trim()
+    if (texte) mots += texte.split(/\s+/).length
+  })
+  const minutesTexte = Math.max(1, Math.round(mots / MOTS_PAR_MINUTE))
+
+  const video = contenu.querySelector('.video-cours')
+
+  function minutesVideo() {
+    if (video && !isNaN(video.duration) && video.duration > 0) {
+      return Math.round(video.duration / 60)
+    }
+    if (video && video.dataset.dureeMin) {
+      return parseInt(video.dataset.dureeMin, 10) || 0
+    }
+    return 0
+  }
+
+  function minutesRessources() {
+    let total = 0
+    contenu.querySelectorAll('.liste-ressources [data-lecture-min]').forEach(function(el) {
+      total += parseInt(el.dataset.lectureMin, 10) || 0
+    })
+    return total
+  }
+
+  const bloc = document.createElement('div')
+  bloc.className = 'formation-estimation'
+  contenu.insertBefore(bloc, contenu.firstChild)
+
+  function rendre() {
+    const mv = minutesVideo()
+    const mr = minutesRessources()
+    const total = minutesTexte + mv + mr
+    bloc.innerHTML =
+      '<span class="formation-estimation-icone">⏱️</span>' +
+      '<span class="formation-estimation-total">Formation complète : ~' + total + ' min</span>' +
+      '<span class="formation-estimation-detail">' +
+        'lecture ' + minutesTexte + ' min · vidéo ' + mv + ' min · ressources ' + mr + ' min' +
+      '</span>'
+  }
+
+  rendre()
+  // La vraie durée n'est connue qu'au chargement des métadonnées de la vidéo.
+  if (video) video.addEventListener('loadedmetadata', rendre)
+}
+
+
+/* ----- 6. JAUGE DE FORCE DU MOT DE PASSE ----- */
+
+/* Score 0 à 5 : +1 par critère (≥8, ≥12, majuscule, chiffre, caractère spécial).
+   Indicatif : la règle qui fait foi est vérifiée côté serveur PHP. */
+function evaluerForceMotDePasse(mdp) {
+  let score = 0
+  if (mdp.length >= 8) score++
+  if (mdp.length >= 12) score++
+  if (/[A-Z]/.test(mdp)) score++
+  if (/[0-9]/.test(mdp)) score++
+  if (/[^A-Za-z0-9]/.test(mdp)) score++
+  return score
+}
+
+function initJaugeMotDePasse(champ, jauge) {
+  if (!champ || !jauge) return
+  const libelle = jauge.querySelector('.jauge-mdp-libelle')
+
+  champ.addEventListener('input', function() {
+    const mdp = champ.value
+    if (!mdp) {
+      jauge.removeAttribute('data-niveau')
+      if (libelle) libelle.textContent = ''
+      return
+    }
+    const score = evaluerForceMotDePasse(mdp)
+    let niveau, texte
+    if (score <= 2)       { niveau = 'faible';    texte = 'Mot de passe faible' }
+    else if (score === 3) { niveau = 'moyen';     texte = 'Mot de passe moyen' }
+    else if (score === 4) { niveau = 'fort';      texte = 'Mot de passe fort' }
+    else                  { niveau = 'tres-fort'; texte = 'Mot de passe très fort' }
+    jauge.setAttribute('data-niveau', niveau)
+    if (libelle) libelle.textContent = texte
+  })
+}

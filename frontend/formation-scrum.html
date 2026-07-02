@@ -35,6 +35,17 @@
   </nav>
 
 
+  <!-- Fil d'Ariane : navigation contextuelle -->
+  <nav class="fil-ariane" aria-label="Fil d'Ariane">
+    <div class="fil-ariane-contenu">
+      <a href="index.html">Accueil</a>
+      <span class="fil-ariane-sep">›</span>
+      <a href="formations.html">Formations</a>
+      <span class="fil-ariane-sep">›</span>
+      <span class="fil-ariane-actuel" aria-current="page">Agile &amp; SCRUM</span>
+    </div>
+  </nav>
+
   <section class="formation-hero">
     <h1>🔄 Agile &amp; SCRUM</h1>
     <p>Master the most widely-used agile method in business. Roles, ceremonies, artifacts: become a key player on your team.</p>
@@ -148,7 +159,7 @@
       <span class="badge-section premium">🎥 PREMIUM VIDEO — 10 MIN</span>
       <h2>Course summary on video</h2>
       <div class="video-cours-conteneur">
-        <video class="video-cours" controls preload="metadata" playsinline>
+        <video class="video-cours" data-duree-min="23" controls preload="metadata" playsinline>
           <source src="videos/formation-scrum.mp4" type="video/mp4">
           Your browser does not support video playback.
         </video>
@@ -271,7 +282,7 @@
 
 
     <!-- ========== RESOURCES (Premium) ========== -->
-    <div class="formation-bloc contenu-premium">
+    <div class="formation-bloc contenu-premium bloc-ressources">
       <span class="badge-section premium">📚 PREMIUM RESOURCES</span>
       <h2>Documents and useful links</h2>
       <p>Download the course slides and the official Scrum Guide to review at your own pace.</p>
@@ -283,7 +294,7 @@
             <div class="ressource-titre">Course slides — Discover SCRUM</div>
             <div class="ressource-description">Full PDF (in English) to review the agile method</div>
           </div>
-          <a href="docs/supports/cours-scrum.pdf" class="ressource-lien" download>📥 Download</a>
+          <a href="docs/supports/cours-scrum.pdf" class="ressource-lien" data-lecture-min="15" download>📥 Download</a>
         </li>
         <li>
           <span class="ressource-icone">📘</span>
@@ -291,7 +302,7 @@
             <div class="ressource-titre">The Scrum Guide — Official 2020 Edition</div>
             <div class="ressource-description">The official reference written by Ken Schwaber and Jeff Sutherland, the creators of SCRUM</div>
           </div>
-          <a href="docs/supports/scrum-guide-2020.pdf" class="ressource-lien" download>📥 Download</a>
+          <a href="docs/supports/scrum-guide-2020.pdf" class="ressource-lien" data-lecture-min="20" download>📥 Download</a>
         </li>
       </ul>
     </div>
