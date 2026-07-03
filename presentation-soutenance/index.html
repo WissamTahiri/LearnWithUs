@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnWithUs — Soutenance immersive 3D</title>
+  <link rel="stylesheet" href="lib/fonts.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Pictogrammes SVG (trait or, style keynote — zéro emoji) -->
+  <svg style="display:none" aria-hidden="true">
+    <symbol id="i-ecran" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+    <symbol id="i-base" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+    <symbol id="i-eclair" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-boite" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+    <symbol id="i-recu" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-cle" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+    <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-cadenas" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-carte" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+    <symbol id="i-bouclier" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-balance" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="5" y1="7" x2="19" y2="7"/><path d="M5 7l-3 6a3.5 3.5 0 0 0 7 0L6 7"/><path d="M19 7l-3 6a3.5 3.5 0 0 0 7 0l-3-6"/></symbol>
+    <symbol id="i-cycle" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+    <symbol id="i-mallette" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+    <symbol id="i-rouage" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></symbol>
+    <symbol id="i-graphique" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+    <symbol id="i-courbe" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-presse" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="i-diplome" viewBox="0 0 24 24"><path d="M22 9L12 4 2 9l10 5 10-5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></symbol>
+    <symbol id="i-fusee" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+    <symbol id="i-micro" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></symbol>
+    <symbol id="i-son" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></symbol>
+    <symbol id="i-muet" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></symbol>
+    <symbol id="i-plein" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></symbol>
+    <symbol id="i-serveur" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></symbol>
+  </svg>
+
+  <!-- Monde 3D -->
+  <canvas id="fond-3d"></canvas>
+  <div id="voile"></div>
+  <div id="balayage"></div>
+  <div id="flash-warp"></div>
+
+  <!-- HUD -->
+  <div id="barre-progression"></div>
+  <div id="compteur"><b id="compteur-n">1</b> / <span id="compteur-tot">27</span></div>
+  <div id="titre-mini"></div>
+
+  <button class="nav-fleche" id="nav-prev" aria-label="Précédent">‹</button>
+  <button class="nav-fleche" id="nav-next" aria-label="Suivant">›</button>
+
+  <div class="controles">
+    <button id="btn-prev" aria-label="Précédent">‹</button>
+    <button id="btn-mute" aria-label="Son"><svg class="pic-hud"><use id="use-mute" href="#i-son"/></svg></button>
+    <button id="btn-plein" aria-label="Plein écran"><svg class="pic-hud"><use href="#i-plein"/></svg></button>
+    <button id="btn-next" aria-label="Suivant">›</button>
+  </div>
+
+  <!-- Scène des slides -->
+  <main id="scene">
+
+    <!-- ============ ACTE I — OUVERTURE ============ -->
+    <section class="slide" data-chapitre="0" data-titre="Ouverture">
+      <div class="kicker" data-anim="1">ESGI · 2MCSI · Projet annuel · Soutenance</div>
+      <h1 class="slide-titre-xxl">LEARNWITHUS</h1>
+      <p class="sous-titre" data-anim="2">La plateforme e-learning qui forme aux métiers du numérique — IA, SCRUM &amp; SAP.</p>
+      <div class="tags" data-anim="3">
+        <span class="tag">Wissam</span>
+        <span class="tag">Hilel</span>
+        <span class="tag">Sanjay</span>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="0" data-titre="L'équipe">
+      <div class="kicker" data-anim="1">L'équipe</div>
+      <h2 data-anim="2">Trois profils, <span class="accent">une <span class="cle">plateforme</span></span></h2>
+      <div class="equipe">
+        <div class="membre" data-anim="3"><div class="avatar">W</div><div class="nom">Wissam</div></div>
+        <div class="membre" data-anim="4"><div class="avatar">H</div><div class="nom">Hilel</div></div>
+        <div class="membre" data-anim="5"><div class="avatar">S</div><div class="nom">Sanjay</div></div>
+      </div>
+      <p class="corps" data-anim="6" style="margin-top:1.8rem">Des rôles <strong>tournants à chaque phase</strong> — chef de projet, analyse, développement, automatisation — pour que chacun maîtrise l'ensemble du projet.</p>
+    </section>
+
+    <section class="slide" data-chapitre="0" data-titre="Le constat">
+      <div class="kicker" data-anim="1">Le constat</div>
+      <h2 data-anim="2">Se former au numérique reste <span class="accent">cher, long, <span class="cle">intimidant</span></span></h2>
+      <ul class="puces">
+        <li data-anim="3">Des formations SAP ou IA facturées <strong>plusieurs milliers d'euros</strong> — payées avant d'avoir vu une seule page du contenu.</li>
+        <li data-anim="4">Des parcours de <strong>plusieurs semaines</strong> avant la première compétence réellement utilisable.</li>
+        <li data-anim="5">Trois domaines parmi les plus demandés du marché — <strong>IA, agilité, ERP</strong> — et presque aucune offre simple pour s'y mettre.</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-chapitre="0" data-titre="Notre réponse">
+      <div class="kicker" data-anim="1">Notre réponse</div>
+      <h2 data-anim="2">Essayer gratuitement, <span class="accent">s'abonner quand on est <span class="cle">convaincu</span></span></h2>
+      <p class="corps" data-anim="3">LearnWithUs, c'est un site élégant où l'on commence à apprendre en 30 secondes — et une machinerie <strong>entièrement automatisée</strong> derrière : CRM, emails, paiements, relances.</p>
+      <div class="grille col-3">
+        <div class="carte" data-anim="4"><svg class="pic"><use href="#i-diplome"/></svg><h3>Apprendre</h3><p>Cours structurés, vidéos, quiz notés.</p></div>
+        <div class="carte" data-anim="5"><svg class="pic"><use href="#i-rouage"/></svg><h3>Automatiser</h3><p>Zéro intervention manuelle de l'inscription à la relance.</p></div>
+        <div class="carte" data-anim="6"><svg class="pic"><use href="#i-graphique"/></svg><h3>Piloter</h3><p>Un tableau de bord en temps réel pour l'équipe.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="0" data-titre="Le déroulé">
+      <div class="kicker" data-anim="1">Au programme</div>
+      <h2 data-anim="2">Ce que nous allons vous <span class="accent"><span class="cle">montrer</span></span></h2>
+      <div class="grille col-3">
+        <div class="carte" data-anim="3"><div class="chiffre">01</div><h3>Le produit</h3><p>Les formations et l'offre.</p></div>
+        <div class="carte" data-anim="3"><div class="chiffre">02</div><h3>La démo</h3><p>Le site en action, et tout ce qui se passe en coulisses.</p></div>
+        <div class="carte" data-anim="4"><div class="chiffre">03</div><h3>La confiance</h3><p>Sécurité, qualité, tests.</p></div>
+        <div class="carte" data-anim="4"><div class="chiffre">04</div><h3>La méthode</h3><p>Six phases menées en équipe.</p></div>
+        <div class="carte" data-anim="5"><div class="chiffre">05</div><h3>Demain</h3><p>La feuille de route.</p></div>
+        <div class="carte" data-anim="5"><div class="chiffre">06</div><h3>Vos questions</h3><p>Et la discussion.</p></div>
+      </div>
+    </section>
+
+    <!-- ============ ACTE II — LE PRODUIT ============ -->
+    <section class="slide" data-chapitre="1" data-titre="Les formations">
+      <div class="kicker" data-anim="1">Le produit</div>
+      <h2 data-anim="2">Trois formations <span class="accent"><span class="cle">métier</span></span></h2>
+      <div class="grille col-3">
+        <div class="carte" data-anim="3"><svg class="pic"><use href="#i-cpu"/></svg><h3>Intelligence Artificielle</h3><p>Comprendre l'IA et écrire des prompts efficaces pour automatiser son quotidien.</p></div>
+        <div class="carte" data-anim="4"><svg class="pic"><use href="#i-cycle"/></svg><h3>Agilité &amp; SCRUM</h3><p>Rôles, sprints, cérémonies : devenir un acteur clé de son équipe.</p></div>
+        <div class="carte" data-anim="5"><svg class="pic"><use href="#i-mallette"/></svg><h3>SAP — ERP</h3><p>Naviguer dans SAP avec confiance : FI, MM et SD expliqués clairement.</p></div>
+      </div>
+      <p class="corps" data-anim="6" style="margin-top:1.4rem">Chaque formation : cours écrit + <strong>vidéo</strong> + quiz de validation + support PDF téléchargeable.</p>
+    </section>
+
+    <section class="slide" data-chapitre="1" data-titre="L'offre">
+      <div class="kicker" data-anim="1">L'offre</div>
+      <h2 data-anim="2">Un modèle <span class="accent"><span class="cle">freemium</span></span> sans friction</h2>
+      <div class="grille col-2" style="width:min(880px,92vw)">
+        <div class="carte offre" data-anim="3">
+          <div class="gros-chiffre">0 €</div>
+          <h3>Standard</h3>
+          <p>Compte créé en 30 secondes, sans carte bancaire. Le début de chaque cours en libre accès — on juge sur pièce.</p>
+        </div>
+        <div class="carte offre premium" data-anim="4">
+          <div class="gros-chiffre" style="color:#fff">29 €<span class="par-mois">/mois</span></div>
+          <h3>Premium</h3>
+          <p>Cours complets, vidéos, quiz notés, supports PDF. Résiliable à tout moment.</p>
+        </div>
+      </div>
+      <p class="corps" data-anim="5" style="margin-top:1.4rem">La conversion se fait <strong>naturellement</strong> : on paie parce qu'on a déjà commencé à apprendre.</p>
+    </section>
+
+    <section class="slide" data-chapitre="1" data-titre="Le site">
+      <div class="kicker" data-anim="1">Le produit, en vrai</div>
+      <div class="navigateur" data-anim="2">
+        <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">https://learnwithus.fr</span></div>
+        <img src="assets/home.png" alt="Page d'accueil LearnWithUs" />
+      </div>
+      <p class="corps" data-anim="3" style="margin-top:1rem">En ligne, en production, sur <strong>learnwithus.fr</strong> — et c'est ce qu'on va manipuler maintenant.</p>
+    </section>
+
+    <!-- ============ ACTE III — LA DÉMO ============ -->
+    <section class="slide" data-chapitre="2" data-titre="Le scénario de démo">
+      <div class="kicker" data-anim="1">La démonstration</div>
+      <h2 data-anim="2">Suivons une inscription, <span class="accent">de bout en <span class="cle">bout</span></span></h2>
+      <p class="corps" data-anim="3">Une seule action côté visiteur — et on va vous montrer <strong>tout ce qu'elle déclenche</strong>, étage par étage.</p>
+      <div class="etapes" data-anim="4">
+        <div class="etape-bloc"><span class="num">1</span><svg class="pic"><use href="#i-ecran"/></svg><b>Le site</b><i>l'action du visiteur</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc"><span class="num">2</span><svg class="pic"><use href="#i-base"/></svg><b>Notion</b><i>la donnée enregistrée</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc"><span class="num">3</span><svg class="pic"><use href="#i-eclair"/></svg><b>n8n</b><i>l'automatisation</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc"><span class="num">4</span><svg class="pic"><use href="#i-boite"/></svg><b>Boîte mail</b><i>l'équipe informée</i></div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="Démo — Le site">
+      <div class="badge-demo" data-anim="1">Démo live · learnwithus.fr</div>
+      <h2 data-anim="2" style="margin-top:1.2rem">Étape 1 — <span class="accent">Le <span class="cle">site</span></span></h2>
+      <div class="demo-cue" data-anim="3">
+        <div class="etape"><span class="n">1</span> Créer un compte gratuit → connexion immédiate, email de bienvenue.</div>
+        <div class="etape"><span class="n">2</span> Ouvrir une formation : aperçu gratuit, puis contenu Premium verrouillé.</div>
+        <div class="etape"><span class="n">3</span> Payer l'abonnement : carte, validation, accès Premium débloqué.</div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="Coulisses — Notion (comptes)">
+      <div class="kicker" data-anim="1">Étape 2 — Ce que Notion vient d'enregistrer</div>
+      <div class="navigateur large" data-anim="2">
+        <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">Notion · Inscriptions Plateforme</span></div>
+        <img src="assets/notion-comptes.png" alt="Base Notion des comptes" />
+      </div>
+      <p class="corps" data-anim="3" style="margin-top:0.9rem">Le compte apparaît <strong>instantanément</strong> — mot de passe haché, illisible même pour nous (et flouté ici, par principe).</p>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="Coulisses — Notion (CRM)">
+      <div class="kicker" data-anim="1">Étape 2 — Et le commercial suit, tout seul</div>
+      <div class="navigateur" data-anim="2">
+        <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">Notion · CRM LearnWithUs</span></div>
+        <img src="assets/notion-crm.png" alt="CRM Notion" />
+      </div>
+      <p class="corps" data-anim="3" style="margin-top:0.9rem">Chaque inscrit devient un <strong>lead</strong>, avance dans le pipeline jusqu'à <strong>Client Premium</strong> — et sera relancé automatiquement.</p>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="Coulisses — n8n">
+      <div class="kicker" data-anim="1">Étape 3 — L'automatisation qui vient de se déclencher</div>
+      <div class="navigateur" data-anim="2">
+        <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">n8n · workflow Bienvenue</span></div>
+        <img src="assets/n8n-bienvenue.png" alt="Workflow n8n bienvenue" />
+      </div>
+      <p class="corps" data-anim="3" style="margin-top:0.9rem">Une inscription = <strong>deux emails</strong> partent en parallèle : bienvenue à l'étudiant, notification à l'équipe.</p>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="L'usine à automatisations">
+      <div class="kicker" data-anim="1">Étape 3 — Et ce n'est pas le seul</div>
+      <h2 data-anim="2"><span class="accent"><span class="cle">Cinq</span></span> scénarios automatisés</h2>
+      <div class="grille col-2 duo-captures">
+        <figure class="mini-capture" data-anim="3"><img src="assets/n8n-contact.png" alt="Workflow contact"><figcaption><svg class="pic-s"><use href="#i-mail"/></svg>Contact — accusé de réception + email à l'équipe</figcaption></figure>
+        <figure class="mini-capture" data-anim="4"><img src="assets/n8n-paiement.png" alt="Workflow paiement"><figcaption><svg class="pic-s"><use href="#i-recu"/></svg>Paiement — reçu client + notification équipe</figcaption></figure>
+        <figure class="mini-capture" data-anim="5"><img src="assets/n8n-reset.png" alt="Workflow reset"><figcaption><svg class="pic-s"><use href="#i-cle"/></svg>Mot de passe oublié — lien sécurisé (15 min)</figcaption></figure>
+        <figure class="mini-capture" data-anim="6"><img src="assets/n8n-relance.png" alt="Workflow relance"><figcaption><svg class="pic-s"><use href="#i-horloge"/></svg>Relance des leads — tous les 15 jours, tout seul</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="Coulisses — Boîte mail">
+      <div class="kicker" data-anim="1">Étape 4 — Pendant ce temps, dans la boîte de l'équipe</div>
+      <div class="navigateur" data-anim="2">
+        <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">contact@learnwithus.fr</span></div>
+        <img src="assets/mail-equipe.png" alt="Boîte mail équipe" />
+      </div>
+      <p class="corps" data-anim="3" style="margin-top:0.9rem">L'équipe est <strong>prévenue en temps réel</strong> de chaque compte, message et paiement — sans lever le petit doigt.</p>
+    </section>
+
+    <section class="slide" data-chapitre="2" data-titre="La boucle est bouclée">
+      <div class="kicker" data-anim="1">La boucle est bouclée</div>
+      <h2 data-anim="2">Une action, <span class="accent">quatre <span class="cle">systèmes</span></span>, zéro intervention</h2>
+      <div class="etapes" data-anim="3">
+        <div class="etape-bloc ok"><svg class="pic"><use href="#i-ecran"/></svg><b>Site</b><i>compte créé</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc ok"><svg class="pic"><use href="#i-base"/></svg><b>Notion</b><i>CRM à jour</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc ok"><svg class="pic"><use href="#i-eclair"/></svg><b>n8n</b><i>emails partis</i></div>
+        <div class="fleche-e">→</div>
+        <div class="etape-bloc ok"><svg class="pic"><use href="#i-boite"/></svg><b>Équipe</b><i>informée</i></div>
+      </div>
+      <p class="corps" data-anim="4" style="margin-top:1.6rem">Et l'équipe pilote tout ça depuis un <strong>dashboard admin</strong> — qu'on vous montre en direct.</p>
+      <div class="badge-demo" data-anim="5" style="margin-top:1rem">Démo live · dashboard admin</div>
+    </section>
+
+    <!-- ============ ACTE IV — LA CONFIANCE ============ -->
+    <section class="slide" data-chapitre="3" data-titre="Sécurité">
+      <div class="kicker" data-anim="1">La confiance</div>
+      <h2 data-anim="2">Vos données sont <span class="accent">entre de bonnes <span class="cle">mains</span></span></h2>
+      <div class="grille col-2">
+        <div class="carte" data-anim="3"><svg class="pic"><use href="#i-cadenas"/></svg><h3>Mots de passe protégés</h3><p>Jamais stockés en clair — vous l'avez vu, même nous ne pouvons pas les lire.</p></div>
+        <div class="carte" data-anim="4"><svg class="pic"><use href="#i-carte"/></svg><h3>Zéro donnée bancaire conservée</h3><p>Aucun numéro de carte ne touche nos serveurs.</p></div>
+        <div class="carte" data-anim="5"><svg class="pic"><use href="#i-bouclier"/></svg><h3>Anti-abus</h3><p>Tentatives de connexion limitées, fausses adresses email refusées poliment.</p></div>
+        <div class="carte" data-anim="6"><svg class="pic"><use href="#i-balance"/></svg><h3>RGPD</h3><p>Droit à l'effacement intégré : chaque utilisateur peut supprimer son compte.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="3" data-titre="Sous le capot">
+      <div class="kicker" data-anim="1">Sous le capot</div>
+      <h2 data-anim="2">Une architecture <span class="accent">simple et <span class="cle">robuste</span></span></h2>
+      <div class="archi">
+        <div class="noeud" data-anim="3"><svg class="pic" style="margin:0 auto 0.5rem"><use href="#i-ecran"/></svg><div class="t">Site</div><div class="d">HTML · CSS · JavaScript</div></div>
+        <div class="fleche" data-anim="3">→</div>
+        <div class="noeud" data-anim="4"><svg class="pic" style="margin:0 auto 0.5rem"><use href="#i-serveur"/></svg><div class="t">Backend</div><div class="d">PHP · hébergé chez IONOS</div></div>
+        <div class="fleche" data-anim="4">→</div>
+        <div class="noeud" data-anim="5"><svg class="pic" style="margin:0 auto 0.5rem"><use href="#i-base"/></svg><div class="t">Notion</div><div class="d">3 bases : comptes · CRM · transactions</div></div>
+        <div class="fleche" data-anim="5">→</div>
+        <div class="noeud" data-anim="6"><svg class="pic" style="margin:0 auto 0.5rem"><use href="#i-eclair"/></svg><div class="t">n8n</div><div class="d">5 workflows d'emails</div></div>
+      </div>
+      <p class="corps" data-anim="6" style="margin-top:1.6rem">Des briques <strong>éprouvées et sans licence coûteuse</strong> — chaque étage peut évoluer sans toucher aux autres.</p>
+    </section>
+
+    <section class="slide" data-chapitre="3" data-titre="Expérience soignée">
+      <div class="deux-cols">
+        <div class="txt">
+          <div class="kicker" data-anim="1">Le souci du détail</div>
+          <h2 data-anim="2">Une expérience <span class="accent"><span class="cle">soignée</span></span> pour tous</h2>
+          <ul class="puces">
+            <li data-anim="3"><strong>Mode sombre</strong> complet, mémorisé d'une visite à l'autre.</li>
+            <li data-anim="4"><strong>Accessibilité</strong> : contrastes, navigation clavier, lecteurs d'écran.</li>
+            <li data-anim="5">Petits plus qui changent tout : jauge de mot de passe, œil afficher/masquer, reprise de lecture.</li>
+          </ul>
+        </div>
+        <div class="navigateur compact" data-anim="4">
+          <div class="barre"><span class="pastille r"></span><span class="pastille j"></span><span class="pastille v"></span><span class="url">learnwithus.fr — mode sombre</span></div>
+          <img src="assets/sombre.png" alt="Mode sombre" />
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="3" data-titre="Testé de bout en bout">
+      <div class="kicker" data-anim="1">La preuve par les tests</div>
+      <h2 data-anim="2">Vérifié <span class="accent">sous toutes les <span class="cle">coutures</span></span></h2>
+      <p class="corps" data-anim="3">Avant de venir vous voir, la plateforme entière a été re-testée de bout en bout, en conditions réelles :</p>
+      <div class="grille col-2" style="margin-top:1.2rem">
+        <div class="carte" data-anim="4"><h3><svg class="pic-s"><use href="#i-check"/></svg>Les 15 pages du site</h3><p>Toutes en ligne, sans lien mort ni erreur.</p></div>
+        <div class="carte" data-anim="4"><h3><svg class="pic-s"><use href="#i-check"/></svg>Le parcours complet</h3><p>Inscription → connexion → paiement → Premium, validé en réel.</p></div>
+        <div class="carte" data-anim="5"><h3><svg class="pic-s"><use href="#i-check"/></svg>Les garde-fous</h3><p>Fausse adresse refusée, mauvais mot de passe bloqué proprement.</p></div>
+        <div class="carte" data-anim="5"><h3><svg class="pic-s"><use href="#i-check"/></svg>Les automatisations</h3><p>Notion et emails synchronisés à chaque action.</p></div>
+      </div>
+    </section>
+
+    <!-- ============ ACTE V — LA MÉTHODE ============ -->
+    <section class="slide" data-chapitre="4" data-titre="La méthode">
+      <div class="kicker" data-anim="1">La méthode</div>
+      <h2 data-anim="2">Six phases, <span class="accent">menées en <span class="cle">agile</span></span></h2>
+      <div class="grille col-3">
+        <div class="carte" data-anim="3"><div class="chiffre">1·2</div><h3>Cadrer</h3><p>Cahier des charges, risques, benchmark, planning.</p></div>
+        <div class="carte" data-anim="4"><div class="chiffre">3·4</div><h3>Construire</h3><p>Le site, les cours, les automatisations, l'architecture.</p></div>
+        <div class="carte" data-anim="5"><div class="chiffre">5·6</div><h3>Finaliser</h3><p>Vidéos, audit, maintenance, et cette soutenance.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="4" data-titre="L'organisation">
+      <div class="kicker" data-anim="1">L'organisation</div>
+      <h2 data-anim="2">Rôles tournants, <span class="accent">suivi <span class="cle">rigoureux</span></span></h2>
+      <ul class="puces">
+        <li data-anim="3">À chaque phase, les casquettes <strong>changent de tête</strong> : chef de projet, analyste, développeur, automaticien.</li>
+        <li data-anim="4">Un <strong>dossier de suivi partagé</strong> tenu à jour : avancement, livrables, répartition.</li>
+        <li data-anim="5">Des <strong>livrables datés</strong> à chaque phase, tous rendus.</li>
+      </ul>
+      <a class="btn-lien" data-anim="6" href="https://docs.google.com/spreadsheets/d/16B7EP6cill_ajEHA-0qvx-n5VdDrkbI81-MQVjj6Bcs/edit?gid=863650391#gid=863650391" target="_blank" rel="noopener"><svg class="pic-s"><use href="#i-presse"/></svg>Ouvrir le dossier de suivi (Google Sheets)</a>
+    </section>
+
+    <section class="slide" data-chapitre="4" data-titre="Les résultats">
+      <div class="kicker" data-anim="1">Les résultats, pas l'effort</div>
+      <h2 data-anim="2">Ce que ça <span class="accent">donne, <span class="cle">concrètement</span></span></h2>
+      <div class="grille col-4">
+        <div class="carte" data-anim="3" style="text-align:center"><div class="chiffre">30 s</div><p>pour créer un compte et commencer à apprendre</p></div>
+        <div class="carte" data-anim="4" style="text-align:center"><div class="chiffre">&lt; 10 s</div><p>pour que les emails partent après chaque action</p></div>
+        <div class="carte" data-anim="5" style="text-align:center"><div class="chiffre">15</div><p>pages en production, zéro lien mort</p></div>
+        <div class="carte" data-anim="6" style="text-align:center"><div class="chiffre">100 %</div><p>du parcours testé en conditions réelles</p></div>
+      </div>
+      <p class="corps" data-anim="6" style="margin-top:1.4rem">Un domaine, une boîte d'équipe, un CRM vivant, trois formations complètes — <strong>en production</strong>.</p>
+    </section>
+
+    <!-- ============ ACTE VI — CONCLUSION ============ -->
+    <section class="slide" data-chapitre="5" data-titre="Demain">
+      <div class="kicker" data-anim="1">Et demain ?</div>
+      <h2 data-anim="2">Une plateforme <span class="accent">prête à <span class="cle">grandir</span></span></h2>
+      <ul class="puces">
+        <li data-anim="3"><strong>Paiement réel</strong> (Stripe) et facturation automatique.</li>
+        <li data-anim="4"><strong>Certificats</strong> de fin de formation et nouveaux parcours.</li>
+        <li data-anim="5"><strong>Sous-titres vidéo</strong> et accessibilité renforcée.</li>
+        <li data-anim="6"><strong>Recommandations IA</strong> : la bonne formation, à la bonne personne.</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-chapitre="5" data-titre="Pourquoi LearnWithUs">
+      <div class="kicker" data-anim="1">En résumé</div>
+      <h2 data-anim="2">Pourquoi <span class="accent"><span class="cle">LearnWithUs</span></span> ?</h2>
+      <div class="grille col-3">
+        <div class="carte" data-anim="3"><svg class="pic"><use href="#i-fusee"/></svg><h3>Ça existe</h3><p>Pas une maquette : un site en production, des vrais comptes, des vrais emails.</p></div>
+        <div class="carte" data-anim="4"><svg class="pic"><use href="#i-eclair"/></svg><h3>Ça tourne seul</h3><p>Inscription, CRM, paiement, relance : automatisés de bout en bout.</p></div>
+        <div class="carte" data-anim="5"><svg class="pic"><use href="#i-courbe"/></svg><h3>Ça peut grandir</h3><p>Un socle simple et solide, prêt pour la suite.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-chapitre="5" data-titre="Manifeste">
+      <p class="manifeste">
+        <span data-anim="1">Une action visiteur.</span>
+        <span data-anim="2">Quatre systèmes.</span>
+        <span class="or" data-anim="3">Zéro intervention humaine.</span>
+      </p>
+    </section>
+
+    <section class="slide" data-chapitre="5" data-titre="Merci">
+      <div class="echo-marque" data-anim="1">LEARNWITHUS</div>
+      <h1 class="slide-titre-xxl">DES QUESTIONS ?</h1>
+      <p class="sous-titre" data-anim="2">Merci de votre attention — Wissam, Hilel &amp; Sanjay · ESGI 2MCSI</p>
+      <div class="tags" data-anim="3">
+        <span class="tag"><svg class="pic-s"><use href="#i-globe"/></svg><b>learnwithus.fr</b></span>
+        <span class="tag"><svg class="pic-s"><use href="#i-mail"/></svg>contact@learnwithus.fr</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Écran de lancement (débloque l'audio) -->
+  <div id="intro">
+    <div class="kicker" style="margin-bottom:0.4rem">ESGI · 2MCSI · Projet annuel</div>
+    <div class="logo-i">LEARNWITHUS</div>
+    <p>Présentation immersive · 3D &amp; son génératif</p>
+    <button id="lancer"><svg class="pic-play"><use href="#i-play"/></svg>Lancer la présentation</button>
+    <p class="ou-entree">ou appuyez sur <kbd>Entrée</kbd></p>
+    <div class="aide aide-intro">
+      <kbd>→</kbd> / <kbd>Espace</kbd> suivant · <kbd>←</kbd> précédent · <kbd>1</kbd>–<kbd>6</kbd> actes · <kbd>F</kbd> plein écran · <kbd>M</kbd> son
+    </div>
+  </div>
+
+  <!-- Three.js (UMD) + post-processing -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/pp/CopyShader.js"></script>
+  <script src="lib/pp/LuminosityHighPassShader.js"></script>
+  <script src="lib/pp/EffectComposer.js"></script>
+  <script src="lib/pp/RenderPass.js"></script>
+  <script src="lib/pp/ShaderPass.js"></script>
+  <script src="lib/pp/MaskPass.js"></script>
+  <script src="lib/pp/UnrealBloomPass.js"></script>
+  <script src="lib/postprocessing.js"></script>
+  <script src="lib/gsap.min.js"></script>
+  <script src="lib/police3d.js"></script>
+  <!-- Modules de la présentation -->
+  <script src="js/three-bg.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/presentation.js"></script>
+</body>
+</html>
