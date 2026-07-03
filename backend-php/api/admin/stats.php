@@ -55,8 +55,7 @@ $leadsParPipeline = [
     'Lead'            => 0,
     'Contacté'        => 0,
     'Client Standard' => 0,
-    'Client Premium'  => 0,
-    'Perdu'           => 0
+    'Client Premium'  => 0
 ];
 foreach ($crm as $l) {
     $p = $l['properties']['Pipeline']['select']['name'] ?? null;
@@ -72,16 +71,15 @@ foreach ($transactions as $t) {
 }
 
 /* === 5 dernières inscriptions === */
-$dernieresInscriptions = array_map(function ($p) {
-    $props = $p['properties'];
+$dernieresInscriptions = array_map(function ($c) {
+    $props = $c['properties'];
     return [
-        'prenom'    => $props['Prénom']['title'][0]['text']['content']   ?? '',
-        'nom'       => $props['Nom']['rich_text'][0]['text']['content']  ?? '',
-        'email'     => $props['Email']['email']                          ?? '',
-        'formation' => $props['Formation']['select']['name']             ?? '',
-        'date'      => $p['created_time']                                ?? ''
+        'prenom' => $props['Prenom']['rich_text'][0]['text']['content'] ?? '',
+        'nom'    => $props['Nom']['rich_text'][0]['text']['content']    ?? '',
+        'email'  => $props['Email']['title'][0]['text']['content']      ?? '',
+        'date'   => $c['created_time']                                  ?? ''
     ];
-}, array_slice($inscriptions, 0, 5));
+}, array_slice($comptes, 0, 5));
 
 /* === 5 dernières transactions === */
 $dernieresTransactions = array_map(function ($t) {

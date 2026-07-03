@@ -16,7 +16,15 @@
    - $maxTentatives : nombre max de tentatives dans la fenêtre
    - $fenetreSec    : durée de la fenêtre en secondes
    Retourne true si OK (et enregistre la tentative), false si limité. */
-function verifierRateLimit($cle, $maxTentatives = 5, $fenetreSec = 900) {
+/* En dev/démo, l'IP est localhost (::1) : tous les testeurs partagent alors
+   le même compteur et se bloquent mutuellement. On exempte donc localhost. */
+function estIpLocale() {
+    return in_array(obtenirIp(), ['127.0.0.1', '::1', 'inconnu'], true);
+}
+
+function verifierRateLimit($cle, $maxTentatives = 10, $fenetreSec = 900) {
+
+    if (estIpLocale()) return true;
 
     $dossier = __DIR__ . '/../data';
     if (!is_dir($dossier)) mkdir($dossier, 0755, true);

@@ -17,15 +17,15 @@ require_once __DIR__ . '/../helpers/webhook.php';
 
 exigerMethode('POST');
 
-if (!verifierRateLimit('mdp-demande-' . obtenirIp())) {
+$d     = lireRequete();
+$email = strtolower(trim($d['email'] ?? ''));
+
+if (!verifierRateLimit('mdp-demande-' . obtenirIp() . '-' . $email, 10, 900)) {
     repondreJson([
         'succes'  => false,
         'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
     ], 429);
 }
-
-$d     = lireRequete();
-$email = strtolower(trim($d['email'] ?? ''));
 
 if (!$email) {
     repondreJson(['succes' => false, 'message' => 'Email obligatoire'], 400);

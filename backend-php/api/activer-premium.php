@@ -62,6 +62,14 @@ $reference = enregistrerTransaction([
     'statut'    => 'Validé'
 ]);
 
+/* L'échec d'enregistrement ne doit pas casser l'activation Premium, mais on
+   ne veut plus d'échec SILENCIEUX : si Notion n'a pas créé la ligne (ex :
+   intégration non partagée avec la base Transactions), on le trace. */
+if (!$reference) {
+    error_log('[Paiement] Transaction Notion NON enregistrée pour ' . $email
+        . ' — verifier le partage de la base Transactions avec l\'integration Notion.');
+}
+
 /* === Webhook n8n #4 (paiement) : reçu client + notif équipe === */
 if (WEBHOOK_N8N_PAIEMENT) {
     $compte = lireCompte($page);
@@ -81,8 +89,9 @@ $utilisateur['statut'] = 'Premium';
 connecterUtilisateur($utilisateur);
 
 repondreJson([
-    'succes'      => true,
-    'message'     => 'Abonnement Premium activé avec succès',
-    'reference'   => $reference,
-    'utilisateur' => $utilisateur
+    'succes'                 => true,
+    'message'                => 'Abonnement Premium activé avec succès',
+    'reference'              => $reference,
+    'transactionEnregistree' => (bool) $reference,
+    'utilisateur'            => $utilisateur
 ]);

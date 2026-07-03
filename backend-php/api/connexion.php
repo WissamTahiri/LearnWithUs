@@ -16,17 +16,19 @@ require_once __DIR__ . '/../helpers/notion.php';
 
 exigerMethode('POST');
 
-/* Anti-bruteforce : 5 tentatives / 15 min par IP */
-if (!verifierRateLimit('connexion-' . obtenirIp())) {
+$d     = lireRequete();
+$email = strtolower(trim($d['email'] ?? ''));
+$mdp   = $d['motDePasse']             ?? '';
+
+/* Anti-bruteforce : 10 tentatives / 15 min par IP + email. Clé par email
+   pour qu'un utilisateur derrière une IP partagée (salle de classe / NAT)
+   ne bloque pas les autres. Localhost est exempté (voir rate-limit.php). */
+if (!verifierRateLimit('connexion-' . obtenirIp() . '-' . $email, 10, 900)) {
     repondreJson([
         'succes'  => false,
         'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
     ], 429);
 }
-
-$d     = lireRequete();
-$email = strtolower(trim($d['email'] ?? ''));
-$mdp   = $d['motDePasse']             ?? '';
 
 if (!$email || !$mdp) {
     repondreJson([

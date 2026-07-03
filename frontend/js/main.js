@@ -619,13 +619,13 @@ function construireTableauInscriptions(lignes) {
   const html =
     '<table class="admin-tableau-compact">' +
       '<thead><tr>' +
-        '<th>Nom</th><th>Formation</th><th>Date</th>' +
+        '<th>Nom</th><th>Email</th><th>Date</th>' +
       '</tr></thead><tbody>' +
       lignes.map(function(l) {
         const nomComplet = ((l.prenom || '') + ' ' + (l.nom || '')).trim() || '—'
         return '<tr>' +
           '<td>' + echappeHtml(nomComplet) + '</td>' +
-          '<td><span class="admin-badge-formation">' + echappeHtml(l.formation || '—') + '</span></td>' +
+          '<td>' + echappeHtml(l.email || '—') + '</td>' +
           '<td>' + formatDateCourte(l.date) + '</td>' +
         '</tr>'
       }).join('') +

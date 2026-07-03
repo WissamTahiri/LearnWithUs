@@ -1785,22 +1785,33 @@ body,
 .nav-liens a.lien-admin {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   line-height: 1;
-  background-color: transparent;
+  background-color: var(--couleur-principale-clair);
   color: var(--couleur-principale);
-  border: 1.5px solid var(--couleur-principale);
-  border-radius: 999px;
-  padding: 6px 15px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: normal;
-  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  transition: background-color 0.25s, color 0.25s;
+}
+.nav-liens a.lien-admin::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--couleur-principale);
+  flex: none;
 }
 .nav-liens a.lien-admin:hover {
   background-color: #6B1F2A;
-  border-color: #6B1F2A;
   color: #FFFFFF;
+}
+.nav-liens a.lien-admin:hover::before {
+  background-color: #FFFFFF;
 }
 
 

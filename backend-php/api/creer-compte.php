@@ -20,14 +20,6 @@ require_once __DIR__ . '/../helpers/crm.php';
 
 exigerMethode('POST');
 
-/* Anti-bruteforce : 5 tentatives / 15 min par IP */
-if (!verifierRateLimit('creer-' . obtenirIp())) {
-    repondreJson([
-        'succes'  => false,
-        'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
-    ], 429);
-}
-
 $d         = lireRequete();
 $prenom    = trim($d['prenom']     ?? '');
 $nom       = trim($d['nom']        ?? '');
@@ -50,6 +42,25 @@ if (strlen($mdp) < 8 || !preg_match('/[A-Z]/', $mdp) || !preg_match('/[0-9]/', $
         'succes'  => false,
         'message' => 'Le mot de passe doit faire au moins 8 caractères, avec une majuscule et un chiffre'
     ], 400);
+}
+
+/* === Vérifie que le domaine de l'email peut recevoir des mails ===
+   Bloque les fausses adresses AVANT tout déclenchement de workflow n8n
+   (le webhook bienvenue n'est atteint qu'après ce point). */
+$domaine = substr(strrchr($email, '@'), 1);
+if (!$domaine || (!checkdnsrr($domaine, 'MX') && !checkdnsrr($domaine, 'A'))) {
+    repondreJson([
+        'succes'  => false,
+        'message' => "Cette adresse email semble introuvable : vérifiez le domaine."
+    ], 422);
+}
+
+/* Anti-bruteforce : 10 tentatives / 15 min par IP + email (localhost exempté). */
+if (!verifierRateLimit('creer-' . obtenirIp() . '-' . $email, 10, 900)) {
+    repondreJson([
+        'succes'  => false,
+        'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
+    ], 429);
 }
 
 /* === Refus si compte déjà existant === */
