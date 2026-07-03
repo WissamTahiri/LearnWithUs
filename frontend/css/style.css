@@ -1194,7 +1194,6 @@ textarea {
 /* Carte mise en avant (pour le revenu) */
 .admin-carte-mise-avant {
   background-color: var(--couleur-principale);
-  grid-column: 1 / -1;
 }
 .admin-carte-mise-avant .admin-carte-chiffre,
 .admin-carte-mise-avant .admin-carte-libelle {
