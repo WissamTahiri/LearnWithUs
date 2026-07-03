@@ -31,7 +31,13 @@ $triRecent = function ($a, $b) {
 };
 usort($comptes,      $triRecent);
 usort($crm,          $triRecent);
-usort($transactions, $triRecent);
+usort($transactions, function ($a, $b) {
+    /* Tri des transactions sur le champ Date (date métier du paiement),
+       avec repli sur created_time si Date n'est pas renseigné. */
+    $da = $a['properties']['Date']['date']['start'] ?? $a['created_time'] ?? '';
+    $db = $b['properties']['Date']['date']['start'] ?? $b['created_time'] ?? '';
+    return strcmp($db, $da);
+});
 
 /* === Comptes : répartition Standard / Premium === */
 $comptesParStatut = ['Standard' => 0, 'Premium' => 0];
@@ -88,7 +94,7 @@ $dernieresTransactions = array_map(function ($t) {
         'formation' => $props['Formation']['select']['name']              ?? '',
         'montant'   => $props['Montant']['number']                        ?? 0,
         'statut'    => $props['Statut']['select']['name']                 ?? '',
-        'date'      => $t['created_time']                                 ?? ''
+        'date'      => ($t['properties']['Date']['date']['start'] ?? $t['created_time'])                                 ?? ''
     ];
 }, array_slice($transactions, 0, 5));
 
