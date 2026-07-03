@@ -886,3 +886,42 @@ body.traversee .slide.actif [data-anim="6"] { animation-delay: 1.85s; }
 @media (prefers-reduced-motion: reduce) {
   body.traversee .slide.actif, body.traversee .slide.actif [data-anim] { animation-delay: 0s !important; }
 }
+
+/* =============================================================
+   PACK ORATEUR — noir démo, notes, pilote auto, carte du voyage
+   ============================================================= */
+
+/* B — fondu au noir : reprendre l'attention pendant les démos live */
+#rideau-noir {
+  position: fixed; inset: 0; z-index: 45; background: #000;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+}
+body.noir #rideau-noir { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+/* Carte du voyage : 6 mondes, cliquables, l'actif rayonne */
+#carte-voyage {
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  z-index: 21; display: flex; gap: 14px; align-items: center;
+  transition: opacity 0.5s ease;
+}
+#carte-voyage .monde {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: rgba(255,255,255,0.18); border: 1px solid var(--bord-verre);
+  cursor: pointer; position: relative; transition: transform 0.25s, background 0.25s;
+}
+#carte-voyage .monde:hover { transform: scale(1.5); background: rgba(231,184,75,0.5); }
+#carte-voyage .monde.actif {
+  background: var(--or);
+  box-shadow: 0 0 10px rgba(231,184,75,0.9);
+}
+#carte-voyage .monde .nom {
+  position: absolute; top: 17px; left: 50%; transform: translateX(-50%);
+  font-family: 'Orbitron', sans-serif; font-size: 0.62rem; letter-spacing: 0.12em;
+  color: var(--texte-doux); white-space: nowrap; opacity: 0;
+  transition: opacity 0.25s; pointer-events: none;
+}
+#carte-voyage .monde:hover .nom, #carte-voyage .monde.actif .nom { opacity: 1; }
+body.idle #carte-voyage, body.accueil #carte-voyage, body.warp #carte-voyage { opacity: 0; pointer-events: none; }
+
+body.auto #chip-auto { opacity: 1; visibility: visible; }

@@ -41,6 +41,7 @@
     var ch = chapitreDe(slides[idx]);
     elMini.textContent = (ACTES[ch] ? ACTES[ch] + '  —  ' : '') +
                          (slides[idx].getAttribute('data-titre') || '');
+    majCarte(ch);
 
     var changeActe = ch !== chapitreCourant;
     chapitreCourant = ch;
@@ -187,6 +188,31 @@
     if (u) u.setAttribute('href', m ? '#i-muet' : '#i-son');
   }
 
+  /* ===== Carte du voyage + rideau noir ===== */
+
+  function majCarte(ch) {
+    var pts = document.querySelectorAll('#carte-voyage .monde');
+    pts.forEach(function (m, i) { m.classList.toggle('actif', i === ch); });
+  }
+
+  function construireCarte() {
+    var nav = document.getElementById('carte-voyage');
+    var noms = ['Projet', 'Produit', 'Démo', 'Confiance', 'Méthode', 'Final'];
+    noms.forEach(function (nom, i) {
+      var d = document.createElement('button');
+      d.className = 'monde';
+      d.setAttribute('aria-label', 'Acte ' + (i + 1) + ' · ' + nom);
+      d.innerHTML = '<span class="nom">' + nom + '</span>';
+      d.addEventListener('click', function () {
+        if (!demarre) return;
+        var cible = debutActe[i];
+        if (cible !== undefined) afficher(cible, cible >= idx ? 1 : -1);
+      });
+      nav.appendChild(d);
+    });
+  }
+
+
   document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.add('accueil');   /* HUD masqué tant que le rideau est levé */
     slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
@@ -212,6 +238,7 @@
 
     if (window.Scene3D) Scene3D.init(document.getElementById('fond-3d'));
     if (window.AudioFX) AudioFX.onMute(majMute);
+    construireCarte();
 
     document.getElementById('lancer').addEventListener('click', function () {
       lancer();
@@ -239,6 +266,15 @@
         else if (e.key === 'f' || e.key === 'F') { pleinEcran(); }
         else if (e.key === 'm' || e.key === 'M') { if (window.AudioFX) AudioFX.toggleMute(); }
         return;
+      }
+      /* pack orateur */
+      if (e.key === 'b' || e.key === 'B') {
+        document.body.classList.toggle('noir');
+        return;
+      }
+      /* toute navigation retire le noir */
+      if (['ArrowRight', 'ArrowLeft', ' ', 'PageDown', 'PageUp', 'Home', 'End'].indexOf(e.key) !== -1) {
+        document.body.classList.remove('noir');
       }
       /* [5] sauts d'acte : touches 1 à 6 */
       if (e.key >= '1' && e.key <= '6') {
