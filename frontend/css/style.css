@@ -1857,3 +1857,45 @@ body,
 .lien-evitement:focus {
   left: 0;
 }
+
+
+/* ============================================================
+   Bouton "œil" afficher/masquer le mot de passe
+   (connexion, création de compte, réinitialisation)
+   ============================================================ */
+.champ-mdp {
+  position: relative;
+  display: block;
+}
+
+.bouton-oeil {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 42px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--couleur-texte-secondaire);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bouton-oeil:hover {
+  color: var(--couleur-principale);
+}
+
+.bouton-oeil:focus-visible {
+  outline: 2px solid var(--couleur-principale);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+.bouton-oeil svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}

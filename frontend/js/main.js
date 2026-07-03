@@ -1068,6 +1068,7 @@ document.addEventListener('DOMContentLoaded', function() {
      réinitialisation (#nouveau-mdp). Ne fait rien si la jauge est absente. */
   initJaugeMotDePasse(document.getElementById('mot-de-passe'), document.getElementById('jauge-mdp'))
   initJaugeMotDePasse(document.getElementById('nouveau-mdp'), document.getElementById('jauge-mdp-reset'))
+  activerAffichageMotDePasse()  /* œil afficher/masquer sur les champs mot de passe */
 
 })
 
@@ -1273,5 +1274,51 @@ function initJaugeMotDePasse(champ, jauge) {
     else                  { niveau = 'tres-fort'; texte = 'Mot de passe très fort' }
     jauge.setAttribute('data-niveau', niveau)
     if (libelle) libelle.textContent = texte
+  })
+}
+
+
+/* ============================================================
+   AFFICHAGE DU MOT DE PASSE (œil afficher/masquer)
+   ------------------------------------------------------------
+   Amélioration progressive : enveloppe chaque champ mot de passe
+   dans un conteneur positionné et y ajoute un bouton "œil" qui
+   bascule le type entre "password" et "text". S'applique à la
+   connexion, la création de compte et la réinitialisation.
+   Sans JS, le champ reste un mot de passe masqué classique.
+   ============================================================ */
+
+var ICONE_OEIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>'
+var ICONE_OEIL_BARRE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+
+function activerAffichageMotDePasse() {
+  var champs = document.querySelectorAll('input[type="password"]')
+  champs.forEach(function(champ) {
+    if (champ.dataset.oeilActif) return          /* évite le double montage */
+    champ.dataset.oeilActif = '1'
+
+    /* Enveloppe le champ pour positionner le bouton par-dessus */
+    var conteneur = document.createElement('span')
+    conteneur.className = 'champ-mdp'
+    champ.parentNode.insertBefore(conteneur, champ)
+    conteneur.appendChild(champ)
+    champ.style.paddingRight = '44px'            /* laisse la place à l'œil */
+
+    var bouton = document.createElement('button')
+    bouton.type = 'button'                       /* n'envoie pas le formulaire */
+    bouton.className = 'bouton-oeil'
+    bouton.setAttribute('aria-label', 'Afficher le mot de passe')
+    bouton.setAttribute('aria-pressed', 'false')
+    bouton.innerHTML = ICONE_OEIL
+
+    bouton.addEventListener('click', function() {
+      var visible = champ.type === 'text'
+      champ.type = visible ? 'password' : 'text'
+      bouton.setAttribute('aria-pressed', visible ? 'false' : 'true')
+      bouton.setAttribute('aria-label', visible ? 'Afficher le mot de passe' : 'Masquer le mot de passe')
+      bouton.innerHTML = visible ? ICONE_OEIL : ICONE_OEIL_BARRE
+    })
+
+    conteneur.appendChild(bouton)
   })
 }
