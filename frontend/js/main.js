@@ -905,7 +905,6 @@ async function chargerDashboardAdmin() {
 
     const s = resultat.stats
 
-    document.getElementById('kpi-inscriptions').textContent  = s.totalInscriptions
     document.getElementById('kpi-comptes').textContent       = s.totalComptes
     document.getElementById('kpi-premium').textContent       = s.comptesParStatut.Premium
     document.getElementById('kpi-leads').textContent         = s.totalLeads

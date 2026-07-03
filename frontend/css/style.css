@@ -1154,7 +1154,7 @@ textarea {
 /* Cartes KPI : grille responsive 2/3/6 colonnes selon taille écran */
 .admin-grille-kpi {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 18px;
   margin-bottom: 32px;
 }
@@ -1194,6 +1194,7 @@ textarea {
 /* Carte mise en avant (pour le revenu) */
 .admin-carte-mise-avant {
   background-color: var(--couleur-principale);
+  grid-column: 1 / -1;
 }
 .admin-carte-mise-avant .admin-carte-chiffre,
 .admin-carte-mise-avant .admin-carte-libelle {

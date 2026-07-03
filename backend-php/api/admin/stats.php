@@ -21,7 +21,6 @@ exigerAdmin();
 /* === Récupération des 4 bases ===
    PHP est synchrone : on les charge l'une après l'autre. Pour
    un projet école avec peu de pages, c'est largement assez. */
-$inscriptions = listerPagesNotion(NOTION_DS_INSCRIPTIONS_ID);
 $comptes      = listerPagesNotion(NOTION_DS_COMPTES_ID);
 $crm          = listerPagesNotion(NOTION_DS_CRM_ID);
 $transactions = listerPagesNotion(NOTION_DS_TRANSACTIONS_ID);
@@ -30,7 +29,6 @@ $transactions = listerPagesNotion(NOTION_DS_TRANSACTIONS_ID);
 $triRecent = function ($a, $b) {
     return strcmp($b['created_time'] ?? '', $a['created_time'] ?? '');
 };
-usort($inscriptions, $triRecent);
 usort($comptes,      $triRecent);
 usort($crm,          $triRecent);
 usort($transactions, $triRecent);
@@ -109,7 +107,6 @@ $tousLesComptes = array_map(function ($c) {
 repondreJson([
     'succes' => true,
     'stats'  => [
-        'totalInscriptions'      => count($inscriptions),
         'totalComptes'           => count($comptes),
         'totalLeads'             => count($crm),
         'totalTransactions'      => count($transactions),
