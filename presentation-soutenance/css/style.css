@@ -891,14 +891,6 @@ body.traversee .slide.actif [data-anim="6"] { animation-delay: 1.85s; }
    PACK ORATEUR — noir démo, notes, pilote auto, carte du voyage
    ============================================================= */
 
-/* B — fondu au noir : reprendre l'attention pendant les démos live */
-#rideau-noir {
-  position: fixed; inset: 0; z-index: 45; background: #000;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
-}
-body.noir #rideau-noir { opacity: 1; visibility: visible; transition-delay: 0s; }
-
 /* Carte du voyage : 6 mondes, cliquables, l'actif rayonne */
 #carte-voyage {
   position: fixed; top: 14px; left: 50%; transform: translateX(-50%);

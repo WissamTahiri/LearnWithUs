@@ -267,15 +267,6 @@
         else if (e.key === 'm' || e.key === 'M') { if (window.AudioFX) AudioFX.toggleMute(); }
         return;
       }
-      /* pack orateur */
-      if (e.key === 'b' || e.key === 'B') {
-        document.body.classList.toggle('noir');
-        return;
-      }
-      /* toute navigation retire le noir */
-      if (['ArrowRight', 'ArrowLeft', ' ', 'PageDown', 'PageUp', 'Home', 'End'].indexOf(e.key) !== -1) {
-        document.body.classList.remove('noir');
-      }
       /* [5] sauts d'acte : touches 1 à 6 */
       if (e.key >= '1' && e.key <= '6') {
         var cible = debutActe[parseInt(e.key, 10) - 1];

@@ -21,20 +21,6 @@
   var muted = localStorage.getItem('lwu-muted') === '1';
   var started = false;
   var muteCbs = [];
-  /* Cris optionnels fournis par l'utilisateur (voir sons/LISEZMOI.txt).
-     S'ils existent, ils remplacent la synthèse ; sinon repli génératif. */
-  var criIntro = null, criIntroOk = false;
-  var criFinal = null, criFinalOk = false;
-  function chargerCris() {
-    try {
-      criIntro = new Audio('sons/cri-intro.mp3');
-      criIntro.preload = 'auto'; criIntro.volume = 0.9;
-      criIntro.addEventListener('canplaythrough', function () { criIntroOk = true; }, { once: true });
-      criFinal = new Audio('sons/cri-final.mp3');
-      criFinal.preload = 'auto'; criFinal.volume = 0.95;
-      criFinal.addEventListener('canplaythrough', function () { criFinalOk = true; }, { once: true });
-    } catch (e) {}
-  }
 
   function reverbIR(seconds, decay) {
     var rate = ctx.sampleRate, len = Math.floor(rate * seconds);
@@ -176,7 +162,7 @@
         /* iOS : catégorie 'playback' → le Web Audio ignore l'interrupteur
            sonnerie/silence de l'iPhone (Safari 16.4+, sans effet ailleurs) */
         if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch (e2) {} }
-        build(); started = true; chargerCris();
+        build(); started = true;
         if (ctx.state === 'suspended') ctx.resume();
       }
       catch (e) { console.warn('Audio indisponible', e); }
@@ -236,65 +222,31 @@
 
     /* ===== Sons synchronisés aux animations (v2) ===== */
 
-    /* Cri d'ouverture façon King of Pop — 100 % synthétisé (aucun sample) :
-       deux chirps falsetto « hi-hi ! » puis un « aaaouh ! » glissant.
-       Technique : oscillateur (corde vocale) passé dans deux filtres
-       passe-bande parallèles = les FORMANTS de la voyelle ; on glisse
-       les formants de /i/ vers /a/→/ou/ pour dessiner la voyelle. */
+    /* Lever de rideau soyeux : accord qui s'ouvre (filtre qui s'épanouit),
+       glissando de harpe cristallin, souffle d'air léger. Fluide, élégant. */
     ouverture: function () {
       if (!started) return;
-      if (criIntroOk && criIntro && !muted) {
-        try { criIntro.currentTime = 0; criIntro.play(); return; } catch (e) {}
-      }
-      var t0 = ctx.currentTime;
-
-      function voixChirp(t, f0a, f0b, dur, F1, F2, gain) {
-        /* petit cri aigu (voyelle /i/ serrée) */
-        var o = ctx.createOscillator(); o.type = 'sawtooth';
-        o.frequency.setValueAtTime(f0a, t);
-        o.frequency.exponentialRampToValueAtTime(f0b, t + dur * 0.8);
-        var b1 = ctx.createBiquadFilter(); b1.type = 'bandpass'; b1.frequency.value = F1; b1.Q.value = 6;
-        var b2 = ctx.createBiquadFilter(); b2.type = 'bandpass'; b2.frequency.value = F2; b2.Q.value = 9;
-        var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(gain, t + 0.018);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(b1); o.connect(b2); b1.connect(g); b2.connect(g);
-        g.connect(busMusic);
-        o.start(t); o.stop(t + dur + 0.05);
-      }
-
-      /* « hi… hi ! » — deux chirps falsetto brefs, mordants, qui claquent */
-      noiseBurst(t0, 0.05, 3200, 0.05);                       /* chiff d'attaque */
-      voixChirp(t0,        920, 1460, 0.13, 320, 2900, 0.20);
-      noiseBurst(t0 + 0.19, 0.05, 3200, 0.05);
-      voixChirp(t0 + 0.19, 980, 1560, 0.14, 320, 3000, 0.22);
-
-      /* « aaaouh ! » — glissando descendant avec vibrato, voyelle
-         qui se ferme de /a/ vers /ou/ */
+      var t = ctx.currentTime;
       try {
-        var ta = t0 + 0.50, durA = 0.78;
-        var o = ctx.createOscillator(); o.type = 'sawtooth';
-        o.frequency.setValueAtTime(560, ta);                       /* part plus haut */
-        o.frequency.exponentialRampToValueAtTime(150, ta + durA);  /* chute plus franche */
-        var vib = ctx.createOscillator(); var vibG = ctx.createGain();
-        vib.frequency.value = 6.4; vibG.gain.value = 22;           /* vibrato plus prononcé */
-        vib.connect(vibG); vibG.connect(o.frequency); vib.start(ta); vib.stop(ta + durA + 0.1);
-        /* formants /a/ → /ou/ */
-        var F1 = ctx.createBiquadFilter(); F1.type = 'bandpass'; F1.Q.value = 5;
-        F1.frequency.setValueAtTime(850, ta);
-        F1.frequency.exponentialRampToValueAtTime(360, ta + durA);
-        var F2 = ctx.createBiquadFilter(); F2.type = 'bandpass'; F2.Q.value = 7;
-        F2.frequency.setValueAtTime(1250, ta);
-        F2.frequency.exponentialRampToValueAtTime(820, ta + durA);
-        var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, ta);
-        g.gain.exponentialRampToValueAtTime(0.22, ta + 0.05);
-        g.gain.setValueAtTime(0.22, ta + durA * 0.55);
-        g.gain.exponentialRampToValueAtTime(0.0001, ta + durA);
-        o.connect(F1); o.connect(F2); F1.connect(g); F2.connect(g);
-        g.connect(busMusic);
-        o.start(ta); o.stop(ta + durA + 0.1);
-        /* souffle d'attaque, pour le mordant */
-        noiseBurst(ta, 0.12, 1800, 0.05);
+        /* accord ré-la-ré qui s'épanouit sur 1,8 s */
+        [N.D3, N.A3, N.D4, N.F4].forEach(function (fq, i) {
+          var o = ctx.createOscillator(); o.type = i % 2 ? 'triangle' : 'sine';
+          o.frequency.value = fq; o.detune.value = (i - 1.5) * 3;
+          var f = ctx.createBiquadFilter(); f.type = 'lowpass';
+          f.frequency.setValueAtTime(320, t);
+          f.frequency.exponentialRampToValueAtTime(3200, t + 1.6);
+          var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(0.085, t + 0.9);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 2.0);
+          o.connect(f); f.connect(g); g.connect(busMusic);
+          o.start(t); o.stop(t + 2.1);
+        });
+        /* harpe cristalline ascendante */
+        for (var h = 0; h < 6; h++) {
+          pluck(GAMME[3 + h], t + 0.35 + h * 0.09, 0.9, 0.07, 'triangle', busMusic);
+        }
+        /* souffle d'air très léger */
+        noiseBurst(t + 0.2, 1.2, 900, 0.05);
       } catch (e) {}
     },
 
@@ -596,32 +548,17 @@
 
         var tx = t + 0.95;   /* instant de la déflagration */
 
-        /* 2a) le CRI — « hooh ! » claqué pile sur l'explosion.
-           Sample utilisateur si fourni, sinon synthèse à formants. */
-        var sampleCri = (criFinalOk && criFinal && !muted);
-        if (sampleCri) {
-          setTimeout(function () {
-            try { criFinal.currentTime = 0; criFinal.play(); } catch (e) {}
-          }, 950);
-        }
-        if (!sampleCri) {
-        var oV = ctx.createOscillator(); oV.type = 'sawtooth';
-        oV.frequency.setValueAtTime(392, tx);
-        oV.frequency.exponentialRampToValueAtTime(130, tx + 0.34);
-        var V1 = ctx.createBiquadFilter(); V1.type = 'bandpass'; V1.Q.value = 5;
-        V1.frequency.setValueAtTime(620, tx);
-        V1.frequency.exponentialRampToValueAtTime(360, tx + 0.34);
-        var V2 = ctx.createBiquadFilter(); V2.type = 'bandpass'; V2.Q.value = 7;
-        V2.frequency.setValueAtTime(1050, tx);
-        V2.frequency.exponentialRampToValueAtTime(760, tx + 0.34);
-        var gV = ctx.createGain(); gV.gain.setValueAtTime(0.0001, tx);
-        gV.gain.exponentialRampToValueAtTime(0.30, tx + 0.02);   /* attaque claquée */
-        gV.gain.exponentialRampToValueAtTime(0.0001, tx + 0.38);
-        oV.connect(V1); oV.connect(V2); V1.connect(gV); V2.connect(gV);
-        gV.connect(busMusic);
-        oV.start(tx); oV.stop(tx + 0.42);
-        noiseBurst(tx, 0.09, 2200, 0.07);                        /* le souffle du cri */
-        }
+        /* 2a) l'ÉCLOSION — accord lumineux qui s'ouvre pile sur
+           l'explosion : fluide, majestueux, sans voix. */
+        [N.D4, N.F4, N.A4, N.D5, N.A5].forEach(function (fqE, iE) {
+          var oE = ctx.createOscillator(); oE.type = 'sine';
+          oE.frequency.value = fqE;
+          var gE = ctx.createGain(); gE.gain.setValueAtTime(0.0001, tx);
+          gE.gain.exponentialRampToValueAtTime(0.12 - iE * 0.012, tx + 0.05 + iE * 0.03);
+          gE.gain.exponentialRampToValueAtTime(0.0001, tx + 1.8);
+          oE.connect(gE); gE.connect(busMusic);
+          oE.start(tx); oE.stop(tx + 1.9);
+        });
 
         /* 2) hit orchestral : pile de saws désaccordées + sub-drop */
         [N.D2, N.A2, N.D3, N.F3, N.A3, N.D4].forEach(function (fq, iH) {
