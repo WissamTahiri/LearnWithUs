@@ -29,7 +29,7 @@
   var warp = { actif: false, depart: 0, duree: 0, de: null, vers: null, fin: null, j1: false, j2: false, courbe: null, lastSpark: 0 };
   var trajet = { actif: false, depart: 0, duree: 0, courbe: null, roll: 0, fovAmp: 0, gerbeFaite: false, hyper: false, chap: 0 };
   var kick = { x: 0, z: 0 };
-  var finale = { actif: false, depart: 0, duree: 13000, explose: false, cb: null, sp1: false, sp2: false, sp3: false };
+  var finale = { actif: false, depart: 0, duree: 15000, explose: false, cb: null, sp1: false, sp2: false, sp3: false };
 
   var tunnel = null, tunnelLignes = [];
   var ondes = [];
@@ -443,11 +443,12 @@
     for (var i = 0; i < cometes.length; i++) if (!cometes[i].actif) { c = cometes[i]; break; }
     if (!c) return;
     c.actif = true; c.t0 = performance.now(); c.dur = 1400 + Math.random() * 900;
-    /* naît au-dessus de la zone regardée, file en diagonale */
+    /* naît au-dessus du point regardé (le regard VIVANT : pendant le
+       Grand Tour, les comètes escortent le vol) */
     c.pos.set(
-      camRegardCible.x + (Math.random() - 0.5) * 90,
-      camRegardCible.y + 22 + Math.random() * 18,
-      camRegardCible.z - 15 - Math.random() * 30
+      camRegard.x + (Math.random() - 0.5) * 90,
+      camRegard.y + 22 + Math.random() * 18,
+      camRegard.z - 15 - Math.random() * 30
     );
     c.vel.set(-(12 + Math.random() * 14) * (Math.random() < 0.5 ? 1 : -1), -(7 + Math.random() * 6), (Math.random() - 0.5) * 8);
     c.l.visible = true;
@@ -801,7 +802,8 @@
       camRegardCible.copy(regards[0]);
       warp.actif = true;
       warp.depart = performance.now();
-      warp.duree = dureeMs || 10500;
+      warp.duree = dureeMs || 15000;
+      warp.mi = false;   /* le grand accord du milieu du tour */
       var pts = [camPos.clone()];
       for (var i = 5; i >= 1; i--) {
         var z = ZONES[i];
@@ -857,12 +859,20 @@
       camPos.copy(warp.courbe.getPoint(k));
       camPos.x += (Math.random() - 0.5) * vitesse * 1.1;
       camPos.y += (Math.random() - 0.5) * vitesse * 1.1;
-      /* pluie d'étincelles qu'on TRAVERSE en plein vol */
-      if (p > 0.05 && p < 0.9 && performance.now() - warp.lastSpark > 210) {
+      /* HÉLICE d'étincelles qu'on traverse : les gerbes s'enroulent
+         autour de la trajectoire comme une poussière de fée */
+      if (p > 0.05 && p < 0.9 && performance.now() - warp.lastSpark > 170) {
         warp.lastSpark = performance.now();
         var devant = warp.courbe.getPoint(Math.min(1, k + 0.06));
-        gerbe(devant.clone().add(new THREE.Vector3((Math.random() - 0.5) * 24, (Math.random() - 0.5) * 18, 0)),
-              Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 22, 10, 650);   /* dispersé : plus de taches beiges */
+        var angH = performance.now() * 0.004;
+        gerbe(devant.clone().add(new THREE.Vector3(Math.cos(angH) * 15, Math.sin(angH) * 11, 0)),
+              Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 22, 10, 650);
+      }
+      /* le GRAND ACCORD du milieu du tour : l'univers entier répond */
+      if (!warp.mi && p > 0.5) {
+        warp.mi = true;
+        creerOnde(camPos.clone().add(new THREE.Vector3(0, 0, -40)), 0xFFE9C4, 48, 1300, 0.35);
+        if (global.AudioFX && global.AudioFX.chime) global.AudioFX.chime();
       }
       /* chaque monde survolé EXPLOSE de joie et joue son arpège */
       while (warp.etapes && warp.etape < warp.etapes.length && p > warp.etapes[warp.etape]) {
@@ -896,9 +906,10 @@
       scene.fog.density = 0.0062 - vitesse * 0.0045;
       majTunnel(dt, vitesse);
       if (aberration) aberration.offset.set(vitesse * 0.0022, vitesse * 0.0013);
-      /* virages inclinés successifs : la caméra PENCHE dans chaque courbe du tour */
+      /* virages inclinés successifs : la caméra PENCHE dans chaque courbe du tour,
+         et le champ RESPIRE à chaque monde survolé */
       rollFrame = Math.sin(p * Math.PI * 3) * 0.28 * Math.sin(p * Math.PI);
-      fovCible = FOV_BASE + vitesse * 26;
+      fovCible = FOV_BASE + vitesse * 26 + Math.sin(p * Math.PI * 6) * 4;
       if (p >= 1) {
         warp.actif = false;
         haloFacteur = 1;
@@ -971,21 +982,22 @@
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(14, 8, 0)), 0xFFE9C4, 150, 15, 2500); }, 600);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(-16, -6, 4)), 0xFFD98A, 150, 15, 2500); }, 950);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 12, -6)), 0xE7734B, 130, 17, 2400); }, 1400);
-            /* le bouquet continue : 14 fusées échelonnées sur presque 7 s */
-            for (var kx = 0; kx < 14; kx++) {
+            /* le bouquet continue : 16 fusées échelonnées sur plus de 8 s */
+            for (var kx = 0; kx < 16; kx++) {
               (function (kx) {
                 setTimeout(function () {
                   gerbe(c2.clone().add(new THREE.Vector3((Math.random() - 0.5) * 32, (Math.random() - 0.3) * 24, (Math.random() - 0.5) * 26)),
                         [0xFFD98A, 0xE7734B, 0xF3C9D0, 0xFFE9C4][kx % 4], 110, 13, 2200);
-                }, 1250 + kx * 400);
+                }, 1250 + kx * 450);
               })(kx);
             }
             /* deuxième front d'ondes : l'écho de la déflagration */
             setTimeout(function () { creerOnde(c2, 0xE7B84B, 95, 2000, 0.18); }, 3800);
             setTimeout(function () { creerOnde(c2, 0xF3C9D0, 105, 2200, 0.14); }, 4300);
-            /* et DEUX pluies d'or qui retombent sur la scène */
+            /* et TROIS pluies d'or qui retombent sur la scène, de plus en plus douces */
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 24, 0)), 0xFFE9C4, 240, 4, 6200, 'pluie'); }, 2100);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 26, 0)), 0xFFD98A, 200, 4, 6000, 'pluie'); }, 6400);
+            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 25, 0)), 0xF3C9D0, 150, 3, 5600, 'pluie'); }, 9800);
           })(centre.clone());
           coeur.scale.setScalar(0.5);
           ronde.forEach(function (a) { a.visible = true; a.position.copy(centre); });
@@ -997,6 +1009,8 @@
               var u = rayons.godRaysMaterial.uniforms;
               gsap.fromTo(u.weight, { value: 0.85 }, { value: 0.30, duration: 4.5, ease: 'power2.out' });
               gsap.fromTo(u.exposure, { value: 0.95 }, { value: 0.55, duration: 4.5, ease: 'power2.out' });
+              /* puis la lumière divine RESPIRE pendant toute la ronde */
+              gsap.to(u.weight, { value: 0.52, duration: 2.2, delay: 4.6, yoyo: true, repeat: 4, ease: 'sine.inOut' });
             }
             if (typeof gsap !== 'undefined') {
               gsap.fromTo(fovPunch, { v: 17 }, { v: 0, duration: 1.3, ease: 'expo.out' });
@@ -1009,7 +1023,7 @@
         if (bloom) bloom.strength = Math.max(1.0, 2.8 - po * 1.6);
         /* LA RONDE COSMIQUE : orbite lancée, prise de recul, puis plongée
            finale À TRAVERS la pluie d'or */
-        var angO = Math.PI * 2.1 * (easeTraj ? easeTraj(Math.min(1, po * 1.15)) : po);
+        var angO = Math.PI * 2.4 * (easeTraj ? easeTraj(Math.min(1, po * 1.15)) : po);
         var rayO = po < 0.5 ? 42 + po * 16 : 50 - (po - 0.5) * 46;
         camPosCible.set(
           centre.x + Math.sin(angO) * rayO,
@@ -1079,9 +1093,10 @@
     camera.fov += (fovCible + fovPunch.v - camera.fov) * 0.12;
     camera.updateProjectionMatrix();
 
-    /* comètes filantes — et BARRAGE de comètes après la déflagration finale */
-    if (!warp.actif && t > prochaineComete && (!finale.actif || finale.explose)) {
-      prochaineComete = t + (finale.actif ? 0.45 : 3 + Math.random() * 4.5);
+    /* comètes filantes — escorte pendant le Grand Tour, BARRAGE après la
+       déflagration finale, respiration douce le reste du temps */
+    if (t > prochaineComete && (!finale.actif || finale.explose)) {
+      prochaineComete = t + (finale.actif ? 0.45 : warp.actif ? 0.7 : 3 + Math.random() * 4.5);
       lancerComete();
     }
     majCometes(dt);

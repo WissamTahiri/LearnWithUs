@@ -677,6 +677,12 @@
         });
         pluck(N.D2, tx + 6.4, 2.4, 0.12, 'sine', busFx);
         pluck(N.D3, tx + 6.4, 2.2, 0.06, 'triangle', busMusic);
+        /* 6) les DERNIÈRES BRAISES : scintillement aigu + trois étoiles
+           qui s'éteignent une à une pendant la plongée dans la pluie d'or */
+        noiseBurst(tx + 8.6, 1.4, 5500, 0.045);
+        [N.D6, N.A5, N.D5].forEach(function (fq, i5) {
+          pluck(fq, tx + 8.8 + i5 * 0.5, 1.8, 0.05, 'sine', busMusic, (i5 - 1) * 0.5);
+        });
       } catch (e) {}
     },
 

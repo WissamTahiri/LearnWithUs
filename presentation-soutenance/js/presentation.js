@@ -12,7 +12,7 @@
   var slides = [], idx = 0, chapitreCourant = -1, demarre = false;
   var ACTES = ['Acte I · Notre projet', 'Acte II · Le produit', 'Acte III · La démo',
                'Acte IV · La confiance', 'Acte V · La méthode', 'Acte VI · Conclusion'];
-  var DUREE_WARP = 10500;   /* le Grand Tour : survol des six mondes avant le portail */
+  var DUREE_WARP = 15000;   /* le Grand Tour : survol des six mondes avant le portail */
   var posDansActe = [];   /* rang de chaque slide au sein de son acte */
   var debutActe = [];     /* index de la première slide de chaque acte (touches 1-6) */
   var reduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -113,7 +113,7 @@
           document.body.classList.remove('warp');
         }
         if (window.AudioFX) AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
-        setTimeout(function () { document.body.classList.remove('finale'); }, 15000);
+        setTimeout(function () { document.body.classList.remove('finale'); }, 17000);
         return;
       }
 

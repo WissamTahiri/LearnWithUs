@@ -970,7 +970,7 @@ body.traversee .slide.actif { animation-delay: 1.6s; }
   background: radial-gradient(ellipse at 50% 50%,
     rgba(255, 248, 238, 0.75), rgba(255, 235, 205, 0.22) 42%, transparent 72%);
 }
-body.warp:not(.finale) #lueur-warp { animation: lueur-vol 10.5s ease-in-out forwards; }
+body.warp:not(.finale) #lueur-warp { animation: lueur-vol 15s ease-in-out forwards; }
 /* une pulsation lumineuse à CHAQUE monde survolé, éblouissement au sprint final */
 @keyframes lueur-vol {
   0%  { opacity: 0; }
