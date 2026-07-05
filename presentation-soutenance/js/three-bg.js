@@ -27,7 +27,7 @@
   var FOV_BASE = 60;
 
   var warp = { actif: false, depart: 0, duree: 0, de: null, vers: null, fin: null, j1: false, j2: false, courbe: null, lastSpark: 0 };
-  var trajet = { actif: false, depart: 0, duree: 0, courbe: null, roll: 0, fovAmp: 0, gerbeFaite: false, hyper: false, chap: 0 };
+  var trajet = { actif: false, depart: 0, duree: 0, courbe: null, roll: 0, fovAmp: 0, gerbeFaite: false, hyper: false, chap: 0, lastSpark: 0 };
   var kick = { x: 0, z: 0 };
   var finale = { actif: false, depart: 0, duree: 15000, explose: false, cb: null, sp1: false, sp2: false, sp3: false };
 
@@ -762,7 +762,7 @@
       var de = camPos.clone();
       var ctrl = de.clone().lerp(vers, 0.5);
       var st = ((style % 6) + 6) % 6;
-      var amp = interActe ? 2.6 : 1;          /* la traversée amplifie tout */
+      var amp = interActe ? 4.2 : 1.35;       /* la traversée amplifie TOUT */
       var roll = dir * 0.12, fovAmp = 10;
       if (st === 0) { ctrl.x += dir * 30 * amp; fovAmp = 12; }
       if (st === 1) { ctrl.y += 24 * amp; roll = dir * 0.2; fovAmp = 16; }
@@ -773,12 +773,17 @@
         ctrl.addScaledVector(lat, dir * 28 * amp); ctrl.y += 6 * amp; roll = dir * 0.3; fovAmp = 9;
       }
       if (st === 5) { ctrl.y += 32 * amp; ctrl.z -= 12 * amp; roll = -dir * 0.34; fovAmp = 18; }
-      if (interActe) { fovAmp = Math.max(fovAmp, 16); roll *= 1.3; }
+      if (interActe) { fovAmp = Math.max(fovAmp, 22); roll *= 1.6; }
 
       trajet.actif = true;
       trajet.depart = performance.now();
-      trajet.duree = interActe ? 2200 : 1050;
-      trajet.courbe = new THREE.QuadraticBezierCurve3(de, ctrl, vers);
+      trajet.duree = interActe ? 5000 : 2500;
+      /* GRANDE TRAVERSÉE : la caméra passe PAR le point de détour (ample
+         montagne russe), simple arc élégant en intra-acte */
+      trajet.courbe = interActe
+        ? new THREE.CatmullRomCurve3([de, ctrl, vers], false, 'catmullrom', 0.35)
+        : new THREE.QuadraticBezierCurve3(de, ctrl, vers);
+      trajet.lastSpark = 0;
       trajet.roll = roll;
       trajet.fovAmp = fovAmp;
       trajet.gerbeFaite = false;
@@ -1055,6 +1060,14 @@
       /* micro-saut spatial systématique : streaks discrets en intra-acte,
          pleine puissance en traversée */
       majTunnel(dt, trajet.hyper ? vit * 0.8 : vit * 0.28);
+      /* pendant la GRANDE traversée : hélice d'étincelles traversées en vol */
+      if (trajet.hyper && pt2 > 0.08 && pt2 < 0.85 && performance.now() - trajet.lastSpark > 300) {
+        trajet.lastSpark = performance.now();
+        var devT = trajet.courbe.getPoint(Math.min(1, kt + 0.08));
+        var angT = performance.now() * 0.004;
+        gerbe(devT.clone().add(new THREE.Vector3(Math.cos(angT) * 14, Math.sin(angT) * 10, 0)),
+              Math.random() < 0.5 ? 0xFFD98A : accentCible.getHex(), 26, 9, 700);
+      }
       if (pt2 > 0.88 && !trajet.gerbeFaite) {
         trajet.gerbeFaite = true;
         gerbe(camRegardCible.clone().add(new THREE.Vector3(14, -9, 3)), accentCible.getHex(), 60, 8, 900);
@@ -1096,7 +1109,7 @@
     /* comètes filantes — escorte pendant le Grand Tour, BARRAGE après la
        déflagration finale, respiration douce le reste du temps */
     if (t > prochaineComete && (!finale.actif || finale.explose)) {
-      prochaineComete = t + (finale.actif ? 0.45 : warp.actif ? 0.7 : 3 + Math.random() * 4.5);
+      prochaineComete = t + (finale.actif ? 0.45 : (warp.actif || trajet.hyper) ? 0.7 : 3 + Math.random() * 4.5);
       lancerComete();
     }
     majCometes(dt);

@@ -541,14 +541,14 @@ body.warp #titre-mini, body.warp .controles, body.warp .nav-fleche { opacity: 0;
    Round 1 — Loop Engineering (mise en scène)
    ============================================================= */
 
-/* Le contenu attend que le décor se calme : pendant un voyage caméra,
-   la cascade d'apparition est décalée de +0,45 s */
-body.voyage .slide.actif [data-anim="1"] { animation-delay: 0.55s; }
-body.voyage .slide.actif [data-anim="2"] { animation-delay: 0.65s; }
-body.voyage .slide.actif [data-anim="3"] { animation-delay: 0.75s; }
-body.voyage .slide.actif [data-anim="4"] { animation-delay: 0.85s; }
-body.voyage .slide.actif [data-anim="5"] { animation-delay: 0.95s; }
-body.voyage .slide.actif [data-anim="6"] { animation-delay: 1.05s; }
+/* Le contenu attend que le décor se calme : le vol intra-acte dure 2,5 s,
+   le texte entre en approche (~1,15 s) et se pose avec la caméra */
+body.voyage .slide.actif [data-anim="1"] { animation-delay: 1.40s; }
+body.voyage .slide.actif [data-anim="2"] { animation-delay: 1.50s; }
+body.voyage .slide.actif [data-anim="3"] { animation-delay: 1.60s; }
+body.voyage .slide.actif [data-anim="4"] { animation-delay: 1.70s; }
+body.voyage .slide.actif [data-anim="5"] { animation-delay: 1.80s; }
+body.voyage .slide.actif [data-anim="6"] { animation-delay: 1.90s; }
 
 /* Les grands titres "atterrissent" comme en keynote : scale + défloutage */
 .slide.actif .slide-titre-xxl {
@@ -875,15 +875,15 @@ h2 .cle::after {
 body.finale .slide[data-titre="Merci"]::before {
   background: radial-gradient(ellipse at 50% 45%, rgba(10, 5, 6, 0.82), rgba(10, 5, 6, 0.25) 80%);
 }
-/* Traversée inter-acte : la slide attend la FIN du vol (2,2 s) — le tunnel
+/* Traversée inter-acte : la slide attend la FIN du vol (5 s) — le tunnel
    joue seul, le texte naît sur un décor stabilisé */
-body.traversee .slide.actif { animation-delay: 1.6s; }
-body.traversee .slide.actif [data-anim="1"] { animation-delay: 1.85s; }
-body.traversee .slide.actif [data-anim="2"] { animation-delay: 1.95s; }
-body.traversee .slide.actif [data-anim="3"] { animation-delay: 2.05s; }
-body.traversee .slide.actif [data-anim="4"] { animation-delay: 2.15s; }
-body.traversee .slide.actif [data-anim="5"] { animation-delay: 2.25s; }
-body.traversee .slide.actif [data-anim="6"] { animation-delay: 2.35s; }
+body.traversee .slide.actif { animation-delay: 4.2s; }
+body.traversee .slide.actif [data-anim="1"] { animation-delay: 4.45s; }
+body.traversee .slide.actif [data-anim="2"] { animation-delay: 4.55s; }
+body.traversee .slide.actif [data-anim="3"] { animation-delay: 4.65s; }
+body.traversee .slide.actif [data-anim="4"] { animation-delay: 4.75s; }
+body.traversee .slide.actif [data-anim="5"] { animation-delay: 4.85s; }
+body.traversee .slide.actif [data-anim="6"] { animation-delay: 4.95s; }
 @media (prefers-reduced-motion: reduce) {
   body.traversee .slide.actif, body.traversee .slide.actif [data-anim] { animation-delay: 0s !important; }
 }
@@ -947,11 +947,11 @@ body[data-cam="5"] .slide.sortante { animation: sortie-chute 0.45s cubic-bezier(
 @keyframes sortie-orbite  { to { opacity: 0; transform: translate(10vw, -3vh) rotateY(-13deg) scale(0.92); filter: blur(8px); } }
 @keyframes sortie-chute   { to { opacity: 0; transform: translateY(-11vh) rotateX(13deg) scale(0.93); filter: blur(8px); } }
 
-/* 450 ms au décor seul avant l'entrée : le voyage respire, PUIS le texte —
+/* 1,15 s au décor seul avant l'entrée : le voyage respire, PUIS le texte —
    et plus aucun ghost du texte entrant pendant que la caméra vole
    (la traversée inter-acte garde son délai long, redéclaré ci-dessous) */
-body.voyage .slide.actif { animation-delay: 0.45s; }
-body.traversee .slide.actif { animation-delay: 1.6s; }
+body.voyage .slide.actif { animation-delay: 1.15s; }
+body.traversee .slide.actif { animation-delay: 4.2s; }
 
 @media (prefers-reduced-motion: reduce) {
   .slide.sortante { animation: none !important; }

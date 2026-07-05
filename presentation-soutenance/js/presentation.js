@@ -81,7 +81,7 @@
           var o = document.getElementById('onde-dom');
           if (!o) return;
           o.classList.remove('actif'); void o.offsetWidth; o.classList.add('actif');
-        }, changeActe ? 2150 : 900);
+        }, changeActe ? 4650 : 2300);
       }
 
       if (derniere) {
@@ -127,10 +127,10 @@
         clearTimeout(afficher._tTrav);
         afficher._tVoyage = setTimeout(function () {
           document.body.classList.remove('voyage');
-        }, 800);
+        }, 2100);
         afficher._tTrav = setTimeout(function () {
           document.body.classList.remove('traversee');
-        }, 2100);
+        }, 4900);
       }
 
       if (window.Scene3D) {
@@ -155,10 +155,11 @@
         if (slides[idx].getAttribute('data-titre') === 'Manifeste') {
           AudioFX.manifeste();      /* trois battements calés sur les lignes */
         } else if (changeActe) {
-          /* la cascade sonore attend que la slide se pose (arrivée de traversée) */
-          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 1350);
+          /* la cascade sonore attend que la slide se pose (arrivée à 5 s) */
+          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 4150);
         } else {
-          AudioFX.cascade(nbAnims(slides[idx]), ch);
+          /* en intra-acte le texte entre à ~1,15 s : la cascade l'accompagne */
+          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 950);
         }
       }
     }
