@@ -112,10 +112,7 @@
         } else {
           document.body.classList.remove('warp');
         }
-        if (window.AudioFX) {
-          AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
-          AudioFX.padNiveau(0.14);   /* la nappe enfle sous la supernova */
-        }
+        if (window.AudioFX) AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
         setTimeout(function () { document.body.classList.remove('finale'); }, 9000);
         return;
       }
@@ -152,9 +149,6 @@
           }, 150);
           AudioFX.sweep(true);      /* souffle long : toute la traversée + signature à l'arrivée */
           AudioFX.arpege(ch);
-          /* la nappe enfle pendant le vol, se rassoit à l'arrivée */
-          AudioFX.padNiveau(0.11);
-          setTimeout(function () { AudioFX.padNiveau(0.05); }, 2100);
         } else {
           AudioFX.transition(styleSon, dir);
         }
@@ -184,10 +178,9 @@
     if (demarre) return;
     demarre = true;
     document.body.classList.remove('accueil');
-    if (window.AudioFX) {
-      AudioFX.unlock();
-      AudioFX.padNiveau(0.05);   /* la salle n'entend plus jamais le silence du projecteur */
-    }
+    if (window.AudioFX) AudioFX.unlock();
+    /* nappe d'ambiance VOLONTAIREMENT muette : le son n'existe
+       que sur les transitions (demande user : zéro bruit de fond) */
 
     elIntro.classList.add('parti');
     setTimeout(function () { elIntro.style.display = 'none'; }, 750);
