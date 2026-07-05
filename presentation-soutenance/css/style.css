@@ -947,13 +947,75 @@ body[data-cam="5"] .slide.sortante { animation: sortie-chute 0.45s cubic-bezier(
 @keyframes sortie-orbite  { to { opacity: 0; transform: translate(10vw, -3vh) rotateY(-13deg) scale(0.92); filter: blur(8px); } }
 @keyframes sortie-chute   { to { opacity: 0; transform: translateY(-11vh) rotateX(13deg) scale(0.93); filter: blur(8px); } }
 
-/* 300 ms au décor seul avant l'entrée : le voyage respire, PUIS le texte
+/* 450 ms au décor seul avant l'entrée : le voyage respire, PUIS le texte —
+   et plus aucun ghost du texte entrant pendant que la caméra vole
    (la traversée inter-acte garde son délai long, redéclaré ci-dessous) */
-body.voyage .slide.actif { animation-delay: 0.3s; }
+body.voyage .slide.actif { animation-delay: 0.45s; }
 body.traversee .slide.actif { animation-delay: 1.6s; }
 
 @media (prefers-reduced-motion: reduce) {
   .slide.sortante { animation: none !important; }
   #flash-nova.actif { animation: none; opacity: 0; }
   body.voyage .slide.actif, body.traversee .slide.actif { animation-delay: 0s; }
+}
+
+/* =============================================================
+   Round 3 — le point manquant (10/10)
+   ============================================================= */
+
+/* Lueur de vitesse : le pic du warp est réellement AVEUGLANT à mi-vol
+   (jamais pendant la charge de la finale : le noir y est voulu) */
+#lueur-warp {
+  position: fixed; inset: 0; z-index: 18; pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at 50% 50%,
+    rgba(255, 248, 238, 0.75), rgba(255, 235, 205, 0.22) 42%, transparent 72%);
+}
+body.warp:not(.finale) #lueur-warp { animation: lueur-vol 3.2s ease-in-out forwards; }
+@keyframes lueur-vol {
+  0% { opacity: 0; } 45% { opacity: 0.72; } 58% { opacity: 1; } 66% { opacity: 0.85; }
+  85% { opacity: 0.18; } 100% { opacity: 0; }
+}
+
+/* Letterbox cinéma : les bandes noires se ferment pendant les vols longs
+   (lancement + traversées inter-actes) et s'ouvrent à l'arrivée */
+#cine-haut, #cine-bas {
+  position: fixed; left: 0; right: 0; height: 7vh; background: #000;
+  z-index: 19; pointer-events: none;
+  transition: transform 0.65s cubic-bezier(0.65, 0, 0.35, 1);
+}
+#cine-haut { top: 0; transform: translateY(-101%); }
+#cine-bas  { bottom: 0; transform: translateY(101%); }
+body.warp #cine-haut, body.traversee #cine-haut { transform: none; }
+body.warp #cine-bas,  body.traversee #cine-bas  { transform: none; }
+
+/* Les grands titres naissent lettre à lettre (cascade keynote).
+   Le dégradé est porté par CHAQUE lettre : le clip du parent ne
+   traverse pas des spans transformés (couches de rendu séparées). */
+.slide-titre-xxl .ltr {
+  display: inline-block;
+  background: linear-gradient(120deg, #FFFFFF 0%, #F3C9D0 45%, var(--bordeaux-clair) 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.slide.actif .slide-titre-xxl {
+  animation: none;   /* plus de scale parent : les lettres jouent */
+}
+.slide.actif .slide-titre-xxl .ltr {
+  animation: ltr-nait 0.7s cubic-bezier(0.16, 1, 0.3, 1) both,
+             titre-brille 7s linear infinite;
+  animation-delay: calc(0.18s + var(--i) * 0.045s), 1.2s;
+}
+@keyframes ltr-nait {
+  from { opacity: 0; transform: translateY(0.35em) rotateX(50deg) scale(1.18); filter: blur(12px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* Le sous-titre du Merci ne laisse jamais « 2MCSI » orphelin :
+   c'est la dernière image que le jury verra */
+.slide[data-titre="Merci"] .sous-titre { text-wrap: balance; }
+
+@media (prefers-reduced-motion: reduce) {
+  body.warp:not(.finale) #lueur-warp { animation: none; opacity: 0; }
+  #cine-haut, #cine-bas { transition: none; transform: none; display: none; }
+  .slide.actif .slide-titre-xxl .ltr { animation: none; }
 }

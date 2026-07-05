@@ -90,6 +90,7 @@
           Scene3D.finale(function () {
             /* le texte NAÎT du flash : impact frame blanche + cascade d'entrée */
             nova();
+            if (window.AudioFX && AudioFX.shimmer) AudioFX.shimmer();
             slides[idx].classList.remove('actif');
             void slides[idx].offsetWidth;
             slides[idx].classList.add('actif');
@@ -265,6 +266,19 @@
     elNova = document.getElementById('flash-nova');
 
     elCompteurTot.textContent = slides.length;
+
+    /* Titres-spectacle : chaque lettre des grands titres naît séparément */
+    document.querySelectorAll('.slide-titre-xxl').forEach(function (h) {
+      var txt = h.textContent;
+      h.textContent = '';
+      txt.split('').forEach(function (c, i) {
+        var s = document.createElement('span');
+        s.className = 'ltr';
+        s.style.setProperty('--i', i);
+        s.textContent = c === ' ' ? ' ' : c;
+        h.appendChild(s);
+      });
+    });
 
     if (window.Scene3D) Scene3D.init(document.getElementById('fond-3d'));
     if (window.AudioFX) AudioFX.onMute(majMute);

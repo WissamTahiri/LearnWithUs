@@ -211,6 +211,27 @@
       pluck(N.D2, ctx.currentTime, 0.9, 0.22, 'sine', busFx);
     },
 
+    /* Shimmer cristallin : la signature sonore de la naissance
+       lettre à lettre du titre final (souffle très aigu qui s'éteint) */
+    shimmer: function () {
+      if (!started) return;
+      var t = ctx.currentTime;
+      try {
+        var len = Math.floor(ctx.sampleRate * 1.2);
+        var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
+        var src = ctx.createBufferSource(); src.buffer = buf;
+        var f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6000;
+        var g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.09, t + 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+        src.connect(f); f.connect(g); g.connect(busFx);
+        src.start(t); src.stop(t + 1.25);
+      } catch (e) {}
+    },
+
     // Arpège à l'entrée d'un chapitre (motif de 4 notes, teinte selon index)
     arpege: function (idx) {
       if (!started) return;
