@@ -1014,6 +1014,41 @@ body.warp #cine-bas,  body.traversee #cine-bas  { transform: none; }
    c'est la dernière image que le jury verra */
 .slide[data-titre="Merci"] .sous-titre { text-wrap: balance; }
 
+/* =============================================================
+   Round 4 — toutes les notes à 10
+   ============================================================= */
+
+/* Le logo de l'accueil naît lettre à lettre dès le chargement :
+   le show commence avant le clic (dégradé porté par chaque lettre) */
+#intro .logo-i { animation: respire-logo 6s ease-in-out infinite; }
+#intro .logo-i .ltr {
+  display: inline-block;
+  background: linear-gradient(120deg, #FFFFFF, var(--bordeaux-clair));
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: ltr-nait 0.7s cubic-bezier(0.16, 1, 0.3, 1) both,
+             titre-brille 9s linear infinite;
+  animation-delay: calc(0.15s + var(--i) * 0.06s), 1.4s;
+}
+
+/* Onde d'atterrissage : un cercle d'or discret souligne chaque pose */
+#onde-dom {
+  position: fixed; left: 50%; top: 50%; width: 12vmin; height: 12vmin;
+  margin: -6vmin 0 0 -6vmin; border-radius: 50%;
+  border: 2px solid rgba(231, 184, 75, 0.55);
+  opacity: 0; pointer-events: none; z-index: 14;
+}
+#onde-dom.actif { animation: onde-pose 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes onde-pose {
+  0%   { opacity: 0.75; transform: scale(0.4); }
+  100% { opacity: 0; transform: scale(7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #intro .logo-i .ltr { animation: none; }
+  #onde-dom.actif { animation: none; opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body.warp:not(.finale) #lueur-warp { animation: none; opacity: 0; }
   #cine-haut, #cine-bas { transition: none; transform: none; display: none; }

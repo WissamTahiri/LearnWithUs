@@ -278,7 +278,7 @@
       var marque0 = texteVolume('LEARNWITHUS', 3.2, 0xFFE9C4, 0xC9862F);
       if (marque0) {
         haloLumineux(marque0, 0xE7B84B, 30, 8, 0.32);
-        marque0.position.set(z0.x, z0.y - 13.5, z0.z + 2);   /* entière dans le cadre en acte I */
+        marque0.position.set(z0.x, z0.y - 12.5, z0.z + 2);   /* entière dans le cadre en acte I */
         marquePortail = marque0;
         monde.add(flotte(heros(0, marque0), 0.7, 0.5));
       }

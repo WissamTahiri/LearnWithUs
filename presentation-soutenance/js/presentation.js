@@ -74,6 +74,16 @@
       /* secousse caméra : le décor encaisse le changement de slide */
       if (!reduit && window.Scene3D && Scene3D.kick) Scene3D.kick(dir);
 
+      /* onde d'atterrissage : un cercle d'or souligne la pose de la slide */
+      if (!reduit) {
+        clearTimeout(afficher._tOnde);
+        afficher._tOnde = setTimeout(function () {
+          var o = document.getElementById('onde-dom');
+          if (!o) return;
+          o.classList.remove('actif'); void o.offsetWidth; o.classList.add('actif');
+        }, changeActe ? 2150 : 900);
+      }
+
       if (derniere) {
         /* [7] réduction de mouvement : la conclusion sans l'acrobatie */
         if (reduit) {
@@ -185,6 +195,7 @@
 
     var arrivee = function () {
       nova();                     /* impact frame : l'arrivée AVEUGLE, elle ne brunit pas */
+      if (window.AudioFX && AudioFX.shimmer) AudioFX.shimmer();   /* les lettres naissent, l'air scintille */
       elFlash.classList.add('actif');
       document.body.classList.remove('warp');
       idx = -1; chapitreCourant = -1;
@@ -267,8 +278,9 @@
 
     elCompteurTot.textContent = slides.length;
 
-    /* Titres-spectacle : chaque lettre des grands titres naît séparément */
-    document.querySelectorAll('.slide-titre-xxl').forEach(function (h) {
+    /* Titres-spectacle : chaque lettre des grands titres naît séparément
+       (y compris le logo de l'écran d'accueil : le show commence AVANT le clic) */
+    document.querySelectorAll('.slide-titre-xxl, #intro .logo-i').forEach(function (h) {
       var txt = h.textContent;
       h.textContent = '';
       txt.split('').forEach(function (c, i) {

@@ -354,6 +354,15 @@
           gQ.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
           srcQ.connect(fQ); fQ.connect(gQ); gQ.connect(busFx);
           srcQ.start(t + 0.4); srcQ.stop(t + 2.15);
+          /* poids cinéma : drone sub (ré grave) sous toute la traversée,
+             coupé à l'arrivée — la salle SENT le vol */
+          var oD = ctx.createOscillator(); oD.type = 'sine'; oD.frequency.value = 36.7;
+          var gD = ctx.createGain();
+          gD.gain.setValueAtTime(0.0001, t);
+          gD.gain.exponentialRampToValueAtTime(0.07, t + 0.5);
+          gD.gain.setValueAtTime(0.07, t + 1.7);
+          gD.gain.exponentialRampToValueAtTime(0.0001, t + 2.3);
+          oD.connect(gD); gD.connect(busFx); oD.start(t); oD.stop(t + 2.4);
           /* arrivée : signature ré→la + impact doux, pile sur l'onde et le pulse */
           pluck(N.D5, t + 2.2, 0.35, 0.09, 'sine', busMusic);
           pluck(N.A4, t + 2.34, 0.5, 0.09, 'sine', busMusic);
@@ -606,7 +615,11 @@
           var gE = ctx.createGain(); gE.gain.setValueAtTime(0.0001, tx);
           gE.gain.exponentialRampToValueAtTime(0.12 - iE * 0.012, tx + 0.05 + iE * 0.03);
           gE.gain.exponentialRampToValueAtTime(0.0001, tx + 1.8);
-          oE.connect(gE); gE.connect(busMusic);
+          oE.connect(gE);
+          /* l'accord s'ouvre EN LARGEUR : chaque note a sa place dans la salle */
+          var pE = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+          if (pE) { pE.pan.value = (iE - 2) * 0.4; gE.connect(pE); pE.connect(busMusic); }
+          else { gE.connect(busMusic); }
           oE.start(tx); oE.stop(tx + 1.9);
         });
 
