@@ -12,7 +12,7 @@
   var slides = [], idx = 0, chapitreCourant = -1, demarre = false;
   var ACTES = ['Acte I · Notre projet', 'Acte II · Le produit', 'Acte III · La démo',
                'Acte IV · La confiance', 'Acte V · La méthode', 'Acte VI · Conclusion'];
-  var DUREE_WARP = 15000;   /* le Grand Tour : survol des six mondes avant le portail */
+  var DUREE_WARP = 10000;   /* le Grand Tour : survol des six mondes avant le portail */
   var posDansActe = [];   /* rang de chaque slide au sein de son acte */
   var debutActe = [];     /* index de la première slide de chaque acte (touches 1-6) */
   var reduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,7 +81,7 @@
           var o = document.getElementById('onde-dom');
           if (!o) return;
           o.classList.remove('actif'); void o.offsetWidth; o.classList.add('actif');
-        }, changeActe ? 4650 : 2300);
+        }, changeActe ? 2150 : 900);
       }
 
       if (derniere) {
@@ -127,10 +127,10 @@
         clearTimeout(afficher._tTrav);
         afficher._tVoyage = setTimeout(function () {
           document.body.classList.remove('voyage');
-        }, 2100);
+        }, 800);
         afficher._tTrav = setTimeout(function () {
           document.body.classList.remove('traversee');
-        }, 4900);
+        }, 2100);
       }
 
       if (window.Scene3D) {
@@ -155,11 +155,10 @@
         if (slides[idx].getAttribute('data-titre') === 'Manifeste') {
           AudioFX.manifeste();      /* trois battements calés sur les lignes */
         } else if (changeActe) {
-          /* la cascade sonore attend que la slide se pose (arrivée à 5 s) */
-          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 4150);
+          /* la cascade sonore attend que la slide se pose (arrivée de traversée) */
+          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 1350);
         } else {
-          /* en intra-acte le texte entre à ~1,15 s : la cascade l'accompagne */
-          setTimeout(function () { AudioFX.cascade(nbAnims(slides[idx]), ch); }, 950);
+          AudioFX.cascade(nbAnims(slides[idx]), ch);
         }
       }
     }

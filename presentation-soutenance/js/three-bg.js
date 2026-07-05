@@ -762,7 +762,7 @@
       var de = camPos.clone();
       var ctrl = de.clone().lerp(vers, 0.5);
       var st = ((style % 6) + 6) % 6;
-      var amp = interActe ? 4.2 : 1.35;       /* la traversée amplifie TOUT */
+      var amp = interActe ? 2.6 : 1;          /* la traversée amplifie tout */
       var roll = dir * 0.12, fovAmp = 10;
       if (st === 0) { ctrl.x += dir * 30 * amp; fovAmp = 12; }
       if (st === 1) { ctrl.y += 24 * amp; roll = dir * 0.2; fovAmp = 16; }
@@ -773,16 +773,12 @@
         ctrl.addScaledVector(lat, dir * 28 * amp); ctrl.y += 6 * amp; roll = dir * 0.3; fovAmp = 9;
       }
       if (st === 5) { ctrl.y += 32 * amp; ctrl.z -= 12 * amp; roll = -dir * 0.34; fovAmp = 18; }
-      if (interActe) { fovAmp = Math.max(fovAmp, 22); roll *= 1.6; }
+      if (interActe) { fovAmp = Math.max(fovAmp, 16); roll *= 1.3; }
 
       trajet.actif = true;
       trajet.depart = performance.now();
-      trajet.duree = interActe ? 5000 : 2500;
-      /* GRANDE TRAVERSÉE : la caméra passe PAR le point de détour (ample
-         montagne russe), simple arc élégant en intra-acte */
-      trajet.courbe = interActe
-        ? new THREE.CatmullRomCurve3([de, ctrl, vers], false, 'catmullrom', 0.35)
-        : new THREE.QuadraticBezierCurve3(de, ctrl, vers);
+      trajet.duree = interActe ? 2200 : 1050;
+      trajet.courbe = new THREE.QuadraticBezierCurve3(de, ctrl, vers);
       trajet.lastSpark = 0;
       trajet.roll = roll;
       trajet.fovAmp = fovAmp;
@@ -807,7 +803,7 @@
       camRegardCible.copy(regards[0]);
       warp.actif = true;
       warp.depart = performance.now();
-      warp.duree = dureeMs || 15000;
+      warp.duree = dureeMs || 10000;
       warp.mi = false;   /* le grand accord du milieu du tour */
       var pts = [camPos.clone()];
       for (var i = 5; i >= 1; i--) {

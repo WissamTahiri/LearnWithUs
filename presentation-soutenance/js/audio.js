@@ -339,39 +339,40 @@
       var t = ctx.currentTime, dur = 0.75;
       if (long) {
         try {
-          /* queue de souffle : le vol continue après le balayage (4,5 s) */
-          var lenQ = Math.floor(ctx.sampleRate * 4.5);
+          /* queue de souffle : le vol continue après le balayage (2 s) */
+          var lenQ = Math.floor(ctx.sampleRate * 2.0);
           var bufQ = ctx.createBuffer(1, lenQ, ctx.sampleRate);
           var dQ = bufQ.getChannelData(0);
           for (var iq = 0; iq < lenQ; iq++) dQ[iq] = Math.random() * 2 - 1;
           var srcQ = ctx.createBufferSource(); srcQ.buffer = bufQ;
           var fQ = ctx.createBiquadFilter(); fQ.type = 'lowpass';
           fQ.frequency.setValueAtTime(1400, t + 0.5);
-          fQ.frequency.exponentialRampToValueAtTime(240, t + 4.7);
+          fQ.frequency.exponentialRampToValueAtTime(240, t + 2.1);
           var gQ = ctx.createGain();
           gQ.gain.setValueAtTime(0.0001, t + 0.4);
-          gQ.gain.exponentialRampToValueAtTime(0.10, t + 0.9);
-          gQ.gain.exponentialRampToValueAtTime(0.0001, t + 4.75);
+          gQ.gain.exponentialRampToValueAtTime(0.10, t + 0.8);
+          gQ.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
           srcQ.connect(fQ); fQ.connect(gQ); gQ.connect(busFx);
-          srcQ.start(t + 0.4); srcQ.stop(t + 4.8);
-          /* poids cinéma : drone sub (ré grave) sous TOUTE la traversée de 5 s */
+          srcQ.start(t + 0.4); srcQ.stop(t + 2.15);
+          /* poids cinéma : drone sub (ré grave) sous toute la traversée,
+             coupé à l'arrivée — la salle SENT le vol */
           var oD = ctx.createOscillator(); oD.type = 'sine'; oD.frequency.value = 36.7;
           var gD = ctx.createGain();
           gD.gain.setValueAtTime(0.0001, t);
-          gD.gain.exponentialRampToValueAtTime(0.07, t + 0.6);
-          gD.gain.setValueAtTime(0.07, t + 4.3);
-          gD.gain.exponentialRampToValueAtTime(0.0001, t + 5.0);
-          oD.connect(gD); gD.connect(busFx); oD.start(t); oD.stop(t + 5.1);
-          /* arrivée à 5 s : signature ré→la + impact doux, pile sur l'onde */
-          pluck(N.D5, t + 4.75, 0.35, 0.09, 'sine', busMusic);
-          pluck(N.A4, t + 4.89, 0.5, 0.09, 'sine', busMusic);
+          gD.gain.exponentialRampToValueAtTime(0.07, t + 0.5);
+          gD.gain.setValueAtTime(0.07, t + 1.7);
+          gD.gain.exponentialRampToValueAtTime(0.0001, t + 2.3);
+          oD.connect(gD); gD.connect(busFx); oD.start(t); oD.stop(t + 2.4);
+          /* arrivée : signature ré→la + impact doux, pile sur l'onde et le pulse */
+          pluck(N.D5, t + 2.2, 0.35, 0.09, 'sine', busMusic);
+          pluck(N.A4, t + 2.34, 0.5, 0.09, 'sine', busMusic);
           var oi = ctx.createOscillator(); oi.type = 'sine';
-          var gi = ctx.createGain(); gi.gain.setValueAtTime(0.0001, t + 4.75);
-          oi.frequency.setValueAtTime(95, t + 4.75);
-          oi.frequency.exponentialRampToValueAtTime(48, t + 5.15);
-          gi.gain.exponentialRampToValueAtTime(0.16, t + 4.79);
-          gi.gain.exponentialRampToValueAtTime(0.0001, t + 5.25);
-          oi.connect(gi); gi.connect(busFx); oi.start(t + 4.75); oi.stop(t + 5.3);
+          var gi = ctx.createGain(); gi.gain.setValueAtTime(0.0001, t + 2.2);
+          oi.frequency.setValueAtTime(95, t + 2.2);
+          oi.frequency.exponentialRampToValueAtTime(48, t + 2.6);
+          gi.gain.exponentialRampToValueAtTime(0.16, t + 2.24);
+          gi.gain.exponentialRampToValueAtTime(0.0001, t + 2.7);
+          oi.connect(gi); gi.connect(busFx); oi.start(t + 2.2); oi.stop(t + 2.75);
         } catch (eL) {}
       }
       try {
@@ -426,19 +427,18 @@
          DEUX MÊMES notes (ré → la). L'oreille du jury reconnaît
          inconsciemment « le son de cette soutenance ». */
       function signature(td) {
-        /* le vol dure 2,5 s : la signature ré→la se résout EN approche,
-           le thump d'atterrissage tombe pile à la pose (2,2 s) */
-        pluck(N.D5, t + 1.85, 0.30, 0.05, 'sine', busMusic);
-        pluck(N.A4, t + 1.98, 0.45, 0.05, 'sine', busMusic);
+        pluck(N.D5, t + td, 0.30, 0.05, 'sine', busMusic);
+        pluck(N.A4, t + td + 0.13, 0.45, 0.05, 'sine', busMusic);
+        /* thump d'atterrissage commun : chaque slide "se pose" physiquement */
         try {
           var oT = ctx.createOscillator(); oT.type = 'sine';
-          var gT = ctx.createGain(); gT.gain.setValueAtTime(0.0001, t + 2.2);
-          oT.frequency.setValueAtTime(85, t + 2.2);
-          oT.frequency.exponentialRampToValueAtTime(45, t + 2.54);
-          gT.gain.exponentialRampToValueAtTime(0.09, t + 2.23);
-          gT.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+          var gT = ctx.createGain(); gT.gain.setValueAtTime(0.0001, t + td + 0.18);
+          oT.frequency.setValueAtTime(85, t + td + 0.18);
+          oT.frequency.exponentialRampToValueAtTime(45, t + td + 0.52);
+          gT.gain.exponentialRampToValueAtTime(0.09, t + td + 0.21);
+          gT.gain.exponentialRampToValueAtTime(0.0001, t + td + 0.58);
           oT.connect(gT); gT.connect(busFx);
-          oT.start(t + 2.2); oT.stop(t + 2.64);
+          oT.start(t + td + 0.18); oT.stop(t + td + 0.62);
         } catch (eT) {}
       }
       try {
