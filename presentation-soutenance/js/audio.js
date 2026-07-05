@@ -96,8 +96,8 @@
     });
   }
 
-  // Enveloppe d'une note pluck
-  function pluck(freq, t, dur, gain, type, bus) {
+  // Enveloppe d'une note pluck (pan optionnel : la note a une place dans l'espace)
+  function pluck(freq, t, dur, gain, type, bus, pan) {
     if (!isFinite(freq) || !isFinite(t) || !isFinite(dur) || !isFinite(gain) || freq <= 0 || dur <= 0) return;
     try {
       var o = ctx.createOscillator();
@@ -107,7 +107,13 @@
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(Math.max(gain, 0.0002), t + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); g.connect(bus || busMusic);
+      o.connect(g);
+      if (pan && ctx.createStereoPanner) {
+        var pn = ctx.createStereoPanner(); pn.pan.value = pan;
+        g.connect(pn); pn.connect(bus || busMusic);
+      } else {
+        g.connect(bus || busMusic);
+      }
       o.start(t); o.stop(t + dur + 0.05);
     } catch (e) {}
   }
@@ -199,6 +205,12 @@
       pluck(N.A4, ctx.currentTime, 0.09, 0.10, 'sine', busFx);
     },
 
+    /* Battement sub du warp d'ouverture — calé sur les ondes de choc */
+    boum: function () {
+      if (!started) return;
+      pluck(N.D2, ctx.currentTime, 0.9, 0.22, 'sine', busFx);
+    },
+
     // Arpège à l'entrée d'un chapitre (motif de 4 notes, teinte selon index)
     arpege: function (idx) {
       if (!started) return;
@@ -206,8 +218,8 @@
       var base = idx % 3;
       var motif = [GAMME[base], GAMME[base + 2], GAMME[base + 4], GAMME[base + 6]];
       motif.forEach(function (f, i) {
-        pluck(f, t + i * 0.10, 0.5, 0.14, i % 2 ? 'triangle' : 'sine', busMusic);
-        pluck(f * 2, t + i * 0.10 + 0.02, 0.3, 0.05, 'sine', busMusic);
+        pluck(f, t + i * 0.10, 0.5, 0.14, i % 2 ? 'triangle' : 'sine', busMusic, (i - 1.5) * 0.25);
+        pluck(f * 2, t + i * 0.10 + 0.02, 0.3, 0.05, 'sine', busMusic, (1.5 - i) * 0.25);
       });
     },
 
@@ -387,6 +399,17 @@
       function signature(td) {
         pluck(N.D5, t + td, 0.30, 0.05, 'sine', busMusic);
         pluck(N.A4, t + td + 0.13, 0.45, 0.05, 'sine', busMusic);
+        /* thump d'atterrissage commun : chaque slide "se pose" physiquement */
+        try {
+          var oT = ctx.createOscillator(); oT.type = 'sine';
+          var gT = ctx.createGain(); gT.gain.setValueAtTime(0.0001, t + td + 0.18);
+          oT.frequency.setValueAtTime(85, t + td + 0.18);
+          oT.frequency.exponentialRampToValueAtTime(45, t + td + 0.52);
+          gT.gain.exponentialRampToValueAtTime(0.09, t + td + 0.21);
+          gT.gain.exponentialRampToValueAtTime(0.0001, t + td + 0.58);
+          oT.connect(gT); gT.connect(busFx);
+          oT.start(t + td + 0.18); oT.stop(t + td + 0.62);
+        } catch (eT) {}
       }
       try {
         if (st === 4) {
@@ -522,8 +545,10 @@
       var base = (chap || 0) % 4;
       for (var i = 0; i < Math.min(nb, 6); i++) {
         var fq = GAMME[(base + i * 2) % GAMME.length];
-        pluck(fq * 2, t + 0.10 + i * 0.10, 0.22, 0.045, 'sine', busMusic);
+        pluck(fq * 2, t + 0.10 + i * 0.10, 0.22, 0.045, 'sine', busMusic, i % 2 ? 0.35 : -0.35);
       }
+      /* le trait or se dessine sous le mot-clé à 0,85 s : l'oreille suit l'œil */
+      pluck(N.D6, t + 0.85, 0.30, 0.032, 'sine', busMusic);
     },
 
     /* APOTHÉOSE — la supernova finale. Calée sur l'animation 3D :
@@ -547,6 +572,10 @@
         noiseBurst(t, 0.95, 800, 0.14);
 
         var tx = t + 0.95;   /* instant de la déflagration */
+
+        /* 180 ms de noir sonore juste avant le hit : l'impact perçu double */
+        master.gain.setTargetAtTime(0.001, tx - 0.18, 0.02);
+        master.gain.setTargetAtTime(muted ? 0.0001 : 0.9, tx, 0.012);
 
         /* 2a) l'ÉCLOSION — accord lumineux qui s'ouvre pile sur
            l'explosion : fluide, majestueux, sans voix. */

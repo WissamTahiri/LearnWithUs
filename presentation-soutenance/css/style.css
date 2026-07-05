@@ -875,14 +875,15 @@ h2 .cle::after {
 body.finale .slide[data-titre="Merci"]::before {
   background: radial-gradient(ellipse at 50% 45%, rgba(10, 5, 6, 0.82), rgba(10, 5, 6, 0.25) 80%);
 }
-/* Traversée inter-acte : la slide attend l'arrivée (le tunnel joue seul) */
-body.traversee .slide.actif { animation-delay: 1.1s; }
-body.traversee .slide.actif [data-anim="1"] { animation-delay: 1.35s; }
-body.traversee .slide.actif [data-anim="2"] { animation-delay: 1.45s; }
-body.traversee .slide.actif [data-anim="3"] { animation-delay: 1.55s; }
-body.traversee .slide.actif [data-anim="4"] { animation-delay: 1.65s; }
-body.traversee .slide.actif [data-anim="5"] { animation-delay: 1.75s; }
-body.traversee .slide.actif [data-anim="6"] { animation-delay: 1.85s; }
+/* Traversée inter-acte : la slide attend la FIN du vol (2,2 s) — le tunnel
+   joue seul, le texte naît sur un décor stabilisé */
+body.traversee .slide.actif { animation-delay: 1.6s; }
+body.traversee .slide.actif [data-anim="1"] { animation-delay: 1.85s; }
+body.traversee .slide.actif [data-anim="2"] { animation-delay: 1.95s; }
+body.traversee .slide.actif [data-anim="3"] { animation-delay: 2.05s; }
+body.traversee .slide.actif [data-anim="4"] { animation-delay: 2.15s; }
+body.traversee .slide.actif [data-anim="5"] { animation-delay: 2.25s; }
+body.traversee .slide.actif [data-anim="6"] { animation-delay: 2.35s; }
 @media (prefers-reduced-motion: reduce) {
   body.traversee .slide.actif, body.traversee .slide.actif [data-anim] { animation-delay: 0s !important; }
 }
@@ -917,3 +918,42 @@ body.traversee .slide.actif [data-anim="6"] { animation-delay: 1.85s; }
 body.idle #carte-voyage, body.accueil #carte-voyage, body.warp #carte-voyage { opacity: 0; pointer-events: none; }
 
 body.auto #chip-auto { opacity: 1; visibility: visible; }
+
+/* =============================================================
+   Round 2 — Loop Engineering (le choc)
+   ============================================================= */
+
+/* Impact frame : une frame blanche pure — la déflagration, pas le lavis brun */
+#flash-nova {
+  position: fixed; inset: 0; z-index: 32; pointer-events: none;
+  background: #FFF; opacity: 0;
+}
+#flash-nova.actif { animation: nova-frame 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes nova-frame { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+/* La slide qui part est chorégraphiée : sortie miroir en 450 ms, floutée —
+   plus JAMAIS deux slides lisibles en double exposition */
+.slide.sortante { visibility: visible; pointer-events: none; }
+body[data-cam="0"] .slide.sortante { animation: sortie-arc 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+body[data-cam="1"] .slide.sortante { animation: sortie-plongee 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+body[data-cam="2"] .slide.sortante { animation: sortie-vrille 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+body[data-cam="3"] .slide.sortante { animation: sortie-fond 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+body[data-cam="4"] .slide.sortante { animation: sortie-orbite 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+body[data-cam="5"] .slide.sortante { animation: sortie-chute 0.45s cubic-bezier(0.55, 0, 0.85, 0.4) both; }
+@keyframes sortie-arc     { to { opacity: 0; transform: translateX(-14vw) rotateY(14deg) scale(0.92); filter: blur(8px); } }
+@keyframes sortie-plongee { to { opacity: 0; transform: translateY(10vh) rotateX(-14deg) scale(0.93); filter: blur(8px); } }
+@keyframes sortie-vrille  { to { opacity: 0; transform: rotate(4deg) translateX(-9vw) scale(0.85); filter: blur(9px); } }
+@keyframes sortie-fond    { to { opacity: 0; transform: scale(0.8); filter: blur(10px); } }
+@keyframes sortie-orbite  { to { opacity: 0; transform: translate(10vw, -3vh) rotateY(-13deg) scale(0.92); filter: blur(8px); } }
+@keyframes sortie-chute   { to { opacity: 0; transform: translateY(-11vh) rotateX(13deg) scale(0.93); filter: blur(8px); } }
+
+/* 300 ms au décor seul avant l'entrée : le voyage respire, PUIS le texte
+   (la traversée inter-acte garde son délai long, redéclaré ci-dessous) */
+body.voyage .slide.actif { animation-delay: 0.3s; }
+body.traversee .slide.actif { animation-delay: 1.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide.sortante { animation: none !important; }
+  #flash-nova.actif { animation: none; opacity: 0; }
+  body.voyage .slide.actif, body.traversee .slide.actif { animation-delay: 0s; }
+}

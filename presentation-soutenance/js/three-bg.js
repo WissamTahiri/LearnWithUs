@@ -51,6 +51,12 @@
   var fluxPts = null, fluxData = [];   /* flux de données du pipeline */
   var orbiteurs = [];      /* planètes du système orbital */
   var ronde = [];          /* astres de la ronde finale */
+  var zoneMats = [];       /* matériaux rattachés à leur monde (allumage de proximité) */
+  var zoneGlow = [1, 1, 1, 1, 1, 1];
+  var haloFacteur = 1;     /* les halos-sprites s'éteignent en plein vol (anti-blob) */
+  var tempo = { v: 1 };    /* ralenti dramatique de l'explosion finale */
+  var marquePortail = null;
+  var BLANC = new THREE.Color(0xFFFFFF);
 
   /* Le chemin des six mondes : sinueux, profond */
   var ZONES = [
@@ -133,6 +139,7 @@
     }));
     sp.scale.set(sx, sy, 1);
     sp.position.set(0, 0, -1.2);
+    sp.userData.halo = true;
     parent.add(sp);
     return parent;
   }
@@ -177,11 +184,12 @@
 
     /* 1 · LA VITRINE — galerie de huit panneaux flottants */
     for (var v = 0; v < 8; v++) {
-      var pan = fil(new THREE.BoxGeometry(4.6, 3, 0.3), 0xF3C9D0, 0.65);
+      /* panneaux discrets et en retrait : ils ne croisent plus les cartes DOM */
+      var pan = fil(new THREE.BoxGeometry(4.6, 3, 0.3), 0xF3C9D0, 0.35);
       pan.position.set(
         z1.x + ((v % 4) - 1.5) * 7.5,
         z1.y + (v < 4 ? 4.5 : -3.5) + Math.sin(v * 2.1) * 1.2,
-        z1.z + Math.sin(v * 1.7) * 4
+        z1.z - 12 + Math.sin(v * 1.7) * 4
       );
       pan.rotation.y = (v % 4 - 1.5) * -0.22;
       monde.add(tourne(pan, 0, 0.02 + (v % 3) * 0.008));
@@ -228,6 +236,7 @@
     anneau4.position.copy(z4); anneau4.rotation.x = Math.PI / 2.25; monde.add(anneau4);
     for (var o4 = 0; o4 < 6; o4++) {
       var pl = fil(new THREE.SphereGeometry(1.15, 8, 6), 0xF3C9D0, 0.85);
+      pl.position.set(z4.x + 7.5 + o4 * 1.5, z4.y, z4.z);   /* position initiale : son monde */
       monde.add(pl);
       orbiteurs.push({ o: pl, centre: z4, ray: 7.5 + o4 * 1.5, ang: (o4 / 6) * Math.PI * 2, v: 0.35 - o4 * 0.04, incl: o4 * 0.3 });
     }
@@ -244,7 +253,7 @@
     /* la ronde finale : six astres cachés qui n'apparaissent qu'à la supernova */
     for (var r5 = 0; r5 < 6; r5++) {
       var astre = fil(new THREE.OctahedronGeometry(1.6, 0), 0xFFD98A, 0.9);
-      astre.visible = false; monde.add(astre);
+      astre.visible = false; astre.position.copy(z5); monde.add(astre);
       ronde.push(astre);
     }
 
@@ -264,11 +273,13 @@
       try { police3D = new THREE.Font(global.POLICE_3D); } catch (eF) { police3D = null; }
     }
     if (police3D) {
-      /* LEARNWITHUS — lettres PLEINES ivoire-or, tranches cuivrées, halo doré */
-      var marque0 = texteVolume('LEARNWITHUS', 2.4, 0xFFE9C4, 0xC9862F);
+      /* LEARNWITHUS — lettres PLEINES ivoire-or, tranches cuivrées, halo doré
+         (plus bas et plus grand : franchement lisible, jamais un débris coupé) */
+      var marque0 = texteVolume('LEARNWITHUS', 3.2, 0xFFE9C4, 0xC9862F);
       if (marque0) {
         haloLumineux(marque0, 0xE7B84B, 30, 8, 0.32);
-        marque0.position.set(z0.x, z0.y - 13.5, z0.z + 2);
+        marque0.position.set(z0.x, z0.y - 13.5, z0.z + 2);   /* entière dans le cadre en acte I */
+        marquePortail = marque0;
         monde.add(flotte(heros(0, marque0), 0.7, 0.5));
       }
       /* LEARNWITHUS du final — or incandescent, tranches bordeaux, halo chaud */
@@ -334,6 +345,30 @@
       regards.push(new THREE.Vector3(ZONES[w].x + (w % 2 ? -9 : 9), ZONES[w].y + 2, ZONES[w].z));
       accents.push(new THREE.Color(PALETTE[w]));
     }
+    waypoints[0].x += 8;   /* les anneaux du Portail sortent du H1, tiers gauche du cadre */
+  }
+
+  /* Rattache chaque matériau du monde à sa zone la plus proche : la boucle
+     module ensuite son opacité selon la distance caméra — chaque transition
+     devient un changement de scène (l'ancien monde s'éteint, le nouveau
+     s'embrase) au lieu d'un brouillard homogène. */
+  function indexerZones() {
+    monde.children.forEach(function (obj) {
+      if (obj === points || obj === lignes || obj === fluxPts || obj.userData.exclu) return;
+      var zi = 0, dmin = Infinity;
+      for (var i = 0; i < 6; i++) {
+        var d = obj.position.distanceTo(ZONES[i]);
+        if (d < dmin) { dmin = d; zi = i; }
+      }
+      if (dmin > 80) return;   /* météores du grand vide : hors système */
+      obj.traverse(function (o) {
+        if (!o.material) return;
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) {
+          if (!m.transparent) { m.transparent = true; m.opacity = 1; }
+          zoneMats.push({ m: m, op0: m.opacity, zone: zi, halo: !!o.userData.halo });
+        });
+      });
+    });
   }
 
   /* ---------- champ d'étoiles le long du chemin ---------- */
@@ -444,6 +479,7 @@
       }));
       mesh.position.set(i ? -50 : 45, 58 + i * 20, -230 - i * 260);
       mesh.rotation.x = Math.PI / 2.5;
+      mesh.userData.exclu = true;   /* opacité pilotée par majAurores, pas par les zones */
       monde.add(mesh);
       aurores.push({ m: mesh, ph: i * 2.4 });
     }
@@ -524,7 +560,7 @@
       arr[i * 6 + 3] = x; arr[i * 6 + 4] = y; arr[i * 6 + 5] = l.z - etire;
     }
     attr.needsUpdate = true;
-    tunnel.material.opacity = Math.min(0.85, vitesse * 1.1);
+    tunnel.material.opacity = Math.min(1, vitesse * 1.25);
     tunnel.rotation.z += dt * (0.6 + vitesse * 2.4);
   }
 
@@ -532,7 +568,7 @@
 
   function creerOnde(position, couleur, maxScale, dur, opa) {
     var m = new THREE.Mesh(
-      new THREE.RingGeometry(0.9, 1.25, 64),
+      new THREE.RingGeometry(0.94, 1.06, 64),   /* anneau FIN : un front d'onde, pas un donut */
       new THREE.MeshBasicMaterial({ color: couleur || 0xE7B84B, transparent: true, opacity: (opa || 0.9), side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     m.position.copy(position);
@@ -640,6 +676,7 @@
       creerPoolCometes();
       construireAurores();
       construireLucioles();
+      indexerZones();
 
       camPos = camera.position.clone();
       camRegard = new THREE.Vector3(0, 0, -10);
@@ -662,7 +699,7 @@
           composer.addPass(new PP.RenderPass(scene, camera));
           bloomFX = new PP.BloomEffect({ intensity: 0.85, luminanceThreshold: 0.25, luminanceSmoothing: 0.55 });
           rayons = new PP.GodRaysEffect(camera, soleilCoeur, {
-            density: 0.94, decay: 0.92, weight: 0.28, exposure: 0.55, samples: 48, clampMax: 1.0
+            density: 0.94, decay: 0.92, weight: 0.28, exposure: 0.55, samples: 30, clampMax: 1.0
           });
           aberration = new PP.ChromaticAberrationEffect({ offset: new THREE.Vector2(0, 0) });
           composer.addPass(new PP.EffectPass(camera, bloomFX, rayons, aberration));
@@ -746,7 +783,12 @@
       trajet.gerbeFaite = false;
       trajet.hyper = !!interActe;      /* la traversée rallume le tunnel */
       trajet.chap = chap;
+      trajet.dir = dir;
       camPosCible.copy(vers);
+      /* coup de dolly arrière au départ : l'image "s'arrache" avant de filer */
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(fovPunch, { v: -7 }, { v: 0, duration: 0.4, ease: 'expo.out' });
+      }
     },
 
     warpIntro: function (dureeMs, onDone) {
@@ -777,6 +819,8 @@
       finale.cb = onExplosion || null;
       trajet.actif = false;
       camRegardCible.copy(coeur.position);
+      /* une seule marque à l'écran : le titre DOM prend le relais */
+      if (marqueFin) marqueFin.visible = false;
     }
   };
 
@@ -786,6 +830,7 @@
     if (!actif) return;
     requestAnimationFrame(boucle);
     var dt = Math.min(horloge.getDelta(), 0.05), t = horloge.getElapsedTime();
+    dt *= tempo.v;   /* ralenti dramatique (slow-mo de l'explosion finale) */
 
     souris.x += (cibleSouris.x - souris.x) * 0.04;
     souris.y += (cibleSouris.y - souris.y) * 0.04;
@@ -805,23 +850,35 @@
         warp.lastSpark = performance.now();
         var devant = warp.courbe.getPoint(Math.min(1, k + 0.10));
         gerbe(devant.clone().add(new THREE.Vector3((Math.random() - 0.5) * 24, (Math.random() - 0.5) * 18, 0)),
-              Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 36, 7, 650);
+              Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 22, 10, 650);   /* dispersé : plus de taches beiges */
       }
-      /* la teinte du tunnel vire de l'or au rose pendant la traversée */
+      /* la teinte du tunnel vire de l'or au rose, puis au BLANC à pleine vitesse */
       tunnel.material.color.setHex(0xFFE9C4).lerp(new THREE.Color(0xF3C9D0), p);
+      if (vitesse > 0.7) tunnel.material.color.lerp(BLANC, (vitesse - 0.7) * 2.2);
+      haloFacteur = 1 - vitesse;   /* les halos s'éteignent en plein vol (anti-blob) */
+      /* la marque du Portail reste lisible pendant tout le vol */
+      if (marquePortail) marquePortail.lookAt(camera.position);
       camRegard.lerp(camRegardCible, 0.08);
-      if (points) points.material.size = 1.5 + vitesse * 1.0;
+      if (points) points.material.size = 1.5 + vitesse * 2.5;
       if (lignes) lignes.material.opacity = 0.14 + vitesse * 0.34;
-      if (bloom) bloom.strength = 0.8 + vitesse * 1.0;
-      scene.fog.density = 0.0062 - vitesse * 0.003;
+      if (bloom) bloom.strength = 0.8 + vitesse * 1.6;   /* sommet réellement blanc à mi-vol */
+      scene.fog.density = 0.0062 - vitesse * 0.0045;
       majTunnel(dt, vitesse);
       if (aberration) aberration.offset.set(vitesse * 0.0022, vitesse * 0.0013);
-      rollFrame = Math.PI * 2 * easeInOut(p);
+      /* virage incliné qui revient à plat : la vitesse, sans la vrille tête en bas */
+      rollFrame = Math.sin(p * Math.PI) * 0.62;
       fovCible = FOV_BASE + vitesse * 26;
-      if (p > 0.4 && !warp.j1) { warp.j1 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.5), 0xE7B84B, 16, 650, 0.4); }
-      if (p > 0.7 && !warp.j2) { warp.j2 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.65), 0xF3C9D0, 20, 700, 0.4); }
+      if (p > 0.4 && !warp.j1) {
+        warp.j1 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.5), 0xE7B84B, 16, 650, 0.4);
+        if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
+      }
+      if (p > 0.7 && !warp.j2) {
+        warp.j2 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.65), 0xF3C9D0, 20, 700, 0.4);
+        if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
+      }
       if (p >= 1) {
         warp.actif = false;
+        haloFacteur = 1;
         if (points) points.material.size = 1.5;
         if (lignes) lignes.material.opacity = 0.14;
         scene.fog.density = 0.0062;
@@ -853,10 +910,27 @@
           gerbe(centre, 0xFFD98A, 320, 26, 3200);
           gerbe(centre, 0xE7734B, 300, 19, 3600);
           gerbe(centre, 0xE7B84B, 280, 13, 4000);
-          creerOnde(centre, 0xE7B84B, 55, 1400);
+          /* fronts d'onde FINS et discrets — le donut plat est banni */
+          creerOnde(centre, 0xE7B84B, 55, 1400, 0.35);
+          /* l'ÉCLAT : un soleil blanc avale l'écran une demi-seconde,
+             puis le monde encaisse le choc au ralenti avant de reprendre */
+          var eclat = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: TEXTURE_POINT, color: 0xFFFFFF, transparent: true, opacity: 1,
+            blending: THREE.AdditiveBlending, depthWrite: false
+          }));
+          eclat.position.copy(centre); eclat.scale.setScalar(2);
+          scene.add(eclat);
+          if (typeof gsap !== 'undefined') {
+            var es = { s: 2 };
+            gsap.to(es, { s: 62, duration: 0.5, ease: 'expo.out',
+              onUpdate: function () { eclat.scale.setScalar(es.s); } });
+            gsap.to(eclat.material, { opacity: 0, duration: 0.95, delay: 0.1, ease: 'power2.out',
+              onComplete: function () { scene.remove(eclat); eclat.material.dispose(); } });
+            gsap.fromTo(tempo, { v: 0.15 }, { v: 1, duration: 0.9, ease: 'power2.in' });
+          }
           (function (c2) {
-            setTimeout(function () { creerOnde(c2, 0xF3C9D0, 70, 1600); }, 180);
-            setTimeout(function () { creerOnde(c2, 0xA5384A, 85, 1800); }, 380);
+            setTimeout(function () { creerOnde(c2, 0xF3C9D0, 70, 1600, 0.28); }, 180);
+            setTimeout(function () { creerOnde(c2, 0xA5384A, 85, 1800, 0.22); }, 380);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(14, 8, 0)), 0xFFE9C4, 150, 15, 2500); }, 600);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(-16, -6, 4)), 0xFFD98A, 150, 15, 2500); }, 950);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 12, -6)), 0xE7734B, 130, 17, 2400); }, 1400);
@@ -893,7 +967,8 @@
         var sc = 0.5 + Math.min(1, po * 2) * 0.9 + Math.sin(pf * 0.01) * 0.1;
         coeur.scale.setScalar(sc);
         if (bloom) bloom.strength = Math.max(1.0, 2.8 - po * 1.6);
-        var angO = po * Math.PI * 1.4;
+        /* orbite lancée puis ralentie (plus jamais linéaire-robot) */
+        var angO = Math.PI * 1.4 * (easeTraj ? easeTraj(Math.min(1, po * 1.3)) : po);
         var rayO = 42 - po * 9;   /* rapprochement final */
         camPosCible.set(centre.x + Math.sin(angO) * rayO, centre.y + 6 + Math.sin(po * Math.PI) * 8, centre.z + Math.cos(angO) * rayO);
         camRegardCible.copy(centre);
@@ -917,10 +992,18 @@
       if (bloom) bloom.strength = 0.85 + vit * 0.35;
       fovCible = FOV_BASE + trajet.fovAmp * vit;
       rollFrame = trajet.roll * Math.sin(Math.PI * pt2);
-      if (trajet.hyper) majTunnel(dt, vit * 0.8);   /* mini-hyperespace de traversée */
+      /* le split RGB vend la vitesse à mi-course, sur CHAQUE voyage */
+      if (aberration) aberration.offset.set(vit * 0.0035 * (trajet.dir || 1), vit * 0.0015);
+      /* micro-saut spatial systématique : streaks discrets en intra-acte,
+         pleine puissance en traversée */
+      majTunnel(dt, trajet.hyper ? vit * 0.8 : vit * 0.28);
       if (pt2 > 0.88 && !trajet.gerbeFaite) {
         trajet.gerbeFaite = true;
         gerbe(camRegardCible.clone().add(new THREE.Vector3(14, -9, 3)), accentCible.getHex(), 60, 8, 900);
+        /* coup de zoom d'impact : la slide "atterrit" physiquement */
+        if (typeof gsap !== 'undefined') {
+          gsap.fromTo(fovPunch, { v: 9 }, { v: 0, duration: 0.55, ease: 'expo.out' });
+        }
         if (trajet.hyper) {
           creerOnde(camRegardCible.clone(), accentCible.getHex(), 24, 850);
           pulseZone.chap = trajet.chap; pulseZone.t0 = performance.now();
@@ -929,7 +1012,8 @@
       if (pt2 >= 1) {
         trajet.actif = false;
         if (points) points.material.size = 1.5;
-        if (trajet.hyper) { tunnel.material.opacity = 0; trajet.hyper = false; }
+        tunnel.material.opacity = 0;
+        trajet.hyper = false;
       }
     } else {
       camPos.lerp(camPosCible, 0.03);
@@ -971,6 +1055,17 @@
       var F = flotteurs[fl];
       F.o.position.y = F.y0 + Math.sin(t * F.sp + F.ph) * F.amp;
       if (F.o.userData.vrille) F.o.rotation.z = t * 0.5;   /* le sprint tourne */
+    }
+
+    /* chaque monde s'embrase à l'approche et s'assoupit au loin */
+    for (var zg = 0; zg < 6; zg++) {
+      var dz = camRegardCible.distanceTo(ZONES[zg]);
+      var fz = Math.max(0.10, Math.min(1, 1 - (dz - 45) / 130));
+      zoneGlow[zg] += (fz - zoneGlow[zg]) * 0.055;
+    }
+    for (var zm = 0; zm < zoneMats.length; zm++) {
+      var ZM = zoneMats[zm];
+      ZM.m.opacity = ZM.op0 * zoneGlow[ZM.zone] * (ZM.halo ? haloFacteur : 1);
     }
 
     /* le monde "salue" quand on arrive chez lui (pulse 750 ms) */

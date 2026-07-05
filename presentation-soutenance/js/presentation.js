@@ -18,7 +18,15 @@
   var reduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var tIdle = null;       /* minuteur d'auto-masquage du HUD */
 
-  var elBarre, elCompteurN, elCompteurTot, elMini, elIntro, elMute, elBalayage, elFlash;
+  var elBarre, elCompteurN, elCompteurTot, elMini, elIntro, elMute, elBalayage, elFlash, elNova;
+
+  /* Impact frame : une frame blanche pure de 120 ms — l'arme des trailers */
+  function nova() {
+    if (!elNova) return;
+    elNova.classList.remove('actif');
+    void elNova.offsetWidth;
+    elNova.classList.add('actif');
+  }
 
   function chapitreDe(s) { return parseInt(s.getAttribute('data-chapitre') || '0', 10); }
   function nbAnims(s) { return s.querySelectorAll('[data-anim]').length; }
@@ -26,6 +34,7 @@
   function afficher(n, dir) {
     n = Math.max(0, Math.min(slides.length - 1, n));
     if (n === idx && demarre && dir !== 0) return;
+    var precedente = slides[idx] || null;   /* la slide qui va partir */
 
     /* Positionnement 3D : déjà vues à gauche (.passe), à venir à droite */
     slides.forEach(function (s, i) {
@@ -56,6 +65,15 @@
       var styleSon = idx % 8;
       document.body.setAttribute('data-cam', styleCam);   /* l'entrée DOM épouse la trajectoire */
 
+      /* La slide qui part est chorégraphiée (sortie miroir, 450 ms) :
+         plus jamais deux slides lisibles en double exposition */
+      if (!reduit && precedente && precedente !== slides[idx]) {
+        precedente.classList.add('sortante');
+        setTimeout(function () { precedente.classList.remove('sortante'); }, 520);
+      }
+      /* secousse caméra : le décor encaisse le changement de slide */
+      if (!reduit && window.Scene3D && Scene3D.kick) Scene3D.kick(dir);
+
       if (derniere) {
         /* [7] réduction de mouvement : la conclusion sans l'acrobatie */
         if (reduit) {
@@ -70,7 +88,8 @@
         document.body.classList.add('finale');     /* voile abaissé : le fond gagne */
         if (window.Scene3D && Scene3D.finale) {
           Scene3D.finale(function () {
-            /* le texte NAÎT du flash : on rejoue la cascade d'entrée */
+            /* le texte NAÎT du flash : impact frame blanche + cascade d'entrée */
+            nova();
             slides[idx].classList.remove('actif');
             void slides[idx].offsetWidth;
             slides[idx].classList.add('actif');
@@ -82,7 +101,10 @@
         } else {
           document.body.classList.remove('warp');
         }
-        if (window.AudioFX) AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
+        if (window.AudioFX) {
+          AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
+          AudioFX.padNiveau(0.14);   /* la nappe enfle sous la supernova */
+        }
         setTimeout(function () { document.body.classList.remove('finale'); }, 9000);
         return;
       }
@@ -119,6 +141,9 @@
           }, 150);
           AudioFX.sweep(true);      /* souffle long : toute la traversée + signature à l'arrivée */
           AudioFX.arpege(ch);
+          /* la nappe enfle pendant le vol, se rassoit à l'arrivée */
+          AudioFX.padNiveau(0.11);
+          setTimeout(function () { AudioFX.padNiveau(0.05); }, 2100);
         } else {
           AudioFX.transition(styleSon, dir);
         }
@@ -148,13 +173,17 @@
     if (demarre) return;
     demarre = true;
     document.body.classList.remove('accueil');
-    if (window.AudioFX) AudioFX.unlock();
+    if (window.AudioFX) {
+      AudioFX.unlock();
+      AudioFX.padNiveau(0.05);   /* la salle n'entend plus jamais le silence du projecteur */
+    }
 
     elIntro.classList.add('parti');
     setTimeout(function () { elIntro.style.display = 'none'; }, 750);
     document.body.classList.add('warp');       /* cache HUD + slides pendant le voyage */
 
     var arrivee = function () {
+      nova();                     /* impact frame : l'arrivée AVEUGLE, elle ne brunit pas */
       elFlash.classList.add('actif');
       document.body.classList.remove('warp');
       idx = -1; chapitreCourant = -1;
@@ -233,6 +262,7 @@
     elMute = document.getElementById('btn-mute');
     elBalayage = document.getElementById('balayage');
     elFlash = document.getElementById('flash-warp');
+    elNova = document.getElementById('flash-nova');
 
     elCompteurTot.textContent = slides.length;
 
