@@ -589,19 +589,20 @@
       if (!started) return;
       var t = ctx.currentTime;
       try {
-        /* 1) charge : gronde grave + souffle qui monte (0 → 0,95 s) */
+        /* 1) charge LONGUE : gronde grave + souffle qui monte (0 → 2,2 s) —
+           les trois spasmes visuels sont ponctués par boum() côté 3D */
         var oC = ctx.createOscillator(); oC.type = 'sawtooth';
         var fC = ctx.createBiquadFilter(); fC.type = 'lowpass'; fC.frequency.value = 300;
         var gC = ctx.createGain(); gC.gain.setValueAtTime(0.0001, t);
         oC.frequency.setValueAtTime(N.D2 / 2, t);
-        oC.frequency.exponentialRampToValueAtTime(N.D3, t + 0.95);
-        gC.gain.exponentialRampToValueAtTime(0.20, t + 0.9);
-        gC.gain.exponentialRampToValueAtTime(0.0001, t + 1.0);
+        oC.frequency.exponentialRampToValueAtTime(N.D3, t + 2.15);
+        gC.gain.exponentialRampToValueAtTime(0.20, t + 2.1);
+        gC.gain.exponentialRampToValueAtTime(0.0001, t + 2.25);
         oC.connect(fC); fC.connect(gC); gC.connect(busFx);
-        oC.start(t); oC.stop(t + 1.05);
-        noiseBurst(t, 0.95, 800, 0.14);
+        oC.start(t); oC.stop(t + 2.3);
+        noiseBurst(t, 2.2, 800, 0.14);
 
-        var tx = t + 0.95;   /* instant de la déflagration */
+        var tx = t + 2.2;   /* instant de la déflagration */
 
         /* 180 ms de noir sonore juste avant le hit : l'impact perçu double */
         master.gain.setTargetAtTime(0.001, tx - 0.18, 0.02);
@@ -644,10 +645,10 @@
         gS.gain.exponentialRampToValueAtTime(0.0001, tx + 1.8);
         sub.connect(gS); gS.connect(busFx); sub.start(tx); sub.stop(tx + 1.9);
 
-        /* 3) crépitements de feu d'artifice, pannés au hasard (2,8 s) */
-        for (var kF = 0; kF < 12; kF++) {
+        /* 3) crépitements de feu d'artifice, pannés au hasard (4,6 s) */
+        for (var kF = 0; kF < 20; kF++) {
           (function (kF) {
-            var tk = tx + 0.25 + Math.random() * 2.6;
+            var tk = tx + 0.25 + Math.random() * 4.4;
             var lenK = Math.floor(ctx.sampleRate * 0.14);
             var bufK = ctx.createBuffer(1, lenK, ctx.sampleRate);
             var dK = bufK.getChannelData(0);
@@ -669,6 +670,13 @@
         [N.D4, N.F4, N.A4, N.D5, N.F5, N.A5, N.D6].forEach(function (fq, i3) {
           pluck(fq, tx + 1.9 + i3 * 0.05, 2.2, 0.10, 'sine', busMusic);
         });
+        /* 5) l'ÉCHO : second accord doux pendant la ronde, puis le ré
+           fondamental qui referme le show — la boucle harmonique se boucle */
+        [N.D5, N.F5, N.A5, N.D6].forEach(function (fq, i4) {
+          pluck(fq, tx + 4.6 + i4 * 0.09, 2.4, 0.06, 'sine', busMusic, (i4 - 1.5) * 0.4);
+        });
+        pluck(N.D2, tx + 6.4, 2.4, 0.12, 'sine', busFx);
+        pluck(N.D3, tx + 6.4, 2.2, 0.06, 'triangle', busMusic);
       } catch (e) {}
     },
 

@@ -29,7 +29,7 @@
   var warp = { actif: false, depart: 0, duree: 0, de: null, vers: null, fin: null, j1: false, j2: false, courbe: null, lastSpark: 0 };
   var trajet = { actif: false, depart: 0, duree: 0, courbe: null, roll: 0, fovAmp: 0, gerbeFaite: false, hyper: false, chap: 0 };
   var kick = { x: 0, z: 0 };
-  var finale = { actif: false, depart: 0, duree: 7000, explose: false, cb: null };
+  var finale = { actif: false, depart: 0, duree: 13000, explose: false, cb: null, sp1: false, sp2: false, sp3: false };
 
   var tunnel = null, tunnelLignes = [];
   var ondes = [];
@@ -791,24 +791,34 @@
       }
     },
 
+    /* LE GRAND TOUR : la caméra naît derrière le monde final et survole
+       les SIX mondes (chacun s'embrase et joue son arpège au passage),
+       puis sprint hyperespace vers le portail. Un générique de cinéma. */
     warpIntro: function (dureeMs, onDone) {
-      camPos.set(0, 10, 190);
-      camRegard.set(0, 0, -40);
+      camPos.set(ZONES[5].x - 60, 42, ZONES[5].z - 110);
+      camRegard.copy(ZONES[5]);
       camPosCible.copy(waypoints[0]);
       camRegardCible.copy(regards[0]);
       warp.actif = true;
       warp.depart = performance.now();
-      warp.duree = dureeMs || 2600;
-      warp.de = camPos.clone();
-      warp.vers = waypoints[0].clone();
-      /* trajectoire en S : la caméra SLALOME jusqu'au portail */
-      warp.courbe = new THREE.QuadraticBezierCurve3(
-        warp.de.clone(),
-        new THREE.Vector3(58, 36, 85),
-        warp.vers.clone()
-      );
+      warp.duree = dureeMs || 10500;
+      var pts = [camPos.clone()];
+      for (var i = 5; i >= 1; i--) {
+        var z = ZONES[i];
+        pts.push(new THREE.Vector3(
+          z.x + (i % 2 ? -26 : 26),
+          z.y + 10 + (i % 3) * 6,
+          z.z + 18
+        ));
+      }
+      pts.push(new THREE.Vector3(ZONES[0].x + 30, ZONES[0].y + 24, ZONES[0].z + 95));
+      pts.push(waypoints[0].clone());
+      warp.courbe = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.35);
       warp.fin = onDone;
-      warp.j1 = false; warp.j2 = false; warp.lastSpark = 0;
+      warp.lastSpark = 0;
+      warp.etapes = [0.14, 0.30, 0.46, 0.62, 0.78];   /* survols des mondes 4→0 */
+      warp.etape = 0;
+      warp.riserFait = false;
     },
 
     finale: function (onExplosion) {
@@ -816,6 +826,7 @@
       finale.actif = true;
       finale.depart = performance.now();
       finale.explose = false;
+      finale.sp1 = finale.sp2 = finale.sp3 = false;
       finale.cb = onExplosion || null;
       trajet.actif = false;
       camRegardCible.copy(coeur.position);
@@ -840,17 +851,35 @@
 
     if (warp.actif) {
       var p = Math.min(1, (performance.now() - warp.depart) / warp.duree);
-      var k = easeVol ? easeVol(p) : easeWarp(p);
-      var vitesse = Math.sin(p * Math.PI);
+      var k = easeInOut(p);
+      /* vitesse SOUTENUE : le tour ne mollit jamais vraiment */
+      var vitesse = 0.25 + 0.75 * Math.sin(p * Math.PI);
       camPos.copy(warp.courbe.getPoint(k));
       camPos.x += (Math.random() - 0.5) * vitesse * 1.1;
       camPos.y += (Math.random() - 0.5) * vitesse * 1.1;
       /* pluie d'étincelles qu'on TRAVERSE en plein vol */
-      if (p > 0.12 && p < 0.88 && performance.now() - warp.lastSpark > 230) {
+      if (p > 0.05 && p < 0.9 && performance.now() - warp.lastSpark > 210) {
         warp.lastSpark = performance.now();
-        var devant = warp.courbe.getPoint(Math.min(1, k + 0.10));
+        var devant = warp.courbe.getPoint(Math.min(1, k + 0.06));
         gerbe(devant.clone().add(new THREE.Vector3((Math.random() - 0.5) * 24, (Math.random() - 0.5) * 18, 0)),
               Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 22, 10, 650);   /* dispersé : plus de taches beiges */
+      }
+      /* chaque monde survolé EXPLOSE de joie et joue son arpège */
+      while (warp.etapes && warp.etape < warp.etapes.length && p > warp.etapes[warp.etape]) {
+        var ziW = Math.max(0, 4 - warp.etape);
+        creerOnde(ZONES[ziW].clone(), accents[ziW].getHex(), 30, 900, 0.4);
+        gerbe(ZONES[ziW].clone().add(new THREE.Vector3(0, 6, 10)), accents[ziW].getHex(), 90, 16, 1400);
+        pulseZone.chap = ziW; pulseZone.t0 = performance.now();
+        if (global.AudioFX) {
+          if (global.AudioFX.boum) global.AudioFX.boum();
+          if (global.AudioFX.arpege) global.AudioFX.arpege(ziW);
+        }
+        warp.etape++;
+      }
+      /* sprint final : le riser démarre pour finir PILE à l'arrivée */
+      if (!warp.riserFait && p > 1 - 2600 / warp.duree) {
+        warp.riserFait = true;
+        if (global.AudioFX && global.AudioFX.riser) global.AudioFX.riser(2600);
       }
       /* la teinte du tunnel vire de l'or au rose, puis au BLANC à pleine vitesse */
       tunnel.material.color.setHex(0xFFE9C4).lerp(new THREE.Color(0xF3C9D0), p);
@@ -858,24 +887,18 @@
       haloFacteur = 1 - vitesse;   /* les halos s'éteignent en plein vol (anti-blob) */
       /* la marque du Portail reste lisible pendant tout le vol */
       if (marquePortail) marquePortail.lookAt(camera.position);
-      camRegard.lerp(camRegardCible, 0.08);
+      /* le regard file DEVANT soi le long du tour, puis se pose sur le portail */
+      var viseeW = p < 0.86 ? warp.courbe.getPoint(Math.min(1, k + 0.05)) : camRegardCible;
+      camRegard.lerp(viseeW, 0.14);
       if (points) points.material.size = 1.5 + vitesse * 2.5;
       if (lignes) lignes.material.opacity = 0.14 + vitesse * 0.34;
       if (bloom) bloom.strength = 0.8 + vitesse * 1.6;   /* sommet réellement blanc à mi-vol */
       scene.fog.density = 0.0062 - vitesse * 0.0045;
       majTunnel(dt, vitesse);
       if (aberration) aberration.offset.set(vitesse * 0.0022, vitesse * 0.0013);
-      /* virage incliné qui revient à plat : la vitesse, sans la vrille tête en bas */
-      rollFrame = Math.sin(p * Math.PI) * 0.62;
+      /* virages inclinés successifs : la caméra PENCHE dans chaque courbe du tour */
+      rollFrame = Math.sin(p * Math.PI * 3) * 0.28 * Math.sin(p * Math.PI);
       fovCible = FOV_BASE + vitesse * 26;
-      if (p > 0.4 && !warp.j1) {
-        warp.j1 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.5), 0xE7B84B, 16, 650, 0.4);
-        if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
-      }
-      if (p > 0.7 && !warp.j2) {
-        warp.j2 = true; creerOnde(camPos.clone().lerp(warp.vers, 0.65), 0xF3C9D0, 20, 700, 0.4);
-        if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
-      }
       if (p >= 1) {
         warp.actif = false;
         haloFacteur = 1;
@@ -893,12 +916,26 @@
     } else if (finale.actif) {
       var pf = performance.now() - finale.depart;
       var centre = coeur.position.clone();
-      if (pf < 950) {
-        var pc = pf / 950;
-        var s = 1 + pc * 1.9 + Math.sin(pf * 0.05) * 0.12 * pc;
+      if (pf < 2200) {
+        /* LA MORT DE L'ÉTOILE : charge longue, trois spasmes d'effondrement */
+        var pc = pf / 2200;
+        var s = 1 + pc * 2.2 + Math.sin(pf * 0.05) * 0.12 * pc;
         coeur.scale.setScalar(s);
-        kick.x += (Math.random() - 0.5) * pc * 1.1;
-        if (bloom) bloom.strength = 0.9 + pc * 1.6;
+        kick.x += (Math.random() - 0.5) * pc * 1.2;
+        if (bloom) bloom.strength = 0.9 + pc * 1.9;
+        if (!finale.sp1 && pf > 700) {
+          finale.sp1 = true; creerOnde(centre, 0xE7B84B, 18, 600, 0.3); kick.x += 1.5;
+          if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
+        }
+        if (!finale.sp2 && pf > 1300) {
+          finale.sp2 = true; creerOnde(centre, 0xF3C9D0, 24, 650, 0.32); kick.x -= 1.8;
+          if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
+        }
+        if (!finale.sp3 && pf > 1900) {
+          finale.sp3 = true; creerOnde(centre, 0xFFE9C4, 30, 700, 0.35); kick.x += 2.1;
+          gerbe(centre, 0xFFE9C4, 60, 8, 700);
+          if (global.AudioFX && global.AudioFX.boum) global.AudioFX.boum();
+        }
         camPosCible.set(centre.x, centre.y + 4, centre.z + 46);
         camRegardCible.copy(centre);
         camPos.lerp(camPosCible, 0.06);
@@ -934,18 +971,21 @@
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(14, 8, 0)), 0xFFE9C4, 150, 15, 2500); }, 600);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(-16, -6, 4)), 0xFFD98A, 150, 15, 2500); }, 950);
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 12, -6)), 0xE7734B, 130, 17, 2400); }, 1400);
-            /* le bouquet continue : 8 fusées synchronisées avec les
-               crépitements de l'apothéose audio (1,25 s → 4 s) */
-            for (var kx = 0; kx < 8; kx++) {
+            /* le bouquet continue : 14 fusées échelonnées sur presque 7 s */
+            for (var kx = 0; kx < 14; kx++) {
               (function (kx) {
                 setTimeout(function () {
                   gerbe(c2.clone().add(new THREE.Vector3((Math.random() - 0.5) * 32, (Math.random() - 0.3) * 24, (Math.random() - 0.5) * 26)),
                         [0xFFD98A, 0xE7734B, 0xF3C9D0, 0xFFE9C4][kx % 4], 110, 13, 2200);
-                }, 1250 + kx * 340);
+                }, 1250 + kx * 400);
               })(kx);
             }
-            /* et la pluie d'or qui retombe sur la scène */
+            /* deuxième front d'ondes : l'écho de la déflagration */
+            setTimeout(function () { creerOnde(c2, 0xE7B84B, 95, 2000, 0.18); }, 3800);
+            setTimeout(function () { creerOnde(c2, 0xF3C9D0, 105, 2200, 0.14); }, 4300);
+            /* et DEUX pluies d'or qui retombent sur la scène */
             setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 24, 0)), 0xFFE9C4, 240, 4, 6200, 'pluie'); }, 2100);
+            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 26, 0)), 0xFFD98A, 200, 4, 6000, 'pluie'); }, 6400);
           })(centre.clone());
           coeur.scale.setScalar(0.5);
           ronde.forEach(function (a) { a.visible = true; a.position.copy(centre); });
@@ -963,14 +1003,18 @@
             }
           } catch (eG) {}
         }
-        var po = (pf - 950) / (finale.duree - 950);
+        var po = (pf - 2200) / (finale.duree - 2200);
         var sc = 0.5 + Math.min(1, po * 2) * 0.9 + Math.sin(pf * 0.01) * 0.1;
         coeur.scale.setScalar(sc);
         if (bloom) bloom.strength = Math.max(1.0, 2.8 - po * 1.6);
-        /* orbite lancée puis ralentie (plus jamais linéaire-robot) */
-        var angO = Math.PI * 1.4 * (easeTraj ? easeTraj(Math.min(1, po * 1.3)) : po);
-        var rayO = 42 - po * 9;   /* rapprochement final */
-        camPosCible.set(centre.x + Math.sin(angO) * rayO, centre.y + 6 + Math.sin(po * Math.PI) * 8, centre.z + Math.cos(angO) * rayO);
+        /* LA RONDE COSMIQUE : orbite lancée, prise de recul, puis plongée
+           finale À TRAVERS la pluie d'or */
+        var angO = Math.PI * 2.1 * (easeTraj ? easeTraj(Math.min(1, po * 1.15)) : po);
+        var rayO = po < 0.5 ? 42 + po * 16 : 50 - (po - 0.5) * 46;
+        camPosCible.set(
+          centre.x + Math.sin(angO) * rayO,
+          centre.y + 6 + Math.sin(po * Math.PI * 2) * 7,
+          centre.z + Math.cos(angO) * rayO);
         camRegardCible.copy(centre);
         camPos.lerp(camPosCible, 0.035);
         camRegard.lerp(camRegardCible, 0.08);
@@ -1035,9 +1079,9 @@
     camera.fov += (fovCible + fovPunch.v - camera.fov) * 0.12;
     camera.updateProjectionMatrix();
 
-    /* comètes filantes (jamais pendant warp/finale : la scène est déjà pleine) */
-    if (!warp.actif && !finale.actif && t > prochaineComete) {
-      prochaineComete = t + 3 + Math.random() * 4.5;
+    /* comètes filantes — et BARRAGE de comètes après la déflagration finale */
+    if (!warp.actif && t > prochaineComete && (!finale.actif || finale.explose)) {
+      prochaineComete = t + (finale.actif ? 0.45 : 3 + Math.random() * 4.5);
       lancerComete();
     }
     majCometes(dt);
@@ -1057,9 +1101,11 @@
       if (F.o.userData.vrille) F.o.rotation.z = t * 0.5;   /* le sprint tourne */
     }
 
-    /* chaque monde s'embrase à l'approche et s'assoupit au loin */
+    /* chaque monde s'embrase à l'approche et s'assoupit au loin
+       (pendant le Grand Tour, c'est la CAMÉRA qui allume les mondes) */
+    var refGlow = warp.actif ? camPos : camRegardCible;
     for (var zg = 0; zg < 6; zg++) {
-      var dz = camRegardCible.distanceTo(ZONES[zg]);
+      var dz = refGlow.distanceTo(ZONES[zg]);
       var fz = Math.max(0.10, Math.min(1, 1 - (dz - 45) / 130));
       zoneGlow[zg] += (fz - zoneGlow[zg]) * 0.055;
     }

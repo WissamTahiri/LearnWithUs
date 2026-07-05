@@ -970,10 +970,17 @@ body.traversee .slide.actif { animation-delay: 1.6s; }
   background: radial-gradient(ellipse at 50% 50%,
     rgba(255, 248, 238, 0.75), rgba(255, 235, 205, 0.22) 42%, transparent 72%);
 }
-body.warp:not(.finale) #lueur-warp { animation: lueur-vol 3.2s ease-in-out forwards; }
+body.warp:not(.finale) #lueur-warp { animation: lueur-vol 10.5s ease-in-out forwards; }
+/* une pulsation lumineuse à CHAQUE monde survolé, éblouissement au sprint final */
 @keyframes lueur-vol {
-  0% { opacity: 0; } 45% { opacity: 0.72; } 58% { opacity: 1; } 66% { opacity: 0.85; }
-  85% { opacity: 0.18; } 100% { opacity: 0; }
+  0%  { opacity: 0; }
+  12% { opacity: 0.5;  } 16% { opacity: 0.12; }
+  28% { opacity: 0.55; } 32% { opacity: 0.14; }
+  44% { opacity: 0.6;  } 48% { opacity: 0.16; }
+  60% { opacity: 0.65; } 64% { opacity: 0.18; }
+  76% { opacity: 0.7;  } 80% { opacity: 0.2;  }
+  93% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* Letterbox cinéma : les bandes noires se ferment pendant les vols longs

@@ -12,7 +12,7 @@
   var slides = [], idx = 0, chapitreCourant = -1, demarre = false;
   var ACTES = ['Acte I · Notre projet', 'Acte II · Le produit', 'Acte III · La démo',
                'Acte IV · La confiance', 'Acte V · La méthode', 'Acte VI · Conclusion'];
-  var DUREE_WARP = 3200;
+  var DUREE_WARP = 10500;   /* le Grand Tour : survol des six mondes avant le portail */
   var posDansActe = [];   /* rang de chaque slide au sein de son acte */
   var debutActe = [];     /* index de la première slide de chaque acte (touches 1-6) */
   var reduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -113,7 +113,7 @@
           document.body.classList.remove('warp');
         }
         if (window.AudioFX) AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
-        setTimeout(function () { document.body.classList.remove('finale'); }, 9000);
+        setTimeout(function () { document.body.classList.remove('finale'); }, 15000);
         return;
       }
 
@@ -198,10 +198,9 @@
     };
 
     if (!reduit && window.Scene3D && window.Scene3D.warpIntro) {
-      if (window.AudioFX) {
-        AudioFX.ouverture();                 /* « hi-hi !… aaaouh ! » */
-        AudioFX.riser(DUREE_WARP);
-      }
+      /* la partition du tour est jouée PAR la 3D : arpège + boum à chaque
+         monde survolé, riser déclenché pour finir pile à l'arrivée */
+      if (window.AudioFX) AudioFX.ouverture();
       Scene3D.warpIntro(DUREE_WARP, arrivee);
     } else {
       if (window.AudioFX && !reduit) AudioFX.ouverture();
