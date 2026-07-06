@@ -855,8 +855,9 @@
     if (warp.actif) {
       var p = Math.min(1, (performance.now() - warp.depart) / warp.duree);
       var k = easeInOut(p);
-      /* vitesse SOUTENUE : le tour ne mollit jamais vraiment */
-      var vitesse = 0.25 + 0.75 * Math.sin(p * Math.PI);
+      /* vitesse SOUTENUE en plateau, mais qui retombe à ZÉRO aux deux bouts :
+         l'atterrissage est fondu, plus aucune coupure sèche à l'arrivée */
+      var vitesse = Math.min(1, Math.sin(p * Math.PI) * 1.6);
       camPos.copy(warp.courbe.getPoint(k));
       camPos.x += (Math.random() - 0.5) * vitesse * 1.1;
       camPos.y += (Math.random() - 0.5) * vitesse * 1.1;
@@ -898,8 +899,10 @@
       haloFacteur = 1 - vitesse;   /* les halos s'éteignent en plein vol (anti-blob) */
       /* la marque du Portail reste lisible pendant tout le vol */
       if (marquePortail) marquePortail.lookAt(camera.position);
-      /* le regard file DEVANT soi le long du tour, puis se pose sur le portail */
-      var viseeW = p < 0.86 ? warp.courbe.getPoint(Math.min(1, k + 0.05)) : camRegardCible;
+      /* le regard file DEVANT soi le long du tour, puis se pose sur le portail.
+         Le point visé est plafonné à 0.97 : jamais confondu avec la destination
+         (viser sa propre position rendait l'orientation instable à l'arrivée) */
+      var viseeW = p < 0.72 ? warp.courbe.getPoint(Math.min(0.97, k + 0.05)) : camRegardCible;
       camRegard.lerp(viseeW, 0.14);
       if (points) points.material.size = 1.5 + vitesse * 2.5;
       if (lignes) lignes.material.opacity = 0.14 + vitesse * 0.34;
@@ -910,7 +913,8 @@
       /* virages inclinés successifs : la caméra PENCHE dans chaque courbe du tour,
          et le champ RESPIRE à chaque monde survolé */
       rollFrame = Math.sin(p * Math.PI * 3) * 0.28 * Math.sin(p * Math.PI);
-      fovCible = FOV_BASE + vitesse * 26 + Math.sin(p * Math.PI * 6) * 4;
+      /* la respiration du champ s'éteint elle aussi en approche */
+      fovCible = FOV_BASE + vitesse * 26 + Math.sin(p * Math.PI * 6) * 4 * Math.sin(p * Math.PI);
       if (p >= 1) {
         warp.actif = false;
         haloFacteur = 1;
