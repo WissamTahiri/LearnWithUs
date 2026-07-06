@@ -10,6 +10,8 @@
   'use strict';
 
   var slides = [], idx = 0, chapitreCourant = -1, demarre = false;
+  var enVol = false;   /* verrou : bloque la navigation pendant le Grand Tour
+                          et la charge de la finale (séquences non interruptibles) */
   var ACTES = ['Acte I · Notre projet', 'Acte II · Le produit', 'Acte III · La démo',
                'Acte IV · La confiance', 'Acte V · La méthode', 'Acte VI · Conclusion'];
   var DUREE_WARP = 10000;   /* le Grand Tour : survol des six mondes avant le portail */
@@ -32,6 +34,7 @@
   function nbAnims(s) { return s.querySelectorAll('[data-anim]').length; }
 
   function afficher(n, dir) {
+    if (enVol) return;   /* aucune navigation pendant une séquence scellée */
     n = Math.max(0, Math.min(slides.length - 1, n));
     if (n === idx && demarre && dir !== 0) return;
     var precedente = slides[idx] || null;   /* la slide qui va partir */
@@ -42,6 +45,7 @@
       s.classList.toggle('passe', i < n);
     });
     slides[n].classList.add('actif');
+    slides[n].classList.remove('sortante');   /* retour éclair : jamais actif+sortante */
     idx = n;
 
     /* HUD */
@@ -74,8 +78,15 @@
       /* secousse caméra : le décor encaisse le changement de slide */
       if (!reduit && window.Scene3D && Scene3D.kick) Scene3D.kick(dir);
 
-      /* onde d'atterrissage : un cercle d'or souligne la pose de la slide */
-      if (!reduit) {
+      /* si on quitte la ronde finale : le voile remonte immédiatement */
+      if (document.body.classList.contains('finale') && !derniere) {
+        document.body.classList.remove('finale');
+        clearTimeout(afficher._tFinale);
+      }
+
+      /* onde d'atterrissage : un cercle d'or souligne la pose de la slide
+         (jamais pendant la charge de la finale : le noir y est total) */
+      if (!reduit && !derniere) {
         clearTimeout(afficher._tOnde);
         afficher._tOnde = setTimeout(function () {
           var o = document.getElementById('onde-dom');
@@ -93,7 +104,11 @@
         }
         /* ===== MISE EN SCÈNE DE LA SUPERNOVA =====
            Le texte final NAÎT de la déflagration : écran masqué pendant
-           la charge, flash + révélation à l'instant de l'explosion. */
+           la charge, flash + révélation à l'instant de l'explosion.
+           Navigation scellée pendant la charge + le flash (3,6 s). */
+        enVol = true;
+        setTimeout(function () { enVol = false; }, 3600);
+        clearTimeout(afficher._tOnde);   /* pas d'anneau d'or sur le noir de la charge */
         document.body.classList.add('warp');       /* cache scène + HUD */
         document.body.classList.add('finale');     /* voile abaissé : le fond gagne */
         if (window.Scene3D && Scene3D.finale) {
@@ -113,7 +128,8 @@
           document.body.classList.remove('warp');
         }
         if (window.AudioFX) AudioFX.apotheose();   /* charge 0,95 s → hit, calé sur la 3D */
-        setTimeout(function () { document.body.classList.remove('finale'); }, 17000);
+        clearTimeout(afficher._tFinale);
+        afficher._tFinale = setTimeout(function () { document.body.classList.remove('finale'); }, 17000);
         return;
       }
 
@@ -177,6 +193,7 @@
   function lancer() {
     if (demarre) return;
     demarre = true;
+    enVol = true;   /* le Grand Tour est scellé : navigation dès l'arrivée */
     document.body.classList.remove('accueil');
     if (window.AudioFX) AudioFX.unlock();
     /* nappe d'ambiance VOLONTAIREMENT muette : le son n'existe
@@ -187,6 +204,7 @@
     document.body.classList.add('warp');       /* cache HUD + slides pendant le voyage */
 
     var arrivee = function () {
+      enVol = false;              /* le tour est fini : la navigation s'ouvre */
       nova();                     /* impact frame : l'arrivée AVEUGLE, elle ne brunit pas */
       if (window.AudioFX && AudioFX.shimmer) AudioFX.shimmer();   /* les lettres naissent, l'air scintille */
       elFlash.classList.add('actif');

@@ -720,7 +720,10 @@
         cibleSouris.y = (e.clientY / innerHeight - 0.5);
       });
       window.addEventListener('resize', API.resize);
-      document.addEventListener('visibilitychange', function () { actif = !document.hidden; if (actif) boucle(); });
+      document.addEventListener('visibilitychange', function () {
+        actif = !document.hidden;
+        if (actif && !rafPrevu) boucle();   /* ne relance que si la chaîne est morte */
+      });
       boucle();
     },
 
@@ -745,7 +748,14 @@
        - INTER-ACTE  : vraie traversée de l'espace entre deux mondes
                        (2,2 s, arc large, le monde suivant émerge du fond) */
     voyage: function (chap, posDansActe, dir, style, interActe) {
-      if (finale.actif) return;
+      /* naviguer pendant la ronde finale = l'orateur reprend la main :
+         la finale s'annule proprement et la scène se range */
+      if (finale.actif) {
+        finale.actif = false;
+        if (bloom) bloom.strength = 0.85;
+      }
+      if (marqueFin && !marqueFin.visible) marqueFin.visible = true;
+      for (var rv = 0; rv < ronde.length; rv++) ronde[rv].visible = false;
       chap = Math.max(0, Math.min(waypoints.length - 1, chap));
       var wp = waypoints[chap];
       accentCible.copy(accents[chap]);
@@ -840,8 +850,11 @@
 
   /* ---------- boucle ---------- */
 
+  var rafPrevu = false;   /* garde anti-doublon : UNE seule chaîne rAF, toujours */
   function boucle() {
+    rafPrevu = false;
     if (!actif) return;
+    rafPrevu = true;
     requestAnimationFrame(boucle);
     var dt = Math.min(horloge.getDelta(), 0.05), t = horloge.getElapsedTime();
     dt *= tempo.v;   /* ralenti dramatique (slow-mo de l'explosion finale) */
@@ -1043,7 +1056,12 @@
           ronde[ri].position.lerp(cible, 0.05);
           ronde[ri].rotation.x += dt * 1.8; ronde[ri].rotation.y += dt * 2.2;
         }
-        if (po >= 1) { finale.actif = false; if (bloom) bloom.strength = 0.85; }
+        if (po >= 1) {
+          finale.actif = false;
+          if (bloom) bloom.strength = 0.85;
+          /* la ronde se range : pas d'astres figés pendant les questions */
+          for (var rf = 0; rf < ronde.length; rf++) ronde[rf].visible = false;
+        }
       }
     } else if (trajet.actif) {
       var pt2 = Math.min(1, (performance.now() - trajet.depart) / trajet.duree);

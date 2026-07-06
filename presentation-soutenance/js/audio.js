@@ -16,7 +16,7 @@
   };
   var GAMME = [N.D3, N.F3, N.G3, N.A3, N.C4, N.D4, N.F4, N.G4, N.A4, N.C5, N.D5];
 
-  var ctx = null, master = null, busMusic = null, busFx = null, busAir = null, reverb = null;
+  var ctx = null, master = null, duck = null, busMusic = null, busFx = null, busAir = null, reverb = null;
   var padGain = null, padOsc = [];
   var muted = localStorage.getItem('lwu-muted') === '1';
   var started = false;
@@ -55,7 +55,10 @@
     var comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -14; comp.ratio.value = 3; comp.attack.value = 0.004; comp.release.value = 0.25;
 
-    master.connect(shaper); shaper.connect(comp); comp.connect(ctx.destination);
+    /* "duck" : nœud dédié aux creux dramatiques (pré-silence de l'apothéose).
+       JAMAIS master : le mute/unmute garde toujours le dernier mot. */
+    duck = ctx.createGain(); duck.gain.value = 1;
+    master.connect(shaper); shaper.connect(comp); comp.connect(duck); duck.connect(ctx.destination);
 
     reverb = ctx.createConvolver();
     reverb.buffer = reverbIR(3.2, 2.4);
@@ -604,9 +607,12 @@
 
         var tx = t + 2.2;   /* instant de la déflagration */
 
-        /* 180 ms de noir sonore juste avant le hit : l'impact perçu double */
-        master.gain.setTargetAtTime(0.001, tx - 0.18, 0.02);
-        master.gain.setTargetAtTime(muted ? 0.0001 : 0.9, tx, 0.012);
+        /* 180 ms de noir sonore juste avant le hit : l'impact perçu double.
+           Sur le nœud duck — le mute (master) reste souverain. */
+        if (duck) {
+          duck.gain.setTargetAtTime(0.001, tx - 0.18, 0.02);
+          duck.gain.setTargetAtTime(1, tx, 0.012);
+        }
 
         /* 2a) l'ÉCLOSION — accord lumineux qui s'ouvre pile sur
            l'explosion : fluide, majestueux, sans voix. */
