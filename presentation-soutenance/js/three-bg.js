@@ -827,6 +827,7 @@
       pts.push(new THREE.Vector3(ZONES[0].x + 30, ZONES[0].y + 24, ZONES[0].z + 95));
       pts.push(waypoints[0].clone());
       warp.courbe = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.35);
+      warp.courbe.getLength();   /* pré-calcule les longueurs d'arc : zéro hoquet en vol */
       warp.fin = onDone;
       warp.lastSpark = 0;
       warp.etapes = [0.14, 0.30, 0.46, 0.62, 0.78];   /* survols des mondes 4→0 */
@@ -871,14 +872,16 @@
       /* vitesse SOUTENUE en plateau, mais qui retombe à ZÉRO aux deux bouts :
          l'atterrissage est fondu, plus aucune coupure sèche à l'arrivée */
       var vitesse = Math.min(1, Math.sin(p * Math.PI) * 1.6);
-      camPos.copy(warp.courbe.getPoint(k));
+      /* getPointAt = paramétrage par LONGUEUR D'ARC : vitesse uniforme sur
+         tout le tour (getPoint saute aux jointures de segments inégaux) */
+      camPos.copy(warp.courbe.getPointAt(k));
       camPos.x += (Math.random() - 0.5) * vitesse * 1.1;
       camPos.y += (Math.random() - 0.5) * vitesse * 1.1;
       /* HÉLICE d'étincelles qu'on traverse : les gerbes s'enroulent
          autour de la trajectoire comme une poussière de fée */
       if (p > 0.05 && p < 0.9 && performance.now() - warp.lastSpark > 170) {
         warp.lastSpark = performance.now();
-        var devant = warp.courbe.getPoint(Math.min(1, k + 0.06));
+        var devant = warp.courbe.getPointAt(Math.min(1, k + 0.06));
         var angH = performance.now() * 0.004;
         gerbe(devant.clone().add(new THREE.Vector3(Math.cos(angH) * 15, Math.sin(angH) * 11, 0)),
               Math.random() < 0.5 ? 0xFFD98A : 0xF3C9D0, 22, 10, 650);
@@ -912,10 +915,12 @@
       haloFacteur = 1 - vitesse;   /* les halos s'éteignent en plein vol (anti-blob) */
       /* la marque du Portail reste lisible pendant tout le vol */
       if (marquePortail) marquePortail.lookAt(camera.position);
-      /* le regard file DEVANT soi le long du tour, puis se pose sur le portail.
-         Le point visé est plafonné à 0.97 : jamais confondu avec la destination
-         (viser sa propre position rendait l'orientation instable à l'arrivée) */
-      var viseeW = p < 0.72 ? warp.courbe.getPoint(Math.min(0.97, k + 0.05)) : camRegardCible;
+      /* le regard file DEVANT soi le long du tour, puis se FOND vers le
+         portail entre 60 % et 85 % du vol — aucune bascule sèche.
+         Le point visé est plafonné à 0.97 : jamais confondu avec la
+         destination (viser sa propre position déstabilise l'orientation) */
+      var viseeW = warp.courbe.getPointAt(Math.min(0.97, k + 0.05));
+      if (p > 0.6) viseeW.lerp(camRegardCible, easeInOut(Math.min(1, (p - 0.6) / 0.25)));
       camRegard.lerp(viseeW, 0.14);
       if (points) points.material.size = 1.5 + vitesse * 2.5;
       if (lignes) lignes.material.opacity = 0.14 + vitesse * 0.34;
