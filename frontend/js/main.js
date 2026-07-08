@@ -678,29 +678,42 @@ function construireTableauComptes(lignes) {
         const nomComplet = ((l.prenom || '') + ' ' + (l.nom || '')).trim() || '—'
         const badgeClasse = l.statut === 'Premium' ? 'premium' : 'standard'
         const autreStatut = l.statut === 'Premium' ? 'Standard' : 'Premium'
-        /* On échappe l'email pour pouvoir le passer en attribut HTML.
-           encodeURIComponent suffit car on ne fait pas d'apostrophes. */
-        const emailEchappe = encodeURIComponent(l.email)
+        /* L'email part en attribut data- ÉCHAPPÉ (echappeHtml protège le
+           contexte HTML). On ne le met plus dans un onclick : une apostrophe
+           dans l'email (valide RFC) cassait la chaîne JS → XSS stockée. */
+        const emailAttr = echappeHtml(l.email || '')
         return '<tr>' +
           '<td>' + echappeHtml(nomComplet) + '</td>' +
           '<td>' + echappeHtml(l.email || '—') + '</td>' +
           '<td><span class="admin-badge-statut ' + badgeClasse + '">' + echappeHtml(l.statut) + '</span></td>' +
           '<td>' + formatDateCourte(l.date) + '</td>' +
           '<td>' +
-            '<button class="admin-action" onclick="changerStatutCompte(\'' + emailEchappe + '\',\'' + autreStatut + '\')">→ ' + autreStatut + '</button>' +
-            '<button class="admin-action admin-action-danger" onclick="supprimerCompteAdmin(\'' + emailEchappe + '\')">Supprimer</button>' +
+            '<button class="admin-action" data-action="statut" data-email="' + emailAttr + '" data-statut="' + autreStatut + '">→ ' + autreStatut + '</button>' +
+            '<button class="admin-action admin-action-danger" data-action="supprimer" data-email="' + emailAttr + '">Supprimer</button>' +
           '</td>' +
         '</tr>'
       }).join('') +
       '</tbody></table>'
 
   conteneur.innerHTML = html
+
+  /* Délégation : on lit l'email depuis dataset (déjà décodé par le navigateur,
+     jamais réinjecté dans du HTML) → aucune surface d'injection. */
+  conteneur.querySelectorAll('button[data-action]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const email = btn.dataset.email
+      if (btn.dataset.action === 'statut') {
+        changerStatutCompte(email, btn.dataset.statut)
+      } else {
+        supprimerCompteAdmin(email)
+      }
+    })
+  })
 }
 
 /* Admin : bascule le statut d'un compte (Standard ↔ Premium). */
-async function changerStatutCompte(emailEncode, nouveauStatut) {
+async function changerStatutCompte(email, nouveauStatut) {
   if (!confirm('Passer ce compte en ' + nouveauStatut + ' ?')) return
-  const email = decodeURIComponent(emailEncode)
   try {
     const reponse = await fetch(URL_BACKEND + '/api/admin/changer-statut.php', {
       method:  'POST',
@@ -720,8 +733,7 @@ async function changerStatutCompte(emailEncode, nouveauStatut) {
 }
 
 /* Admin : supprime un compte (après confirmation). */
-async function supprimerCompteAdmin(emailEncode) {
-  const email = decodeURIComponent(emailEncode)
+async function supprimerCompteAdmin(email) {
   if (!confirm('Supprimer définitivement le compte ' + email + ' ?\n\nCette action est irréversible.')) return
   try {
     const reponse = await fetch(URL_BACKEND + '/api/admin/supprimer-compte.php', {

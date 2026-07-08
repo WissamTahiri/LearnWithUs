@@ -20,10 +20,17 @@ $d     = lireRequete();
 $email = strtolower(trim($d['email'] ?? ''));
 $mdp   = $d['motDePasse']             ?? '';
 
-/* Anti-bruteforce : 10 tentatives / 15 min par IP + email. Clé par email
-   pour qu'un utilisateur derrière une IP partagée (salle de classe / NAT)
-   ne bloque pas les autres. Localhost est exempté (voir rate-limit.php). */
-if (!verifierRateLimit('connexion-' . obtenirIp() . '-' . $email, 10, 900)) {
+/* Anti-bruteforce à DEUX niveaux (localhost exempté, voir rate-limit.php) :
+   - par IP + email (10 / 15 min) : protège UN compte ciblé sans bloquer les
+     autres utilisateurs derrière une IP partagée (salle de classe / NAT) ;
+   - par IP seule (40 / 15 min) : plafond global qui freine le credential
+     stuffing (un bot qui teste des dizaines d'emails différents depuis la
+     même IP). Seuil généreux pour tolérer une classe entière, mais très en
+     dessous des centaines de tentatives d'une attaque automatisée.
+   On appelle les DEUX avant le test pour qu'ils enregistrent leur tentative. */
+$ipOk    = verifierRateLimit('connexion-ip-' . obtenirIp(), 40, 900);
+$emailOk = verifierRateLimit('connexion-' . obtenirIp() . '-' . $email, 10, 900);
+if (!$ipOk || !$emailOk) {
     repondreJson([
         'succes'  => false,
         'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
@@ -39,6 +46,11 @@ if (!$email || !$mdp) {
 
 $page = chercherCompteParEmail($email);
 if (!$page) {
+    /* Anti-énumération par timing : on exécute quand même un password_verify
+       contre un hash bcrypt factice (même coût 10) pour que la réponse mette
+       le même temps qu'un compte existant. Sinon, une réponse trop rapide
+       trahit l'absence de compte. */
+    password_verify($mdp, '$2y$10$iz7Nvuv/tUDSgVBlwxaJ9..wYnlV.9gan4ZSNECOGkgovDk8mD9Cm');
     repondreJson([
         'succes'  => false,
         'message' => 'Email ou mot de passe incorrect'

@@ -26,3 +26,7 @@ backend-php/config.php
 
 # Vidéos de formation (assets lourds .mp4) — déployées via FileZilla, PAS via Git
 frontend/videos/
+
+# État du rate-limiter généré au runtime (compteurs anti-bruteforce)
+# Le dossier data/ est conservé via .gitkeep, mais pas ses fichiers rl-*.json
+backend-php/data/rl-*.json

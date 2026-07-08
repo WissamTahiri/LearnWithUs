@@ -10,8 +10,19 @@
 require_once __DIR__ . '/_init.php';
 require_once __DIR__ . '/../helpers/webhook.php';
 require_once __DIR__ . '/../helpers/crm.php';
+require_once __DIR__ . '/../helpers/rate-limit.php';
 
 exigerMethode('POST');
+
+/* Anti-spam : 5 envois / 15 min par IP (localhost exempté). Sans ça, le
+   formulaire de contact est une route publique qui écrit → n8n + CRM Notion
+   pouvaient être inondés à l'infini. */
+if (!verifierRateLimit('contact-' . obtenirIp(), 5, 900)) {
+    repondreJson([
+        'succes'  => false,
+        'message' => 'Trop de messages envoyés, réessayez dans 15 minutes.'
+    ], 429);
+}
 
 $donnees = lireRequete();
 $prenom  = trim($donnees['prenom']  ?? '');

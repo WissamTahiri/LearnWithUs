@@ -36,8 +36,13 @@ $page = chercherCompteParEmail($email);
 if ($page) {
     $compte = lireCompte($page);
 
-    /* Token signé valable 15 minutes */
-    $token = genererToken($compte['email'], 'reset', 15 * 60);
+    /* Empreinte du hash actuel : lie le token au mot de passe courant, ce qui
+       rend le lien À USAGE UNIQUE (dès que le mdp change, tout lien émis avant
+       devient invalide). */
+    $empreinte = substr(hash('sha256', $compte['hash']), 0, 16);
+
+    /* Token signé valable 15 minutes, lié au mot de passe actuel */
+    $token = genererToken($compte['email'], 'reset', 15 * 60, $empreinte);
     $lien  = URL_SITE . '/reset-mot-de-passe.html?token=' . $token;
 
     if (WEBHOOK_N8N_RESET_MDP) {

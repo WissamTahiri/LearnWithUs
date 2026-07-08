@@ -16,7 +16,7 @@ exigerMethode('POST');
 
 /* Anti-bruteforce : 5 tentatives / 15 min par IP. Empêche un
    attaquant de forger des tokens et de tester massivement. */
-if (!verifierRateLimit('mdp-confirmer-' . obtenirIp())) {
+if (!verifierRateLimit('mdp-confirmer-' . obtenirIp(), 5, 900)) {
     repondreJson([
         'succes'  => false,
         'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
@@ -53,6 +53,18 @@ if (!$payload) {
 $page = chercherCompteParEmail($payload['email']);
 if (!$page) {
     repondreJson(['succes' => false, 'message' => 'Compte introuvable'], 404);
+}
+
+/* Usage unique : le token porte l'empreinte du hash au moment de l'envoi.
+   Si le mot de passe a déjà changé depuis (lien rejoué, ou un 2e lien plus
+   récent a été demandé), l'empreinte ne correspond plus → on refuse. */
+$compte = lireCompte($page);
+$empreinteActuelle = substr(hash('sha256', $compte['hash']), 0, 16);
+if (!hash_equals($empreinteActuelle, $payload['liaison'] ?? '')) {
+    repondreJson([
+        'succes'  => false,
+        'message' => 'Lien déjà utilisé ou expiré (valable 15 minutes)'
+    ], 400);
 }
 
 $nouveauHash = password_hash($nouveauMdp, PASSWORD_BCRYPT, ['cost' => 10]);

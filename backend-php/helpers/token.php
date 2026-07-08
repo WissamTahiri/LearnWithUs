@@ -18,9 +18,12 @@ require_once __DIR__ . '/../config.php';
    - $email    : email du compte concerné
    - $purpose  : raison du token ('reset' ou 'verification')
    - $dureeSec : durée de validité en secondes */
-function genererToken($email, $purpose, $dureeSec) {
+function genererToken($email, $purpose, $dureeSec, $liaison = '') {
     $exp     = time() + $dureeSec;
-    $charge  = $email . '|' . $purpose . '|' . $exp;
+    /* $liaison = valeur qui LIE le token à un état serveur (ex : empreinte du
+       hash actuel du mot de passe). Résultat : usage unique — dès que cet état
+       change (mdp modifié), l'empreinte change et le token ne valide plus. */
+    $charge  = $email . '|' . $purpose . '|' . $exp . '|' . $liaison;
     $payload = base64UrlEncode($charge);
     $sig     = hash_hmac('sha256', $payload, APP_SECRET);
     return $payload . '.' . $sig;
@@ -43,14 +46,14 @@ function verifierToken($token, $purposeAttendu) {
     if (!$charge) return null;
 
     $parties = explode('|', $charge);
-    if (count($parties) !== 3) return null;
+    if (count($parties) !== 4) return null;
 
-    list($email, $purpose, $exp) = $parties;
+    list($email, $purpose, $exp, $liaison) = $parties;
 
     if ($purpose !== $purposeAttendu) return null;
     if (time() > (int)$exp)            return null;
 
-    return ['email' => $email, 'purpose' => $purpose, 'exp' => (int)$exp];
+    return ['email' => $email, 'purpose' => $purpose, 'exp' => (int)$exp, 'liaison' => $liaison];
 }
 
 

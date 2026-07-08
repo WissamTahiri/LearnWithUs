@@ -33,6 +33,23 @@ if (!$page) {
     ], 404);
 }
 
+/* === Idempotence : si le compte est DÉJÀ Premium, on s'arrête ici ===
+   Sans cette garde, un rejeu de la requête (double-clic, refresh du
+   formulaire, retour arrière) ré-enregistrerait une transaction 29 € et
+   renverrait un nouveau reçu à chaque appel → revenu faussé + spam client.
+   On lit le statut réel côté Notion (source de vérité), pas la session. */
+$compteActuel = lireCompte($page);
+if (($compteActuel['statut'] ?? '') === 'Premium') {
+    $utilisateur['statut'] = 'Premium';
+    connecterUtilisateur($utilisateur);
+    repondreJson([
+        'succes'      => true,
+        'message'     => 'Votre compte est déjà Premium',
+        'dejaPremium' => true,
+        'utilisateur' => $utilisateur
+    ]);
+}
+
 /* === Bascule du Statut Notion → Premium === */
 $majStatut = appelerNotion('PATCH', 'pages/' . $page['id'], [
     'properties' => [
