@@ -1899,3 +1899,66 @@ body,
   height: 20px;
   display: block;
 }
+
+
+/* ===== RESPONSIVE MOBILE — durcissement multi-appareils (2026-07-09) ===== */
+/* Garantit un affichage correct sur tout appareil, y compris les écrans
+   étroits (<=360px) et le zoom navigateur. Corrige les débordements des
+   tableaux de tarifs et des liens de ressources sur petit écran. */
+
+/* Filet de sécurité : un mot ou une URL trop long ne doit jamais élargir la page */
+p, li, td, th, h1, h2, h3, .ressource-description, .accordeon-reponse {
+  overflow-wrap: break-word;
+}
+
+/* Tables : défilement horizontal DANS leur conteneur plutôt que débordement
+   de toute la page (le wrapper .table-scroll est ajouté autour des tables). */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 20px;
+}
+.table-scroll .tableau-tarifs { margin-bottom: 0; }
+
+@media (max-width: 600px) {
+  /* Tarifs : cellules compactes pour tenir sans défilement sur la
+     plupart des téléphones ; .table-scroll gère les cas extrêmes. */
+  .tableau-tarifs th,
+  .tableau-tarifs td { padding: 8px 10px; font-size: 0.88rem; }
+
+  /* Ressources : la ligne s'enroule, le lien ne force plus la largeur */
+  .liste-ressources li { flex-wrap: wrap; }
+  .liste-ressources a.ressource-lien,
+  .liste-ressources .ressource-lien-desactive { white-space: normal; }
+
+  /* Tables admin : défilement interne au lieu de casser la page */
+  .admin-tableau-compact { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+/* Réglages fins pour les téléphones (<=480px) */
+@media (max-width: 480px) {
+  .section,
+  .section-fond { padding: 40px 16px; }
+  .section h2,
+  .section-fond .section-contenu h2 { font-size: 1.5rem; margin-bottom: 30px; }
+
+  .hero { padding: 40px 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero p  { font-size: 1rem; }
+
+  .fiche-formation,
+  .formulaire-conteneur { padding: 24px 18px; }
+  .premium-cta,
+  .infos-contact { padding: 28px 20px; }
+
+  /* Boutons pleine largeur = cibles tactiles confortables */
+  .fiche-boutons { flex-direction: column; }
+  .fiche-boutons .bouton-principal,
+  .fiche-boutons .bouton-secondaire { width: 100%; }
+
+  /* Onglets Standard / Premium : compacts mais côte à côte */
+  .onglet-bouton { padding: 12px 16px; font-size: 0.92rem; }
+
+  /* Confort tactile : liens de navigation plus hauts */
+  .nav-liens a { padding: 12px 0; }
+}
