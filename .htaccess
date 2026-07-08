@@ -31,6 +31,12 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     Require all denied
 </Files>
 
+# config.example.php : modele sans secret, mais on bloque l'acces direct
+# pour ne pas exposer publiquement l'architecture (constantes Notion / n8n).
+<Files "config.example.php">
+    Require all denied
+</Files>
+
 # Tout le dossier helpers/ est inaccessible en direct.
 RedirectMatch 403 ^/backend-php/helpers/
 
@@ -51,10 +57,9 @@ RedirectMatch 403 ^/backend-php/data/
     # Empeche que la page soit affichee dans un iframe (clickjacking)
     Header set X-Frame-Options "SAMEORIGIN"
 
-    # Force HTTPS pendant 1 an (HSTS) - ne pas activer avant
-    # d'etre sur que tout fonctionne en HTTPS, sinon on bloque
-    # l'acces au site.
-    # Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    # Force HTTPS pendant 1 an (HSTS). Active : le site tourne deja en
+    # HTTPS avec un certificat SSL valide et toutes les pages en 200.
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
     # Limite le referrer envoye aux sites tiers
     Header set Referrer-Policy "strict-origin-when-cross-origin"

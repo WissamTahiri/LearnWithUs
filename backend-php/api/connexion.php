@@ -67,13 +67,6 @@ if (!password_verify($mdp, $compte['hash'])) {
     ], 401);
 }
 
-/* Mise à jour de "Derniere connexion" (silencieux si erreur) */
-appelerNotion('PATCH', 'pages/' . $compte['id'], [
-    'properties' => [
-        'Derniere connexion' => ['date' => ['start' => date('c')]]
-    ]
-]);
-
 /* Ouverture de la session */
 $utilisateur = [
     'email'  => $compte['email'],
