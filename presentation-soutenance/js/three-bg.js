@@ -29,7 +29,7 @@
   var warp = { actif: false, depart: 0, duree: 0, de: null, vers: null, fin: null, j1: false, j2: false, courbe: null, lastSpark: 0 };
   var trajet = { actif: false, depart: 0, duree: 0, courbe: null, roll: 0, fovAmp: 0, gerbeFaite: false, hyper: false, chap: 0, lastSpark: 0 };
   var kick = { x: 0, z: 0 };
-  var finale = { actif: false, depart: 0, duree: 15000, explose: false, cb: null, sp1: false, sp2: false, sp3: false };
+  var finale = { actif: false, depart: 0, duree: 15000, explose: false, cb: null, sp1: false, sp2: false, sp3: false, timers: [], eclat: null };
 
   var tunnel = null, tunnelLignes = [];
   var ondes = [];
@@ -753,6 +753,23 @@
       if (finale.actif) {
         finale.actif = false;
         if (bloom) bloom.strength = 0.85;
+        /* ANNULATION PROPRE de la finale : l'orateur reprend la main, on purge
+           les effets differes pour qu'ils ne tirent pas par-dessus les slides
+           suivantes (fusees, pluies d'or, god rays qui respirent, eclat blanc).
+           Sans ca : pool de bursts epuise + rayons qui pulsent tout le reste. */
+        for (var _ft = 0; _ft < finale.timers.length; _ft++) clearTimeout(finale.timers[_ft]);
+        finale.timers.length = 0;
+        if (typeof gsap !== 'undefined') {
+          if (rayons && rayons.godRaysMaterial) {
+            var _uAnn = rayons.godRaysMaterial.uniforms;
+            gsap.killTweensOf(_uAnn.weight); gsap.killTweensOf(_uAnn.exposure);
+            _uAnn.weight.value = 0.28; _uAnn.exposure.value = 0.55;   /* base calme des god rays */
+          }
+          gsap.killTweensOf(fovPunch); fovPunch.v = 0;
+          gsap.killTweensOf(tempo); tempo.v = 1;
+          if (finale.eclat) gsap.killTweensOf(finale.eclat.material);
+        }
+        if (finale.eclat) { scene.remove(finale.eclat); finale.eclat.material.dispose(); finale.eclat = null; }
       }
       if (marqueFin && !marqueFin.visible) marqueFin.visible = true;
       for (var rv = 0; rv < ronde.length; rv++) ronde[rv].visible = false;
@@ -897,6 +914,7 @@
         var ziW = Math.max(0, 4 - warp.etape);
         creerOnde(ZONES[ziW].clone(), accents[ziW].getHex(), 30, 900, 0.4);
         gerbe(ZONES[ziW].clone().add(new THREE.Vector3(0, 6, 10)), accents[ziW].getHex(), 90, 16, 1400);
+        if (pulseZone.chap >= 0) zoneHeros[pulseZone.chap].forEach(function (h) { h.scale.setScalar(1); });
         pulseZone.chap = ziW; pulseZone.t0 = performance.now();
         if (global.AudioFX) {
           if (global.AudioFX.boum) global.AudioFX.boum();
@@ -991,36 +1009,45 @@
           }));
           eclat.position.copy(centre); eclat.scale.setScalar(2);
           scene.add(eclat);
+          finale.eclat = eclat;
           if (typeof gsap !== 'undefined') {
             var es = { s: 2 };
             gsap.to(es, { s: 62, duration: 0.5, ease: 'expo.out',
               onUpdate: function () { eclat.scale.setScalar(es.s); } });
             gsap.to(eclat.material, { opacity: 0, duration: 0.95, delay: 0.1, ease: 'power2.out',
-              onComplete: function () { scene.remove(eclat); eclat.material.dispose(); } });
+              onComplete: function () { scene.remove(eclat); eclat.material.dispose(); finale.eclat = null; } });
             gsap.fromTo(tempo, { v: 0.15 }, { v: 1, duration: 0.9, ease: 'power2.in' });
+          } else {
+            /* pas de GSAP : pas de tween pour disposer le sprite -> on le retire
+               tout de suite au lieu de le laisser fuir dans la scene. */
+            scene.remove(eclat); eclat.material.dispose(); finale.eclat = null;
           }
           (function (c2) {
-            setTimeout(function () { creerOnde(c2, 0xF3C9D0, 70, 1600, 0.28); }, 180);
-            setTimeout(function () { creerOnde(c2, 0xA5384A, 85, 1800, 0.22); }, 380);
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(14, 8, 0)), 0xFFE9C4, 150, 15, 2500); }, 600);
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(-16, -6, 4)), 0xFFD98A, 150, 15, 2500); }, 950);
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 12, -6)), 0xE7734B, 130, 17, 2400); }, 1400);
+            /* tous ces effets differes sont traces dans finale.timers : une
+               annulation de la finale (voyage()) doit pouvoir les purger d'un coup. */
+            finale.timers.length = 0;
+            var P = function (fn, ms) { finale.timers.push(setTimeout(fn, ms)); };
+            P(function () { creerOnde(c2, 0xF3C9D0, 70, 1600, 0.28); }, 180);
+            P(function () { creerOnde(c2, 0xA5384A, 85, 1800, 0.22); }, 380);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(14, 8, 0)), 0xFFE9C4, 150, 15, 2500); }, 600);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(-16, -6, 4)), 0xFFD98A, 150, 15, 2500); }, 950);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 12, -6)), 0xE7734B, 130, 17, 2400); }, 1400);
             /* le bouquet continue : 16 fusées échelonnées sur plus de 8 s */
             for (var kx = 0; kx < 16; kx++) {
               (function (kx) {
-                setTimeout(function () {
+                P(function () {
                   gerbe(c2.clone().add(new THREE.Vector3((Math.random() - 0.5) * 32, (Math.random() - 0.3) * 24, (Math.random() - 0.5) * 26)),
                         [0xFFD98A, 0xE7734B, 0xF3C9D0, 0xFFE9C4][kx % 4], 110, 13, 2200);
                 }, 1250 + kx * 450);
               })(kx);
             }
             /* deuxième front d'ondes : l'écho de la déflagration */
-            setTimeout(function () { creerOnde(c2, 0xE7B84B, 95, 2000, 0.18); }, 3800);
-            setTimeout(function () { creerOnde(c2, 0xF3C9D0, 105, 2200, 0.14); }, 4300);
+            P(function () { creerOnde(c2, 0xE7B84B, 95, 2000, 0.18); }, 3800);
+            P(function () { creerOnde(c2, 0xF3C9D0, 105, 2200, 0.14); }, 4300);
             /* et TROIS pluies d'or qui retombent sur la scène, de plus en plus douces */
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 24, 0)), 0xFFE9C4, 240, 4, 6200, 'pluie'); }, 2100);
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 26, 0)), 0xFFD98A, 200, 4, 6000, 'pluie'); }, 6400);
-            setTimeout(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 25, 0)), 0xF3C9D0, 150, 3, 5600, 'pluie'); }, 9800);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 24, 0)), 0xFFE9C4, 240, 4, 6200, 'pluie'); }, 2100);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 26, 0)), 0xFFD98A, 200, 4, 6000, 'pluie'); }, 6400);
+            P(function () { gerbe(c2.clone().add(new THREE.Vector3(0, 25, 0)), 0xF3C9D0, 150, 3, 5600, 'pluie'); }, 9800);
           })(centre.clone());
           coeur.scale.setScalar(0.5);
           ronde.forEach(function (a) { a.visible = true; a.position.copy(centre); });
@@ -1100,6 +1127,7 @@
         }
         if (trajet.hyper) {
           creerOnde(camRegardCible.clone(), accentCible.getHex(), 24, 850);
+          if (pulseZone.chap >= 0) zoneHeros[pulseZone.chap].forEach(function (h) { h.scale.setScalar(1); });
           pulseZone.chap = trajet.chap; pulseZone.t0 = performance.now();
         }
       }

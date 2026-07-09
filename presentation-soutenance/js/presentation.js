@@ -138,7 +138,11 @@
          le tunnel joue seul, la slide se pose quand le monde est là. */
       if (!reduit) {
         document.body.classList.add('voyage');
+        /* la classe 'traversee' ne vaut QUE le temps d'une traversée inter-acte ;
+           en nav intra-acte on la retire tout de suite, sinon un aller-retour
+           rapide (qui clear _tTrav) la laisse collée sur le reste des slides. */
         if (changeActe) document.body.classList.add('traversee');
+        else document.body.classList.remove('traversee');
         clearTimeout(afficher._tVoyage);
         clearTimeout(afficher._tTrav);
         afficher._tVoyage = setTimeout(function () {
@@ -180,8 +184,22 @@
     }
   }
 
-  function suivant() { if (idx < slides.length - 1) afficher(idx + 1, 1); }
-  function precedent() { if (idx > 0) afficher(idx - 1, -1); }
+  /* anti-spam de navigation : deux appels a moins de 150 ms (auto-repeat clavier
+     maintenu, double-clic, matraquage) sont ignores -> plus d'empilement de sons
+     de transition ni de sauts de slide involontaires. */
+  var tNav = 0;
+  function suivant() {
+    var maintenant = performance.now();
+    if (maintenant - tNav < 150) return;
+    tNav = maintenant;
+    if (idx < slides.length - 1) afficher(idx + 1, 1);
+  }
+  function precedent() {
+    var maintenant = performance.now();
+    if (maintenant - tNav < 150) return;
+    tNav = maintenant;
+    if (idx > 0) afficher(idx - 1, -1);
+  }
 
   function pleinEcran() {
     var el = document.documentElement;
@@ -192,6 +210,14 @@
   /* Lancement : intro → warp 3D + riser → flash → première slide */
   function lancer() {
     if (demarre) return;
+    /* la 3D (three.min.js ~592 Ko) peut encore parser quand on lance : au lieu
+       de tomber tout de suite dans le repli SANS le vol d'ouverture, on patiente
+       jusqu'a ~2,4 s que warpIntro soit prete. En reduit, aucun vol -> on file. */
+    if (!reduit && (!window.Scene3D || !window.Scene3D.warpIntro)
+        && (lancer._essais = (lancer._essais || 0) + 1) <= 12) {
+      setTimeout(lancer, 200);
+      return;
+    }
     demarre = true;
     enVol = true;   /* le Grand Tour est scellé : navigation dès l'arrivée */
     document.body.classList.remove('accueil');

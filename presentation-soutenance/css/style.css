@@ -75,7 +75,9 @@ html, body {
   transition: opacity 0.85s ease, transform 1.05s cubic-bezier(0.65, 0, 0.35, 1),
               visibility 0s linear 1.05s;
   pointer-events: none;
-  will-change: transform, opacity;
+  /* will-change scopé à la slide active (voir .slide.actif) : le poser sur les
+     ~28 slides en permanence garde autant de couches compositeur GPU vivantes
+     pour rien (MDN le déconseille). Une seule couche à la fois suffit. */
 }
 /* Slide déjà vue : rangée à gauche, pivot inverse */
 .slide.passe {
@@ -87,6 +89,7 @@ html, body {
   transform: none;
   pointer-events: auto;
   transition-delay: 0s;
+  will-change: transform, opacity;
 }
 
 /* --- Balayage lumineux lors d'un changement d'acte --- */
@@ -1060,4 +1063,17 @@ body.warp #cine-bas,  body.traversee #cine-bas  { transform: none; }
   body.warp:not(.finale) #lueur-warp { animation: none; opacity: 0; }
   #cine-haut, #cine-bas { transition: none; transform: none; display: none; }
   .slide.actif .slide-titre-xxl .ltr { animation: none; }
+}
+
+
+/* ===== Accessibilite clavier (2026-07-09) =====
+   Anneau de focus visible UNIQUEMENT au clavier : :focus-visible ne se declenche
+   pas au clic souris, donc l'esthetique de la demo reste intacte. Rend les
+   boutons HUD (son, plein ecran) et le bouton de lancement reperables au Tab. */
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #E7B84B;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
