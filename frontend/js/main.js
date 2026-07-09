@@ -472,15 +472,20 @@ function configurerAccesFormation() {
     if (carteCta) {
       const bouton  = carteCta.querySelector('.bouton-cta')
       const message = carteCta.querySelector('.message-cta')
+      /* la page SCRUM est en anglais (lang="en") : on garde le CTA dans la
+         langue de la page au lieu d'injecter systematiquement du francais. */
+      const en = document.documentElement.lang === 'en'
       if (estConnecte) {
-        message.textContent =
-          'Passez à Premium pour débloquer le cours complet, la vidéo de 10 min et le quiz final.'
-        bouton.textContent = 'Passer à Premium'
+        message.textContent = en
+          ? 'Upgrade to Premium to unlock the full course, the complete video and the final quiz.'
+          : 'Passez à Premium pour débloquer le cours complet, la vidéo complète et le quiz final.'
+        bouton.textContent = en ? 'Go Premium' : 'Passer à Premium'
         bouton.href = 'paiement.html'
       } else {
-        message.textContent =
-          'Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.'
-        bouton.textContent = 'Créer un compte'
+        message.textContent = en
+          ? 'Create your free account to get started, then go Premium to unlock everything.'
+          : 'Créez votre compte gratuit pour commencer, puis passez Premium pour tout débloquer.'
+        bouton.textContent = en ? 'Create an account' : 'Créer un compte'
         bouton.href = 'inscription-compte.html'
       }
     }

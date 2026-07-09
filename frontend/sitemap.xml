@@ -2,7 +2,7 @@
 <!--
   sitemap.xml — liste des URLs publiques pour les moteurs de recherche.
   À mettre à jour si on ajoute / retire des pages publiques.
-  Les pages privées (admin, paiement, parametres, reset, verification)
+  Les pages privées (admin, paiement, parametres, reset)
   sont exclues volontairement (elles ont aussi `noindex` dans le HTML).
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -57,6 +57,12 @@
 
   <url>
     <loc>https://learnwithus.fr/inscription-compte.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
+    <loc>https://learnwithus.fr/espace-client.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>

@@ -3,9 +3,9 @@
   connexion.html — Page de connexion de LearnWithUs
   ============================================================
   Authentifie l'utilisateur auprès du backend via l'API
-  /api/connexion (bcrypt + JWT). La session est stockée
-  dans localStorage et permet de naviguer connecté sur
-  toutes les pages (voir majNavigation dans main.js).
+  /api/connexion (bcrypt, session PHP par cookie HttpOnly).
+  Le front met l'utilisateur en cache localStorage pour la
+  nav (voir majNavigation dans main.js).
   ============================================================
 -->
 <html lang="fr">
@@ -210,7 +210,7 @@
        ============================================================
        Formulaire centré dans une carte blanche.
        action="#" empêche le rechargement de la page à la soumission.
-       La vraie logique de connexion sera ajoutée en Phase 4.
+       La logique de connexion est gérée par envoyerConnexion() (main.js).
        ============================================================ -->
   <main class="page-auth" id="contenu">
     <div class="carte-auth">
