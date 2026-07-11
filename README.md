@@ -29,6 +29,7 @@ LearnWithUs/
 |   |-- paiement.html               <- Paiement Premium fictif
 |   |-- admin.html                  <- Dashboard administrateur
 |   |-- reset-mot-de-passe.html     <- Reinitialisation mot de passe
+|   |-- mentions-legales.html       <- Mentions legales, CGU, confidentialite
 |   |-- 404.html                    <- Page d'erreur personnalisee
 |   |-- sitemap.xml / robots.txt    <- SEO
 |   |-- favicon.svg                 <- Icone du site
@@ -46,8 +47,8 @@ LearnWithUs/
 |   |   |-- crm.php                 <- Synchronisation CRM Notion
 |   |   |-- comptes.php             <- Recherche / lecture comptes
 |   |   |-- auth.php                <- Sessions PHP, exigerConnexion / Admin
-|   |   |-- rate-limit.php          <- Anti-bruteforce (5 / 15 min)
-|   |   |-- token.php               <- Tokens HMAC (reset, verif email)
+|   |   |-- rate-limit.php          <- Anti-bruteforce fichier (10-40 essais / 15 min selon l'action)
+|   |   |-- token.php               <- Tokens HMAC (reset mot de passe)
 |   |   |-- transactions.php        <- Enregistrement paiements Notion
 |   |-- api/
 |   |   |-- _init.php               <- Bootstrap commun
@@ -143,7 +144,7 @@ Le site tourne en production sur `https://learnwithus.fr`. Les etapes suivies :
 5. **Config prod** : `backend-php/config.php` cree directement sur le serveur (jamais commit sur Git), seule difference vs local : `URL_SITE = 'https://learnwithus.fr'`
 6. **Permissions** : dossier `backend-php/data/` en 755 (writeable pour le rate-limit)
 
-Le fichier `.htaccess` a la racine force HTTPS (redirection 301), bloque l'acces direct au `config.php` et aux dossiers `helpers/` et `data/`, ajoute les headers de securite (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy), active la compression gzip et le cache navigateur, et redirige les 404 vers `/404.html`.
+Le fichier `.htaccess` a la racine force HTTPS (redirection 301), bloque l'acces direct au `config.php` et aux dossiers `helpers/` et `data/`, desactive le listing des repertoires (`Options -Indexes`) et protege les videos et supports de cours contre le hotlink externe, ajoute les headers de securite (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy), active la compression gzip et le cache navigateur, et redirige les 404 vers `/404.html`.
 
 
 ## Email professionnel (IONOS)
