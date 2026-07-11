@@ -94,3 +94,27 @@ RedirectMatch 403 ^/backend-php/data/
 # ----- 6. PAGE D'ERREUR 404 -----
 # Utilise notre 404.html au lieu de la page Apache par defaut.
 ErrorDocument 404 /404.html
+
+# ----- 7. EMPECHER LE LISTING DES DOSSIERS -----
+# Sans cette directive, taper /videos/ ou /docs/supports/ dans le
+# navigateur afficherait la liste de tous les fichiers du dossier.
+# On desactive l'index automatique d'Apache : un dossier sans
+# index.html renvoie desormais 403 au lieu de lister son contenu.
+Options -Indexes
+
+
+# ----- 8. ANTI-HOTLINK SUR LES VIDEOS ET SUPPORTS -----
+# Empeche un site tiers d'integrer directement nos videos (.mp4) ou
+# nos PDF de cours (vol de bande passante + contournement du Premium
+# par embed externe). Regle volontairement conservatrice pour ne PAS
+# casser la lecture pendant la demo :
+#   - requete venant de learnwithus.fr  -> AUTORISEE (lecture normale)
+#   - requete sans referer (lien direct, lecteur video) -> AUTORISEE
+#   - referer d'un AUTRE domaine         -> BLOQUEE (403)
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} ^/(videos|docs)/ [NC]
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://([^/]+\.)?learnwithus\.fr [NC]
+    RewriteRule ^ - [F]
+</IfModule>
+

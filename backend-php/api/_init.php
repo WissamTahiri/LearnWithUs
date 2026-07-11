@@ -8,6 +8,13 @@
    - Fournit une fonction lireRequete() qui supporte JSON & form
    ============================================================= */
 
+/* Sécurité : ne jamais afficher les erreurs PHP au visiteur.
+   Une erreur affichée pourrait révéler un chemin serveur ou une
+   partie du code. On les masque et on les journalise côté serveur. */
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../config.php';
 
 /* Toutes nos routes répondent en JSON */
