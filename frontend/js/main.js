@@ -1023,6 +1023,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  /* Page espace-client.html : ouvre directement l'onglet Premium si l'URL le
+     demande (#premium ou ?onglet=premium) - le recu de paiement y renvoie. */
+  if (document.getElementById('contenu-premium') &&
+      (window.location.hash === '#premium' ||
+       new URLSearchParams(window.location.search).get('onglet') === 'premium')) {
+    basculerOnglet('premium')
+  }
+
   /* Page reset-mot-de-passe.html : bascule demande / confirmation */
   const formDemandeReset = document.getElementById('formulaire-demande-reset')
   if (formDemandeReset) {
