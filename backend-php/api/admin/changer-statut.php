@@ -10,6 +10,7 @@ require_once __DIR__ . '/../_init.php';
 require_once __DIR__ . '/../../helpers/auth.php';
 require_once __DIR__ . '/../../helpers/comptes.php';
 require_once __DIR__ . '/../../helpers/notion.php';
+require_once __DIR__ . '/../../helpers/crm.php';
 
 exigerMethode('POST');
 exigerAdmin();
@@ -41,6 +42,17 @@ $maj = appelerNotion('PATCH', 'pages/' . $page['id'], [
 if (!$maj) {
     repondreJson(['succes' => false, 'message' => 'Erreur lors du changement de statut'], 500);
 }
+
+/* === Aligne le CRM sur le nouveau statut ===
+   Sans cette synchro, un compte passe Premium par l'admin restait "Lead"
+   dans le CRM : le pipeline n'etait mis a jour que par le paiement en
+   self-service. Premium -> Client Premium ; retour Standard -> Client. */
+$compte = lireCompte($page);
+synchroniserCRM([
+    'email'      => $emailCible,
+    'nomComplet' => (trim(($compte['prenom'] ?? '') . ' ' . ($compte['nom'] ?? '')) ?: $emailCible),
+    'pipeline'   => $nouveauStatut === 'Premium' ? 'Client Premium' : 'Client'
+]);
 
 repondreJson([
     'succes'  => true,
