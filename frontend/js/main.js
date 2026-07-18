@@ -390,7 +390,7 @@ function brancherFormatsCarte() {
   })
 
   cvv.addEventListener('input', function() {
-    cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4)
+    cvv.value = cvv.value.replace(/\D/g, '').slice(0, 3)
   })
 }
 
