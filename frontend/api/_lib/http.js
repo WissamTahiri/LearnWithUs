@@ -11,6 +11,15 @@ function lireCorps(req) {
   return req.body && typeof req.body === 'object' ? req.body : {};
 }
 
+/* Regex email pratique et largement utilisee (equivalent JS le
+   plus proche de FILTER_VALIDATE_EMAIL en PHP — JS n'a pas
+   d'equivalent natif). Centralisee ici pour que toutes les
+   routes valident un email exactement de la meme facon. */
+const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function emailValide(email) {
+  return typeof email === 'string' && REGEX_EMAIL.test(email);
+}
+
 function envoyerJson(res, payload, code = 200) {
   res.status(code).json(payload);
 }
@@ -25,4 +34,4 @@ function exigerMethode(req, res, attendu) {
   return true;
 }
 
-module.exports = { lireCorps, envoyerJson, exigerMethode };
+module.exports = { lireCorps, envoyerJson, exigerMethode, emailValide };
