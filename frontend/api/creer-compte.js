@@ -12,7 +12,7 @@
    ============================================================= */
 
 const dns = require('dns').promises;
-const { lireCorps, envoyerJson, exigerMethode, emailValide } = require('./_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, emailValide, texte } = require('./_lib/http');
 const { chercherCompteParEmail } = require('./_lib/comptes');
 const { estAdmin } = require('./_lib/auth');
 const { verifierRateLimit, acquerirVerrouCreation, libererVerrou, obtenirIp } = require('./_lib/rateLimit');
@@ -50,11 +50,13 @@ module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
 
   const d = lireCorps(req);
-  const prenom = (d.prenom || '').trim();
-  const nom = (d.nom || '').trim();
-  const email = (d.email || '').trim().toLowerCase();
-  const mdp = d.motDePasse || '';
-  const formation = (d.formation || '').trim();
+  const prenom = texte(d.prenom);
+  const nom = texte(d.nom);
+  const email = texte(d.email).toLowerCase();
+  /* motDePasse n'est jamais trim() (comme en PHP : les espaces d'un mot de
+     passe sont significatifs), mais doit rester une string pour bcryptjs. */
+  const mdp = typeof d.motDePasse === 'string' ? d.motDePasse : '';
+  const formation = texte(d.formation);
 
   /* === Validations === */
   if (!prenom || !nom || !email || !mdp) {
@@ -94,7 +96,10 @@ module.exports = async (req, res) => {
   /* === Verrou anti-doublon (2 inscriptions simultanées, même email) === */
   const verrou = await acquerirVerrouCreation(email);
   if (!verrou) {
-    return envoyerJson(res, { succes: false, message: 'Trop de tentatives, réessayez dans 15 minutes.' }, 429);
+    /* Contention du verrou Redis (TTL 5s, retry-poll ~1,5s) — pas un
+       dépassement de quota anti-bruteforce. Message et code distincts
+       du 429 ci-dessus pour ne pas laisser croire à 15 min d'attente. */
+    return envoyerJson(res, { succes: false, message: 'Le service est momentanément occupé, merci de réessayer dans quelques secondes.' }, 503);
   }
 
   /* === Section critique protégée par le verrou : vérifier + créer === */
@@ -144,7 +149,7 @@ module.exports = async (req, res) => {
 
   /* === Connexion automatique (cookie de session) === */
   const utilisateur = { email, prenom, nom, statut: 'Standard' };
-  ecrireCookieSession(res, utilisateur);
+  await ecrireCookieSession(res, utilisateur);
 
   envoyerJson(res, {
     succes: true,
