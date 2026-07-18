@@ -7,11 +7,21 @@
 
 const NOTION_VERSION = '2025-09-03';
 
+/* Signale une vraie panne Notion (reseau ou HTTP >= 400) — distincte
+   d'un `null` "aucun resultat trouve" (chercherPageNotion). Sans cette
+   distinction, une panne Notion pendant une connexion ressemblait a un
+   "compte introuvable"/mauvais mot de passe : un vrai incident serveur
+   devenait indiscernable d'une erreur utilisateur cote client. */
+class ErreurNotion extends Error {}
+
 /* Appelle l'API Notion.
    - methode  : 'GET' / 'POST' / 'PATCH' / 'DELETE'
    - endpoint : ex 'pages', 'pages/abc-123', 'data_sources/xyz/query'
    - donnees  : objet (sera envoye en JSON) ou null
-   Retourne l'objet decode, ou null si HTTP >= 400 ou erreur reseau. */
+   Retourne l'objet decode. Leve ErreurNotion sur panne reseau ou HTTP >= 400
+   (ne renvoie plus jamais null sur erreur — un succes renvoie toujours un
+   objet, meme avec results:[] vide, donc null ne peut plus vouloir dire
+   que "vraie panne", jamais "aucun resultat"). */
 async function appelerNotion(methode, endpoint, donnees = null) {
   const url = 'https://api.notion.com/v1/' + endpoint;
 
@@ -29,13 +39,13 @@ async function appelerNotion(methode, endpoint, donnees = null) {
     });
   } catch (e) {
     console.error('[Notion] ' + methode + ' ' + endpoint + ' -> erreur reseau : ' + e.message);
-    return null;
+    throw new ErreurNotion('Erreur reseau Notion : ' + e.message);
   }
 
   if (!reponse.ok) {
     const texte = await reponse.text().catch(() => '');
     console.error('[Notion] ' + methode + ' ' + endpoint + ' -> HTTP ' + reponse.status + ' - ' + texte);
-    return null;
+    throw new ErreurNotion('HTTP ' + reponse.status + ' sur ' + methode + ' ' + endpoint);
   }
 
   return reponse.json();
@@ -60,8 +70,17 @@ async function listerPagesNotion(dataSourceId) {
     const corps = { page_size: 100 };
     if (cursor) corps.start_cursor = cursor;
 
-    const reponse = await appelerNotion('POST', 'data_sources/' + dataSourceId + '/query', corps);
-    if (!reponse) break;
+    let reponse;
+    try {
+      reponse = await appelerNotion('POST', 'data_sources/' + dataSourceId + '/query', corps);
+    } catch (e) {
+      /* Degradation gracieuse preservee (comportement volontaire existant,
+         utilise par admin/stats.js) : si la pagination echoue en cours de
+         route, on retourne les pages deja recuperees plutot que de tout
+         faire echouer. */
+      if (e instanceof ErreurNotion) break;
+      throw e;
+    }
 
     toutes.push(...(reponse.results || []));
     cursor = reponse.has_more ? reponse.next_cursor : null;
@@ -70,4 +89,4 @@ async function listerPagesNotion(dataSourceId) {
   return toutes;
 }
 
-module.exports = { appelerNotion, chercherPageNotion, listerPagesNotion };
+module.exports = { appelerNotion, chercherPageNotion, listerPagesNotion, ErreurNotion };

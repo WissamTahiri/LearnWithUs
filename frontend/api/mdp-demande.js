@@ -9,7 +9,7 @@
    ============================================================= */
 
 const crypto = require('crypto');
-const { lireCorps, envoyerJson, exigerMethode } = require('./_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, texte } = require('./_lib/http');
 const { chercherCompteParEmail, lireCompte } = require('./_lib/comptes');
 const { verifierRateLimit, obtenirIp } = require('./_lib/rateLimit');
 const { genererToken } = require('./_lib/token');
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
 
   const d = lireCorps(req);
-  const email = (d.email || '').trim().toLowerCase();
+  const email = texte(d.email).toLowerCase();
 
   const ip = obtenirIp(req);
   const ok = await verifierRateLimit('mdp-demande-' + ip + '-' + email, 10, 900, ip);

@@ -4,7 +4,7 @@
    Equivalent Node de backend-php/api/contact.php.
    ============================================================= */
 
-const { lireCorps, envoyerJson, exigerMethode, emailValide } = require('./_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, emailValide, texte } = require('./_lib/http');
 const { verifierRateLimit, obtenirIp } = require('./_lib/rateLimit');
 const { appelerWebhook } = require('./_lib/webhook');
 const { synchroniserCRM } = require('./_lib/crm');
@@ -19,11 +19,11 @@ module.exports = async (req, res) => {
   }
 
   const d = lireCorps(req);
-  const prenom = (d.prenom || '').trim();
-  const nom = (d.nom || '').trim();
-  const email = (d.email || '').trim();
-  const sujet = (d.sujet || '').trim();
-  const message = (d.message || '').trim();
+  const prenom = texte(d.prenom);
+  const nom = texte(d.nom);
+  const email = texte(d.email);
+  const sujet = texte(d.sujet);
+  const message = texte(d.message);
 
   if (!prenom || !email || !message) {
     return envoyerJson(res, { succes: false, message: 'Prénom, email et message sont obligatoires' }, 400);
