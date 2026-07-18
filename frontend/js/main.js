@@ -2,16 +2,16 @@
    Chargé sur toutes les pages. Gère : menu mobile, formulaires,
    onglets espace client, accordéon FAQ, authentification.
 
-   Backend : PHP servi par l'hébergement IONOS (anciennement Node.js sur Render).
-   Authentification : sessions PHP natives (cookie), plus de JWT.
-   Le cookie de session est envoyé automatiquement par le navigateur. */
+   Backend : fonctions serverless Node.js (Vercel), sous /api/.
+   Authentification : cookie de session signé (HMAC), envoyé
+   automatiquement par le navigateur (credentials:'include'). */
 
 
 /* URL du backend — préfixe ajouté à chaque appel fetch.
-   - Local        : '/backend-php' (PHP servi à côté du frontend)
-   - Prod IONOS   : '' (PHP servi sous le même domaine que le front)
-   En IONOS on basculera ici en J6. */
-const URL_BACKEND = '/backend-php'
+   Le backend est desormais une fonction serverless Node.js servie
+   sous /api/ du meme domaine que le frontend (Vercel) : pas de
+   prefixe separe, pas de CORS a gerer. */
+const URL_BACKEND = ''
 
 /* Clé localStorage pour la session utilisateur.
    /!\ La session "réelle" est côté serveur (cookie PHP). Cette clé
@@ -50,7 +50,7 @@ function sauverSession(utilisateur) {
    serveur, puis vide le cache local et redirige vers l'accueil. */
 async function deconnecter() {
   try {
-    await fetch(URL_BACKEND + '/api/deconnexion.php', {
+    await fetch(URL_BACKEND + '/api/deconnexion', {
       method: 'POST',
       credentials: 'include'
     })
@@ -139,7 +139,7 @@ async function envoyeContact(evenement) {
   boutonEnvoi.textContent = 'Envoi en cours...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/contact.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/contact', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -252,7 +252,7 @@ async function envoyerCreationCompte(evenement) {
   boutonEnvoi.textContent = 'Création du compte...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/creer-compte.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/creer-compte', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -296,7 +296,7 @@ async function envoyerConnexion(evenement) {
   boutonEnvoi.textContent = 'Connexion...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/connexion.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/connexion', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -420,7 +420,7 @@ async function envoyerPaiement(evenement) {
   bouton.textContent = 'Paiement en cours...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/activer-premium.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/activer-premium', {
       method:  'POST',
       credentials: 'include'
     })
@@ -720,7 +720,7 @@ function construireTableauComptes(lignes) {
 async function changerStatutCompte(email, nouveauStatut) {
   if (!confirm('Passer ce compte en ' + nouveauStatut + ' ?')) return
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/admin/changer-statut.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/changer-statut', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -741,7 +741,7 @@ async function changerStatutCompte(email, nouveauStatut) {
 async function supprimerCompteAdmin(email) {
   if (!confirm('Supprimer définitivement le compte ' + email + ' ?\n\nCette action est irréversible.')) return
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/admin/supprimer-compte.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/supprimer-compte', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -773,7 +773,7 @@ async function envoyerDemandeReset(evenement) {
   bouton.textContent = 'Envoi en cours...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/mdp-demande.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/mdp-demande', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -816,7 +816,7 @@ async function envoyerConfirmationReset(evenement) {
   bouton.textContent = 'Enregistrement...'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/mdp-confirmer.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/mdp-confirmer', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -852,7 +852,7 @@ async function supprimerMonCompte() {
   if (message) message.innerHTML = '<p style="color: var(--couleur-texte-secondaire); margin-top: 12px;">Suppression en cours…</p>'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/supprimer-compte.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/supprimer-compte', {
       method: 'POST',
       credentials: 'include'
     })
@@ -897,7 +897,7 @@ async function chargerDashboardAdmin() {
   zoneMessage.innerHTML = '<div class="admin-message-chargement">⏳ Chargement des statistiques…</div>'
 
   try {
-    const reponse = await fetch(URL_BACKEND + '/api/admin/stats.php', {
+    const reponse = await fetch(URL_BACKEND + '/api/admin/stats', {
       credentials: 'include'
     })
 

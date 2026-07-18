@@ -11,8 +11,8 @@ Disallow: /paiement.html
 Disallow: /parametres.html
 Disallow: /reset-mot-de-passe.html
 
-# Backend PHP : aucune raison de l'indexer.
-Disallow: /backend-php/
+# Backend (API Node.js) : aucune raison de l'indexer.
+Disallow: /api/
 
 # Sitemap pour aider l'indexation.
 Sitemap: https://learnwithus.fr/sitemap.xml
