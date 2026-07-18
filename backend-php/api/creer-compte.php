@@ -44,14 +44,37 @@ if (strlen($mdp) < 8 || !preg_match('/[A-Z]/', $mdp) || !preg_match('/[0-9]/', $
     ], 400);
 }
 
-/* === Vérifie que le domaine de l'email peut recevoir des mails ===
-   Bloque les fausses adresses AVANT tout déclenchement de workflow n8n
-   (le webhook bienvenue n'est atteint qu'après ce point). */
+/* === Vérifie que le domaine a un serveur mail (MX) ===
+   Seul le MX prouve qu'un domaine reçoit vraiment des emails. Un simple
+   enregistrement A (page web) ne suffit pas : beaucoup de domaines
+   enregistrés mais jamais configurés pour le mail en ont un quand même
+   (page de parking du registrar) — accepter le A seul laissait passer
+   ces domaines "coquille vide". Bloque AVANT tout déclenchement n8n. */
 $domaine = substr(strrchr($email, '@'), 1);
-if (!$domaine || (!checkdnsrr($domaine, 'MX') && !checkdnsrr($domaine, 'A'))) {
+if (!$domaine || !checkdnsrr($domaine, 'MX')) {
     repondreJson([
         'succes'  => false,
         'message' => "Cette adresse email semble introuvable : vérifiez le domaine."
+    ], 422);
+}
+
+/* === Refus des adresses email jetables / temporaires ===
+   Ces domaines (yopmail, mailinator...) ont un vrai MX et passent donc le
+   test DNS ci-dessus : on les bloque explicitement. Refuser l'inscription
+   = pas de compte, donc pas d'accès au site ni au paiement. Liste à éditer. */
+$domainesJetables = [
+    'yopmail.com', 'yopmail.fr', 'mailinator.com', 'guerrillamail.com',
+    'guerrillamail.info', 'sharklasers.com', '10minutemail.com', 'temp-mail.org',
+    'tempmail.com', 'tempmailo.com', 'minuteinbox.com', 'throwawaymail.com',
+    'getnada.com', 'trashmail.com', 'maildrop.cc', 'mailcatch.com',
+    'fakeinbox.com', 'dispostable.com', 'mintemail.com', 'mohmal.com',
+    'jetable.org', 'moakt.com', 'mailsac.com', 'discard.email',
+    'emailondeck.com', 'spam4.me', 'tempr.email', '33mail.com',
+];
+if (in_array($domaine, $domainesJetables, true)) {
+    repondreJson([
+        'succes'  => false,
+        'message' => "Les adresses email temporaires ne sont pas acceptées. Utilisez une adresse personnelle ou professionnelle."
     ], 422);
 }
 
@@ -62,6 +85,17 @@ if (!verifierRateLimit('creer-' . obtenirIp() . '-' . $email, 10, 900)) {
         'message' => 'Trop de tentatives, réessayez dans 15 minutes.'
     ], 429);
 }
+
+/* === Verrou anti-doublon (2 inscriptions simultanées, même email) ===
+   Sans verrou, deux requêtes qui arrivent en même temps peuvent CHACUNE
+   passer le test "email déjà utilisé" avant que l'autre n'ait fini de
+   créer son compte (Notion n'a pas de contrainte d'unicité comme une
+   vraie base SQL) → 2 comptes en doublon. Le flock force les requêtes
+   sur le MÊME email à s'exécuter une par une. */
+$dossierData = __DIR__ . '/../data';
+if (!is_dir($dossierData)) mkdir($dossierData, 0755, true);
+$verrou = fopen($dossierData . '/lock-creation-' . md5($email) . '.lock', 'c');
+flock($verrou, LOCK_EX);
 
 /* === Refus si compte déjà existant === */
 if (chercherCompteParEmail($email)) {
@@ -92,6 +126,11 @@ if (!$creation) {
         'message' => 'Erreur serveur lors de la création du compte'
     ], 500);
 }
+
+/* Compte créé : on relâche le verrou tout de suite (pas besoin de
+   bloquer les autres requêtes pendant CRM/webhook/session ci-dessous). */
+flock($verrou, LOCK_UN);
+fclose($verrou);
 
 /* === Sync CRM (Pipeline=Lead, Source=Création compte) === */
 synchroniserCRM([
