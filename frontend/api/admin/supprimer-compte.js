@@ -6,18 +6,18 @@
    compte (utiliser /api/supprimer-compte.js pour ça).
    ============================================================= */
 
-const { lireCorps, envoyerJson, exigerMethode } = require('../_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, texte } = require('../_lib/http');
 const { exigerAdmin } = require('../_lib/auth');
 const { chercherCompteParEmail } = require('../_lib/comptes');
 const { appelerNotion } = require('../_lib/notion');
 
 module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
-  const admin = exigerAdmin(req, res);
+  const admin = await exigerAdmin(req, res);
   if (!admin) return;
 
   const d = lireCorps(req);
-  const emailCible = (d.email || '').trim().toLowerCase();
+  const emailCible = texte(d.email).toLowerCase();
 
   if (!emailCible) {
     return envoyerJson(res, { succes: false, message: 'Email obligatoire' }, 400);

@@ -23,7 +23,7 @@ function triRecent(a, b) {
 
 module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'GET')) return;
-  if (!exigerAdmin(req, res)) return;
+  if (!(await exigerAdmin(req, res))) return;
 
   /* Les 3 bases n'ont aucune dépendance entre elles : on les charge
      en parallèle (pur gain de perf, aucun changement de contrat de

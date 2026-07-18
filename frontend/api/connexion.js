@@ -6,7 +6,7 @@
    3. Ouvre la session (cookie signé)
    ============================================================= */
 
-const { lireCorps, envoyerJson, exigerMethode } = require('./_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, texte } = require('./_lib/http');
 const { chercherCompteParEmail, lireCompte } = require('./_lib/comptes');
 const { estAdmin } = require('./_lib/auth');
 const { verifierRateLimit, obtenirIp } = require('./_lib/rateLimit');
@@ -17,8 +17,8 @@ module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
 
   const d = lireCorps(req);
-  const email = (d.email || '').trim().toLowerCase();
-  const mdp = d.motDePasse || '';
+  const email = texte(d.email).toLowerCase();
+  const mdp = typeof d.motDePasse === 'string' ? d.motDePasse : '';
 
   /* Anti-bruteforce à DEUX niveaux (les deux checks s'exécutent
      toujours, pour qu'ils enregistrent chacun leur tentative) :
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
   }
 
   const utilisateur = { email: compte.email, prenom: compte.prenom, nom: compte.nom, statut: compte.statut };
-  ecrireCookieSession(res, utilisateur);
+  await ecrireCookieSession(res, utilisateur);
 
   envoyerJson(res, {
     succes: true,

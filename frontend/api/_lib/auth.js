@@ -19,16 +19,20 @@ function estAdmin(email) {
   return liste.includes(email.toLowerCase());
 }
 
-/* Retourne l'utilisateur connecte (objet, avec estAdmin recalcule) ou null. */
-function utilisateurConnecte(req) {
-  const payload = lireCookieSession(req);
+/* Retourne l'utilisateur connecte (objet, avec estAdmin recalcule) ou null.
+   Async depuis l'ajout de la revocation server-side (lireCookieSession
+   verifie la version en Redis) — TOUS les appelants doivent await, sinon
+   ils recoivent une Promise (toujours truthy) au lieu de l'utilisateur/null
+   et court-circuitent silencieusement les gardes d'authentification. */
+async function utilisateurConnecte(req) {
+  const payload = await lireCookieSession(req);
   if (!payload) return null;
   return { ...payload, estAdmin: estAdmin(payload.email) };
 }
 
 /* Renvoie l'utilisateur connecte, ou repond 401 et retourne null. */
-function exigerConnexion(req, res) {
-  const u = utilisateurConnecte(req);
+async function exigerConnexion(req, res) {
+  const u = await utilisateurConnecte(req);
   if (!u) {
     envoyerJson(res, { succes: false, message: 'Authentification requise' }, 401);
     return null;
@@ -38,11 +42,11 @@ function exigerConnexion(req, res) {
 
 /* Renvoie l'utilisateur si admin, sinon repond 403 (ou 401 via
    exigerConnexion) et retourne null. */
-function exigerAdmin(req, res) {
-  const u = exigerConnexion(req, res);
+async function exigerAdmin(req, res) {
+  const u = await exigerConnexion(req, res);
   if (!u) return null; /* deja repondu par exigerConnexion */
   if (!u.estAdmin) {
-    envoyerJson(res, { succes: false, message: "Acces reserve a l'equipe administration" }, 403);
+    envoyerJson(res, { succes: false, message: "Accès réservé à l'équipe administration" }, 403);
     return null;
   }
   return u;

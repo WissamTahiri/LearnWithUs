@@ -5,19 +5,20 @@
    de webhook (silent update).
    ============================================================= */
 
-const { lireCorps, envoyerJson, exigerMethode } = require('../_lib/http');
+const { lireCorps, envoyerJson, exigerMethode, texte } = require('../_lib/http');
 const { exigerAdmin } = require('../_lib/auth');
 const { chercherCompteParEmail, lireCompte } = require('../_lib/comptes');
 const { appelerNotion } = require('../_lib/notion');
 const { synchroniserCRM } = require('../_lib/crm');
+const { invaliderSessionsUtilisateur } = require('../_lib/cookie');
 
 module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
-  if (!exigerAdmin(req, res)) return;
+  if (!(await exigerAdmin(req, res))) return;
 
   const d = lireCorps(req);
-  const emailCible = (d.email || '').trim().toLowerCase();
-  const nouveauStatut = (d.nouveauStatut || '').trim();
+  const emailCible = texte(d.email).toLowerCase();
+  const nouveauStatut = texte(d.nouveauStatut);
 
   if (!emailCible) {
     return envoyerJson(res, { succes: false, message: 'Email obligatoire' }, 400);
@@ -50,6 +51,11 @@ module.exports = async (req, res) => {
     nomComplet: (compte.prenom + ' ' + compte.nom).trim() || emailCible,
     pipeline: nouveauStatut === 'Premium' ? 'Client Premium' : 'Client',
   });
+
+  /* Un utilisateur rétrogradé (Premium -> Standard) ne doit pas garder son
+     cookie 'statut=Premium' jusqu'à expiration naturelle — force une
+     reconnexion qui émettra un cookie à jour. */
+  await invaliderSessionsUtilisateur(emailCible);
 
   envoyerJson(res, { succes: true, message: 'Statut mis à jour : ' + nouveauStatut });
 };

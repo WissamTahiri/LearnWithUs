@@ -6,9 +6,17 @@
    ============================================================= */
 
 const { envoyerJson } = require('./_lib/http');
-const { effacerCookieSession } = require('./_lib/cookie');
+const { utilisateurConnecte } = require('./_lib/auth');
+const { effacerCookieSession, invaliderSessionsUtilisateur } = require('./_lib/cookie');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
+  /* Révoque la session côté serveur (pas seulement le cookie local) :
+     un cookie déjà copié avant ce clic (log de proxy, poste partagé,
+     vol d'appareil) devient inutilisable immédiatement, plutôt que de
+     rester valide jusqu'à expiration naturelle (7 jours). */
+  const u = await utilisateurConnecte(req);
+  if (u) await invaliderSessionsUtilisateur(u.email);
+
   effacerCookieSession(res);
   envoyerJson(res, { succes: true, message: 'Vous êtes déconnecté' });
 };

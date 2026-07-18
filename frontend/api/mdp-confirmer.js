@@ -12,6 +12,7 @@ const { appelerNotion } = require('./_lib/notion');
 const { verifierToken } = require('./_lib/token');
 const { verifierRateLimit, obtenirIp } = require('./_lib/rateLimit');
 const { hashMdp } = require('./_lib/bcryptCompat');
+const { invaliderSessionsUtilisateur } = require('./_lib/cookie');
 
 module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return;
@@ -25,8 +26,8 @@ module.exports = async (req, res) => {
   }
 
   const d = lireCorps(req);
-  const token = d.token || '';
-  const nouveauMdp = d.nouveauMdp || '';
+  const token = typeof d.token === 'string' ? d.token : '';
+  const nouveauMdp = typeof d.nouveauMdp === 'string' ? d.nouveauMdp : '';
 
   if (!token || !nouveauMdp) {
     return envoyerJson(res, { succes: false, message: 'Token et nouveau mot de passe obligatoires' }, 400);
@@ -71,6 +72,10 @@ module.exports = async (req, res) => {
   if (!maj) {
     return envoyerJson(res, { succes: false, message: 'Erreur lors de la mise à jour' }, 500);
   }
+
+  /* Un cookie déjà volé ne doit pas survivre à une réinitialisation de mot
+     de passe, même s'il reste dans ses 7 jours de validité normale. */
+  await invaliderSessionsUtilisateur(payload.email);
 
   envoyerJson(res, { succes: true, message: 'Mot de passe réinitialisé' });
 };

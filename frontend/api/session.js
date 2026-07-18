@@ -9,6 +9,6 @@
 const { envoyerJson } = require('./_lib/http');
 const { utilisateurConnecte } = require('./_lib/auth');
 
-module.exports = (req, res) => {
-  envoyerJson(res, { succes: true, utilisateur: utilisateurConnecte(req) });
+module.exports = async (req, res) => {
+  envoyerJson(res, { succes: true, utilisateur: await utilisateurConnecte(req) });
 };

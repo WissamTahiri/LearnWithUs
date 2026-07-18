@@ -19,7 +19,7 @@ const { effacerCookieSession } = require('./_lib/cookie');
 module.exports = async (req, res) => {
   if (!exigerMethode(req, res, 'POST')) return; /* POST plutôt que DELETE : formulaires HTML classiques */
 
-  const utilisateur = exigerConnexion(req, res);
+  const utilisateur = await exigerConnexion(req, res);
   if (!utilisateur) return;
   const email = utilisateur.email;
 
