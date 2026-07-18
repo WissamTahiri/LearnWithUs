@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/admin/changer-statut", "destination": "/api/admin/handler" },
+    { "source": "/api/admin/supprimer-compte", "destination": "/api/admin/handler" },
+    { "source": "/api/admin/stats", "destination": "/api/admin/handler" }
+  ]
+}
