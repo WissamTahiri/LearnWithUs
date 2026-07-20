@@ -949,7 +949,8 @@ async function chargerDashboardAdmin() {
 /* Initialisation au chargement de la page */
 /* =============================================================
    Lecteurs vidéo des cours (pages formation-*.html)
-   La vidéo est servie depuis IONOS : frontend/videos/formation-*.mp4
+   La vidéo est servie depuis Vercel Blob Storage (URL absolue dans
+   le <source>, cross-origin, pas de dossier local frontend/videos/).
    Tant que le fichier n'est pas en ligne (404), on masque le lecteur
    et on affiche un repli "bientôt disponible". */
 function initLecteursVideo() {
