@@ -2,11 +2,11 @@
 
 Site web complet pour **LearnWithUs**, un organisme de formation numerique proposant 3 formations : Intelligence Artificielle, Agilite & SCRUM (en anglais), et SAP.
 
-**Stack technique** : HTML + CSS + JavaScript vanilla (frontend) / PHP 8.x procedural (backend) / Notion (base de donnees) / n8n.cloud (automatisations email)
+**Stack technique** : HTML + CSS + JavaScript vanilla (frontend) / Node.js (fonctions serverless, backend) / Notion (base de donnees) / n8n.cloud (automatisations email)
 
-**Hebergement** : IONOS (mutualise, ~8 EUR/mois) - PHP 8.4, SSL Sectigo Wildcard
+**Hebergement** : Vercel (palier Hobby, gratuit) - fonctions serverless Node.js 24.x + Vercel Blob Storage (videos) + Upstash Redis (anti-bruteforce, sessions)
 
-**URL de production** : https://learnwithus.fr
+**URL de production** : https://learn-with-us-lac.vercel.app
 
 
 ## Structure du projet
@@ -14,7 +14,7 @@ Site web complet pour **LearnWithUs**, un organisme de formation numerique propo
 ```
 LearnWithUs/
 |
-|-- frontend/                       <- Partie visible du site
+|-- frontend/                       <- Racine deployee sur Vercel
 |   |-- index.html                  <- Page Accueil
 |   |-- formations.html             <- Catalogue des 3 formations
 |   |-- formation-ia.html           <- Cours Intelligence Artificielle
@@ -34,131 +34,136 @@ LearnWithUs/
 |   |-- sitemap.xml / robots.txt    <- SEO
 |   |-- favicon.svg                 <- Icone du site
 |   |-- docs/supports/              <- PDF des supports de cours (Premium)
-|   |-- videos/                     <- Videos des 3 formations (mp4)
 |   |-- css/style.css               <- Styles communs
 |   |-- js/main.js                  <- JavaScript commun
+|   |-- package.json                <- Dependances des fonctions serverless
+|   |-- vercel.json                 <- Rewrites (routes admin fusionnees, cf. plus bas)
+|   |
+|   |-- api/                        <- Backend : fonctions serverless Node.js
+|       |-- _lib/                   <- Helpers partages (prefixe _ ignore par le routing Vercel)
+|       |   |-- notion.js           <- Wrapper API Notion (fetch natif)
+|       |   |-- webhook.js          <- Appel webhooks n8n
+|       |   |-- crm.js              <- Synchronisation CRM Notion
+|       |   |-- comptes.js          <- Recherche / lecture comptes
+|       |   |-- auth.js             <- exigerConnexion / exigerAdmin
+|       |   |-- cookie.js           <- Session (cookie signe HMAC + revocation via Redis)
+|       |   |-- hmac.js             <- Primitive de signature generique
+|       |   |-- token.js            <- Tokens reset mot de passe (usage unique)
+|       |   |-- bcryptCompat.js     <- Hash mots de passe (bcryptjs)
+|       |   |-- rateLimit.js        <- Anti-bruteforce + verrous anti-doublon (Upstash Redis)
+|       |   |-- transactions.js     <- Enregistrement paiements Notion
+|       |   |-- http.js             <- Bootstrap commun (parsing, reponses JSON)
+|       |-- health.js               <- Sonde de sante
+|       |-- contact.js              <- Formulaire contact
+|       |-- creer-compte.js         <- Creation compte + session
+|       |-- connexion.js            <- Login session
+|       |-- deconnexion.js          <- Detruit session (+ revocation serveur)
+|       |-- activer-premium.js      <- Bascule Standard -> Premium
+|       |-- supprimer-compte.js     <- RGPD - droit a l'effacement
+|       |-- mdp-demande.js          <- Demande lien reset mot de passe
+|       |-- mdp-confirmer.js        <- Applique nouveau mot de passe
+|       |-- admin/
+|           |-- handler.js          <- stats + changer-statut + supprimer-compte (fusionnees,
+|                                       cf. "Limite de fonctions Vercel" plus bas)
 |
-|-- backend-php/                    <- API PHP procedurale (zero dependance)
-|   |-- config.php                  <- Secrets (Notion token, IDs DB, etc.)
-|   |-- config.example.php          <- Modele a recopier en config.php
-|   |-- helpers/
-|   |   |-- notion.php              <- Wrapper API Notion via cURL
-|   |   |-- webhook.php             <- Appel webhooks n8n
-|   |   |-- crm.php                 <- Synchronisation CRM Notion
-|   |   |-- comptes.php             <- Recherche / lecture comptes
-|   |   |-- auth.php                <- Sessions PHP, exigerConnexion / Admin
-|   |   |-- rate-limit.php          <- Anti-bruteforce fichier (10-40 essais / 15 min selon l'action)
-|   |   |-- token.php               <- Tokens HMAC (reset mot de passe)
-|   |   |-- transactions.php        <- Enregistrement paiements Notion
-|   |-- api/
-|   |   |-- _init.php               <- Bootstrap commun
-|   |   |-- health.php              <- Sonde de sante
-|   |   |-- contact.php             <- Formulaire contact
-|   |   |-- creer-compte.php        <- Creation compte + session
-|   |   |-- connexion.php           <- Login session
-|   |   |-- deconnexion.php         <- Detruit session
-|   |   |-- session.php             <- Renvoie utilisateur connecte
-|   |   |-- activer-premium.php     <- Bascule Standard -> Premium
-|   |   |-- supprimer-compte.php    <- RGPD - droit a l'effacement
-|   |   |-- mdp-demande.php         <- Demande lien reset mot de passe
-|   |   |-- mdp-confirmer.php       <- Applique nouveau mot de passe
-|   |   |-- admin/
-|   |       |-- stats.php           <- Dashboard admin (KPI agreges)
-|   |       |-- changer-statut.php  <- Standard / Premium par admin
-|   |       |-- supprimer-compte.php <- Admin archive un compte
-|   |-- data/                       <- Stockage rate-limit (gitignored)
-|
-|-- .htaccess                       <- Configuration Apache (HTTPS, securite)
+|-- backend-php/                    <- ARCHIVE : ancien backend PHP (production jusqu'a la
+|                                       migration Vercel), conserve comme reference, plus deploye
 |-- README.md                       <- Ce fichier
 ```
+
+
+## Pourquoi Node.js et pas PHP ?
+
+Le site tournait initialement sur un backend PHP procedural, heberge sur IONOS (voir `backend-php/`, conserve dans le repo comme reference). Suite a la resiliation de cet hebergement, le backend a ete entierement porte vers des **fonctions serverless Node.js deployees sur Vercel**, avec un contrat d'API strictement identique (mêmes routes, mêmes reponses JSON, mêmes regles metier) pour ne rien casser côté frontend.
+
+Deux briques externes remplacent ce que PHP faisait nativement sur un serveur classique :
+- **Upstash Redis** (palier gratuit) : le disque d'une fonction serverless ne persiste pas entre deux appels, contrairement a un fichier PHP sur un serveur classique. Redis stocke donc l'anti-bruteforce (tentatives de connexion) et la revocation de session (deconnexion, reset mot de passe, changement de statut admin invalident immediatement les cookies actifs).
+- **Vercel Blob Storage** (palier gratuit, 1 Go) : les 3 videos de cours (~730 Mo) etaient deployees a part sur IONOS via FileZilla, en dehors du depot Git. Vercel ne deployant que ce qui est versionne, les videos sont desormais heberges sur Vercel Blob et referencees par URL absolue dans les pages `formation-*.html`.
+
+
+## Limite de fonctions Vercel (palier Hobby)
+
+Le palier gratuit de Vercel limite un deploiement a **12 fonctions serverless**. Le decoupage naturel (1 fichier = 1 route) en comptait 13, ce qui faisait echouer chaque deploiement (`exceeded_serverless_functions_per_deployment`). Les 3 routes admin (`stats`, `changer-statut`, `supprimer-compte`) sont donc regroupees dans un seul fichier `api/admin/handler.js`, avec un dispatch interne sur le chemin de la requete ; `vercel.json` redirige les 3 URLs publiques vers ce fichier unique (`rewrites`). Aucun changement cote appelant (frontend) : les URLs `/api/admin/stats`, `/api/admin/changer-statut`, `/api/admin/supprimer-compte` restent inchangees.
 
 
 ## Installation locale (etape par etape)
 
 ### Prerequis
 
-- **PHP 8.x** installe localement ([php.net/downloads](https://www.php.net/downloads)) avec les extensions cURL, OpenSSL et mbstring activees
+- **Node.js 24.x** ([nodejs.org](https://nodejs.org))
+- **Vercel CLI** : `npm install -g vercel`
 - **VS Code** ou tout editeur de code
-- **Un navigateur** : Chrome, Firefox, Edge
 
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-utilisateur/learnwithus.git
-cd learnwithus
+git clone https://github.com/WissamTahiri/LearnWithUs.git
+cd LearnWithUs/frontend
 ```
 
-### 2. Lancer le serveur PHP local
-
-Le projet ne necessite aucun serveur dedie : le serveur web integre de PHP suffit.
-
-1. Verifiez dans votre `php.ini` que les extensions sont activees :
-   - `extension=curl` (decommente)
-   - `extension=openssl` (decommente)
-   - `extension=mbstring` (decommente)
-2. Pour que cURL valide les certificats SSL, telechargez [cacert.pem](https://curl.se/ca/cacert.pem) et renseignez son chemin :
-   ```ini
-   [curl]
-   curl.cainfo = "/chemin/vers/cacert.pem"
-   ```
-3. Depuis la racine du projet, demarrez le serveur :
-   ```bash
-   php -S localhost:8000
-   ```
-
-### 3. Configurer le backend PHP
+### 2. Installer les dependances
 
 ```bash
-cd backend-php
-cp config.example.php config.php
+npm install
 ```
 
-Editez `config.php` et remplissez les valeurs :
+### 3. Configurer les variables d'environnement
+
+Lier le projet a Vercel puis recuperer les variables (necessite un acces au projet Vercel `learn-with-us`) :
+
+```bash
+vercel link
+vercel env pull .env.local
+```
+
+Ou, pour un developpement independant, creer `.env.local` a la racine de `frontend/` avec :
 
 - `NOTION_TOKEN` - token d'integration Notion ([notion.so/my-integrations](https://www.notion.so/my-integrations))
 - `NOTION_DATABASE_COMPTES_ID` - ID de la base "Comptes LearnWithUs"
-- `NOTION_DS_*_ID` - IDs des 4 data sources (Comptes, CRM, Transactions, Inscriptions)
-- `WEBHOOK_N8N_*` - URLs des 5 webhooks n8n (cf. n8n.cloud)
+- `NOTION_DS_COMPTES_ID` / `NOTION_DS_CRM_ID` / `NOTION_DS_TRANSACTIONS_ID` - IDs des data sources Notion
+- `WEBHOOK_N8N_BIENVENUE` / `WEBHOOK_N8N_CONTACT` / `WEBHOOK_N8N_PAIEMENT` / `WEBHOOK_N8N_RESET_MDP` - URLs des webhooks n8n
 - `ADMIN_EMAILS` - liste des emails admin separes par virgules
-- `APP_SECRET` - chaine aleatoire 32+ caracteres : `php -r "echo bin2hex(random_bytes(32));"`
+- `APP_SECRET` - chaine aleatoire 32+ octets : `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+- `URL_SITE` - URL du site (pour les liens dans les emails)
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - base Redis Upstash (plan Free, [upstash.com](https://upstash.com))
+- `BLOB_READ_WRITE_TOKEN` - injecte automatiquement par Vercel si un store Blob est lie au projet
 
 Mot de passe utilisateur : 8 caracteres minimum, avec au moins 1 majuscule et 1 chiffre (verifie cote backend ET frontend).
 
 ### 4. Tester en local
 
+```bash
+vercel dev
+```
+
 Ouvrez dans votre navigateur :
 
-- `http://localhost:8000/frontend/index.html` - page d'accueil
-- `http://localhost:8000/backend-php/api/health.php` - sonde de sante
+- `http://localhost:3000/index.html` - page d'accueil
+- `http://localhost:3000/api/health` - sonde de sante
   (doit renvoyer `{"statut":"ok",...}`)
 
 
-## Deploiement IONOS (production - effectue le 28/04/2026)
+## Deploiement (Vercel)
 
-Le site tourne en production sur `https://learnwithus.fr`. Les etapes suivies :
+Le projet `learn-with-us` sur Vercel est connecte au depot GitHub `WissamTahiri/LearnWithUs` : chaque `git push` sur `main` declenche automatiquement un nouveau deploiement en production.
 
-1. **Souscription** : pack IONOS Hebergement Web Premium (~8 EUR/mois) avec PHP 8.4
-2. **Domaine** : `learnwithus.fr` connecte au pack via "Connecter a un espace Web", cible `/public`
-3. **SSL** : certificat **SSL Starter Wildcard** (Sectigo) gratuit inclus, couvre `learnwithus.fr` et `*.learnwithus.fr`, renouvellement auto tous les 180 jours
-4. **Upload** : tous les fichiers `frontend/*` + `.htaccess` + `backend-php/` deposes via SFTP (FileZilla) dans `/public/`
-5. **Config prod** : `backend-php/config.php` cree directement sur le serveur (jamais commit sur Git), seule difference vs local : `URL_SITE = 'https://learnwithus.fr'`
-6. **Permissions** : dossier `backend-php/data/` en 755 (writeable pour le rate-limit)
-
-Le fichier `.htaccess` a la racine force HTTPS (redirection 301), bloque l'acces direct au `config.php` et aux dossiers `helpers/` et `data/`, desactive le listing des repertoires (`Options -Indexes`) et protege les videos et supports de cours contre le hotlink externe, ajoute les headers de securite (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy), active la compression gzip et le cache navigateur, et redirige les 404 vers `/404.html`.
+- **Root Directory** du projet Vercel : `frontend` (le dossier `backend-php/` a la racine du depot n'est pas deploye)
+- **Variables d'environnement** : configurees dans Vercel (Project Settings -> Environment Variables), jamais commitees
+- **Videos de cours** : uploadees une fois sur Vercel Blob via `vercel blob put <fichier> --access public --pathname videos/<nom>.mp4`, referencees par URL absolue dans les pages `formation-*.html` (pas besoin de re-upload a chaque deploiement)
 
 
 ## Email professionnel (IONOS)
 
-Une boite mail `contact@learnwithus.fr` (Email Basic 2 Go, gratuit avec le pack) est configuree pour :
-- Recevoir les messages depuis le formulaire de contact du site
-- **Etre l'expediteur SMTP des 5 workflows n8n** (point critique pour la delivrabilite : sans cela les emails partent depuis Gmail et sont rejetes par les FAI .fr a cause du SPF)
+Le domaine `learnwithus.fr` et la boite mail `contact@learnwithus.fr` (Email Basic 2 Go) restent actifs chez IONOS independamment de l'hebergement web (produits separes) :
+- Reception des messages du formulaire de contact (relaye par n8n)
+- **Expediteur SMTP des workflows n8n** (point critique pour la delivrabilite : sans cela les emails partent depuis Gmail et sont rejetes par les FAI .fr a cause du SPF)
 
 Webmail accessible sur https://mail.ionos.fr.
 
 
 ## Configuration n8n (5 workflows)
 
-Workflows hebergees sur n8n.cloud (instance `persia-esgi`). Tous utilisent le **credential SMTP IONOS** suivant :
+Workflows heberges sur n8n.cloud (instance `persia-esgi`). Tous utilisent le **credential SMTP IONOS** suivant :
 
 ```
 Host:     smtp.ionos.fr
@@ -170,13 +175,13 @@ STARTTLS: ACTIVE (NE PAS desactiver - sinon erreur 530 User not authenticated)
 
 | # | Workflow | Declenche par |
 |---|---|---|
-| 1 | Bienvenue | Creation de compte (`/api/creer-compte.php`) |
-| 2 | Contact | Formulaire contact (`/api/contact.php`) |
+| 1 | Bienvenue | Creation de compte (`/api/creer-compte`) |
+| 2 | Contact | Formulaire contact (`/api/contact`) |
 | 3 | Relance leads 15j | Schedule (tous les 15 jours, 9h) |
-| 4 | Paiement Premium | Activation Premium (`/api/activer-premium.php`) |
-| 5 | Reset mot de passe | Demande reset (`/api/mdp-demande.php`) |
+| 4 | Paiement Premium | Activation Premium (`/api/activer-premium`) |
+| 5 | Reset mot de passe | Demande reset (`/api/mdp-demande`) |
 
-Apres import des workflows JSON, chaque URL `Production` (pas `Test`) est collee dans la constante correspondante de `config.php`. Les 5 workflows doivent etre **actives** (toggle vert en haut a droite de l'editeur n8n) pour que les webhooks Production repondent.
+Apres import des workflows JSON, chaque URL `Production` (pas `Test`) est collee dans la variable d'environnement correspondante sur Vercel. Les 5 workflows doivent etre **actives** (toggle vert en haut a droite de l'editeur n8n) pour que les webhooks Production repondent.
 
 
 ## Aide
